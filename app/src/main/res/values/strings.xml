@@ -1,3 +1,24 @@
 <resources>
-    <string name="app_name">PharmacyStorage</string>
+    <string name="app_name">Склад Влада</string>
+    <string name="button_sales_text">Продажи</string>
+    <string name="button_medicine_text">Лекарства</string>
+    <string name="button_save">Сохранить</string>
+    <string name="button_exit_text">Выйти из личного кабинета</string>
+    <string name="button_report_text">Получить отчет</string>
+    <string name="text_view_password_text">Пароль: </string>
+    <string name="text_view_password_login">Почта: </string>
+    <string name="button_enter_text">Войти</string>
+    <string name="button_register_text">Зарегестрироваться</string>
+    <string name="button_create_text">Создать</string>
+    <string name="button_add_text">Добавить</string>
+    <string name="text_view_count">Количество: </string>
+    <string name="button_cancel_text">Отмена</string>
+    <string name="text_view_name">Название: </string>
+    <string name="button_update_text">Изменить</string>
+    <string name="button_delete_text">Удалить</string>
+    <string name="text_view_medicine_name">Название: </string>
+    <string name="text_view_type">Тип: </string>
+    <string name="text_view_price">Цена за упаковку: </string>
+    <string name="button_date_from"> От </string>
+    <string name="button_date_to"> До </string>
 </resources>
