@@ -5,8 +5,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.example.pharmacystorage.models.SendingModel;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 
 public class SendingLogic {
     DatabaseHelper sqlHelper;
@@ -16,6 +22,8 @@ public class SendingLogic {
     final String COLUMN_DATE = "date";
     final String COLUMN_STORAGE_ID = "storageId";
     final String COLUMN_PHARMACY_ID = "pharmacyId";
+
+    final SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
 
     public SendingLogic(Context context) {
         sqlHelper = new DatabaseHelper(context);
@@ -31,19 +39,24 @@ public class SendingLogic {
         db.close();
     }
 
-    public List<MedicineModel> getFullList() {
+    public List<SendingModel> getFullList() {
         Cursor cursor = db.rawQuery("select * from " + TABLE, null);
-        List<MedicineModel> list = new ArrayList<>();
+        List<SendingModel> list = new ArrayList<>();
         if (!cursor.moveToFirst()) {
             return list;
         }
         do {
-            MedicineModel obj = new MedicineModel();
+            SendingModel obj = new SendingModel();
+            Calendar cal = new GregorianCalendar();
+
+            try {
+                cal.setTime(sdf.parse(cursor.getString((int) cursor.getColumnIndex(COLUMN_DATE))));// all done
+            }catch (Exception ex){}
 
             obj.setId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_ID)));
-            obj.setDate(cursor.getString((int) cursor.getColumnIndex(COLUMN_DATE)));
+            obj.setDate(cal);
             obj.setStorageId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_STORAGE_ID)));
-            obj.setPharmacyId(cursor.getString((int) cursor.getColumnIndex(COLUMN_PHARMACY_ID)));
+            obj.setPharmacyId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_PHARMACY_ID)));
 
             list.add(obj);
             cursor.moveToNext();
@@ -51,40 +64,45 @@ public class SendingLogic {
         return list;
     }
 
-    public List<MedicineModel> getFilteredList(int pharmacyId) {
+    public List<SendingModel> getFilteredList(int pharmacyId) {
         Cursor cursor = db.rawQuery("select * from " + TABLE + " where "
                 + COLUMN_PHARMACY_ID + " = " + pharmacyId, null);
-        List<MedicineModel> list = new ArrayList<>();
+        List<SendingModel> list = new ArrayList<>();
         if (!cursor.moveToFirst()) {
             return list;
         }
         do {
-            MedicineModel obj = getElement(cursor.getInt((int) cursor.getColumnIndex(COLUMN_ID)));
+            SendingModel obj = getElement(cursor.getInt((int) cursor.getColumnIndex(COLUMN_ID)));
             list.add(obj);
             cursor.moveToNext();
         } while (!cursor.isAfterLast());
         return list;
     }
 
-    public MedicineModel getElement(int id) {
+    public SendingModel getElement(int id) {
         Cursor cursor = db.rawQuery("select * from " + TABLE + " where "
                 + COLUMN_ID + " = " + id, null);
-        MedicineModel obj = new MedicineModel();
+        SendingModel obj = new SendingModel();
         if (!cursor.moveToFirst()) {
             return null;
         }
+        Calendar cal = new GregorianCalendar();
+
+        try {
+            cal.setTime(sdf.parse(cursor.getString((int) cursor.getColumnIndex(COLUMN_DATE))));// all done
+        }catch (Exception ex){}
 
         obj.setId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_ID)));
-        obj.setDate(cursor.getString((int) cursor.getColumnIndex(COLUMN_DATE)));
+        obj.setDate(cal);
         obj.setStorageId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_STORAGE_ID)));
-        obj.setPharmacyId(cursor.getString((int) cursor.getColumnIndex(COLUMN_PHARMACY_ID)));
+        obj.setPharmacyId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_PHARMACY_ID)));
 
         return obj;
     }
 
-    public void insert(MedicineModel model) {
+    public void insert(SendingModel model) {
         ContentValues content = new ContentValues();
-        content.put(COLUMN_DATE,model.getName());
+        content.put(COLUMN_DATE,model.getDate());
         content.put(COLUMN_STORAGE_ID,model.getStorageId());
         content.put(COLUMN_PHARMACY_ID,model.getPharmacyId());
         if(model.getId() != 0){
@@ -93,9 +111,9 @@ public class SendingLogic {
         db.insert(TABLE,null,content);
     }
 
-    public void update(MedicineModel model) {
+    public void update(SendingModel model) {
         ContentValues content=new ContentValues();
-        content.put(COLUMN_DATE,model.getName());
+        content.put(COLUMN_DATE,model.getDate());
         content.put(COLUMN_STORAGE_ID,model.getStorageId());
         content.put(COLUMN_PHARMACY_ID,model.getPharmacyId());
         String where = COLUMN_ID + " = " + model.getId();

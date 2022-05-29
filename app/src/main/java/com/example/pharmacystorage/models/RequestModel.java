@@ -2,7 +2,7 @@ package com.example.pharmacystorage.models;
 
 import java.util.Calendar;
 
-public class Request {
+public class RequestModel {
 
     int Id;
     Calendar Date;

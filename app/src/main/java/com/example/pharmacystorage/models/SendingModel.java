@@ -3,7 +3,7 @@ package com.example.pharmacystorage.models;
 import java.util.Calendar;
 import java.util.Dictionary;
 
-public class Sending {
+public class SendingModel {
     private int Id;
     private Calendar Date;
     private int StorageId;

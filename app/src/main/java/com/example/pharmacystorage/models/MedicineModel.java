@@ -1,6 +1,6 @@
 package com.example.pharmacystorage.models;
 
-public class Medicine {
+public class MedicineModel {
 
     int Id;
     int Name;

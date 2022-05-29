@@ -1,12 +1,12 @@
 package com.example.pharmacystorage.models;
 
-public class Storage {
+public class PharmacyModel {
 
     private int Id;
     private String Name;
-    private String Password;
     private String Email;
-    private String EmailPassword;
+    private String Address;
+    private int StorageId;
 
     public void setId(int id) {
         Id = id;
@@ -16,16 +16,16 @@ public class Storage {
         Name = name;
     }
 
-    public void setPassword(String password) {
-        Password = password;
-    }
-
     public void setEmail(String email) {
         Email = email;
     }
 
-    public void setEmailPassword(String emailPassword) {
-        EmailPassword = emailPassword;
+    public void setAddress(String address) {
+        Address = address;
+    }
+
+    public void setStorageId(int storageId) {
+        StorageId = storageId;
     }
 
     public int getId() {
@@ -36,15 +36,15 @@ public class Storage {
         return Name;
     }
 
-    public String getPassword() {
-        return Password;
-    }
-
     public String getEmail() {
         return Email;
     }
 
-    public String getEmailPassword() {
-        return EmailPassword;
+    public String getAddress() {
+        return Address;
+    }
+
+    public int getStorageId() {
+        return StorageId;
     }
 }

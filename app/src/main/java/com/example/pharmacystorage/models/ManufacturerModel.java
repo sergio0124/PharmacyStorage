@@ -1,15 +1,19 @@
 package com.example.pharmacystorage.models;
 
-public class Pharmacy {
+public class ManufacturerModel {
 
-    private int Id;
-    private String Name;
-    private String Email;
-    private String Address;
-    private int StorageId;
+    int Id;
+    int StorageId;
+    String Name;
+    String Email;
+    String Address;
 
     public void setId(int id) {
         Id = id;
+    }
+
+    public void setStorageId(int storageId) {
+        StorageId = storageId;
     }
 
     public void setName(String name) {
@@ -24,12 +28,12 @@ public class Pharmacy {
         Address = address;
     }
 
-    public void setStorageId(int storageId) {
-        StorageId = storageId;
-    }
-
     public int getId() {
         return Id;
+    }
+
+    public int getStorageId() {
+        return StorageId;
     }
 
     public String getName() {
@@ -42,9 +46,5 @@ public class Pharmacy {
 
     public String getAddress() {
         return Address;
-    }
-
-    public int getStorageId() {
-        return StorageId;
     }
 }
