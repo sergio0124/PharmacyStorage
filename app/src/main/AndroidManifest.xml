@@ -14,8 +14,11 @@
         android:theme="@style/Theme.PharmacyStorage"
         tools:targetApi="31">
         <activity
-            android:name=".activities.CreateManufacturerActivity"
+            android:name=".activities.MedicineActivity"
             android:exported="false" />
+        <activity
+            android:name=".activities.CreateManufacturerActivity"
+            android:exported="true" />
         <activity
             android:name=".activities.ManufacturerActivity"
             android:exported="true" />

@@ -8,6 +8,24 @@ public class ManufacturerModel {
     String Email;
     String Address;
 
+    public ManufacturerModel() {
+    }
+
+    public ManufacturerModel(String name, String email, String address, int storageId) {
+        StorageId = storageId;
+        Name = name;
+        Email = email;
+        Address = address;
+    }
+
+    public ManufacturerModel(int id, int storageId, String name, String email, String address) {
+        Id = id;
+        StorageId = storageId;
+        Name = name;
+        Email = email;
+        Address = address;
+    }
+
     public void setId(int id) {
         Id = id;
     }

@@ -1,7 +1,12 @@
 package com.example.pharmacystorage.activities;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -41,6 +46,7 @@ public class ManufacturerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manufacturer);
+        int userId = getIntent().getExtras().getInt("userId");
 
         button_create_manufacturer = findViewById(R.id.button_to_create_manufacturer_activity);
         button_create_request = findViewById(R.id.button_to_create_request_activity);
@@ -50,7 +56,9 @@ public class ManufacturerActivity extends AppCompatActivity {
 
         button_create_manufacturer.setOnClickListener(
                 v -> {
-                    Intent intent = new Intent(ManufacturerActivity.this, MainActivity.class);
+                    Intent intent = new Intent(ManufacturerActivity.this, CreateManufacturerActivity.class);
+                    intent.putExtra("userId", userId);
+                    intent.putExtra("id", 0);
                     startActivity(intent);
                 }
         );
@@ -68,7 +76,6 @@ public class ManufacturerActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
         );
-
 
         logic.open();
         fillTable(Arrays.asList("Название", "Почта", "Адрес"), logic.getFullList());

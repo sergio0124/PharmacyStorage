@@ -32,6 +32,7 @@ public class MainMenuActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
+        int userId = getIntent().getExtras().getInt("userId");
 
         button_pharmacy = findViewById(R.id.button_to_pharmacy_activity);
         button_manufacturer = findViewById(R.id.button_to_manufacturer_activity);
@@ -39,6 +40,7 @@ public class MainMenuActivity extends AppCompatActivity {
         button_pharmacy.setOnClickListener(
                 v -> {
                     Intent intent = new Intent(MainMenuActivity.this, MainActivity.class);
+                    intent.putExtra("userId", userId);
                     startActivity(intent);
                 }
         );
@@ -46,6 +48,7 @@ public class MainMenuActivity extends AppCompatActivity {
         button_manufacturer.setOnClickListener(
                 v -> {
                     Intent intent = new Intent(MainMenuActivity.this, ManufacturerActivity.class);
+                    intent.putExtra("userId", userId);
                     startActivity(intent);
                 }
         );

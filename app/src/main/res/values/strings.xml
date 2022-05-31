@@ -29,4 +29,6 @@
     <string name="button_to_acceptance_supply_text">Прием поставок</string>
     <string name="text_view_address_text">Адрес</string>
     <string name="button_create_medicine_text">Создать лекарство</string>
+    <string name="text_view_dosage">Дозировка</string>
+    <string name="text_view_form">Форма выпуска</string>
 </resources>

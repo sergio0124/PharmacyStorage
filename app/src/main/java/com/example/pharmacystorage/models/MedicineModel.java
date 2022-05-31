@@ -8,6 +8,23 @@ public class MedicineModel {
     String Form;
     int ManufacturerId;
 
+    public MedicineModel(int id, String name, int dosage, String form, int manufacturerId) {
+        Id = id;
+        Name = name;
+        Dosage = dosage;
+        Form = form;
+        ManufacturerId = manufacturerId;
+    }
+
+    public MedicineModel() {
+    }
+
+    public MedicineModel(String name, int dosage, String form) {
+        Name = name;
+        Dosage = dosage;
+        Form = form;
+    }
+
     public void setId(int id) {
         Id = id;
     }

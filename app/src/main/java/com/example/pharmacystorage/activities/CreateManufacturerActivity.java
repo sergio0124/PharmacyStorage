@@ -1,5 +1,7 @@
 package com.example.pharmacystorage.activities;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -12,16 +14,17 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.pharmacystorage.R;
 import com.example.pharmacystorage.database.logics.ManufacturerLogic;
 import com.example.pharmacystorage.database.logics.MedicineLogic;
-import com.example.pharmacystorage.database.logics.SaleLogic;
-import com.example.pharmacystorage.database.logics.SaleMedicinesLogic;
-import com.example.pharmacystorage.database.models.MedicineModel;
-import com.example.pharmacystorage.database.models.SaleMedicinesModel;
-import com.example.pharmacystorage.database.models.SaleModel;
+import com.example.pharmacystorage.models.ManufacturerModel;
+import com.example.pharmacystorage.models.MedicineModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SaleActivity extends AppCompatActivity {
+public class CreateManufacturerActivity extends AppCompatActivity {
 
     Button button_create_medicine;
     Button button_cancel;
@@ -41,10 +44,10 @@ public class SaleActivity extends AppCompatActivity {
     ManufacturerLogic logic;
     MedicineLogic logicMed;
     TableRow selectedRow;
+    List<MedicineModel> medicines;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        mapMedicine = new HashMap<MedicineModel, Integer>();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_manufacturer);
 
@@ -57,69 +60,71 @@ public class SaleActivity extends AppCompatActivity {
         button_create_medicine = findViewById(R.id.button_to_create_medicine_activity);
         button_save = findViewById(R.id.button_save);
         button_cancel = findViewById(R.id.button_cancel);
-        edit_text_count = findViewById(R.id.edit_text_count);
+        edit_text_name = findViewById(R.id.edit_text_name);
+        edit_text_email = findViewById(R.id.edit_text_email);
+        edit_text_address = findViewById(R.id.edit_text_address);
 
-        logicM.open();
-        List<MedicineModel> spinnerArray =  new ArrayList<MedicineModel>();
-        spinnerArray.addAll(logicM.getFullList());
-        logicM.close();
-
-        ArrayAdapter<MedicineModel> adapter = new ArrayAdapter<MedicineModel>(
-                this, android.R.layout.simple_spinner_item, spinnerArray);
-
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner_medicine = (Spinner) findViewById(R.id.spinner_name);
-        spinner_medicine.setAdapter(adapter);
-
-        if (id != 0){
-            logic.open();
-            SaleModel model = logic.getElement(id);
-            logic.close();
-            logicSM.open();
-            List<SaleMedicinesModel> listSM = logicSM.getFilteredList(id);
-            logicSM.close();
-            logicM.open();
-            for (int i = 0; i < listSM.size(); i++){
-                mapMedicine.put(logicM.getElement(listSM.get(i).getMedicineid()),listSM.get(i).getCount());
+        if(id != 0){
+            if (logicMed.getFilteredList(id).size() != 0){
+                medicines = logicMed.getFilteredList(id);
             }
-            logicM.close();
-            fillTable(Arrays.asList("Название", "Количество упаковок"));
-
-            mapMedicine.entrySet();
-
-            this.date = new Date(model.getDate());
-        } else {
-            this.date = new Date();
+            fillTable(Arrays.asList("Название", "Дозировка", "Форма выпуска"), medicines);
+        }else {
+            medicines = new ArrayList<>();
         }
 
-        button_add.setOnClickListener(
+
+        ActivityResultLauncher<Intent> mStartForResult = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        Intent intent = result.getData();
+                        Bundle arguments = intent.getExtras();
+                        MedicineModel model = (MedicineModel)arguments.getSerializable(MedicineModel.class.getSimpleName());
+                        medicines.add(model);
+                    }
+                });
+
+        button_create_medicine.setOnClickListener(
                 v -> { ;
-                    mapMedicine.put(((MedicineModel)spinner_medicine.getSelectedItem()), Integer.parseInt(edit_text_count.getText().toString()));
-                    fillTable(Arrays.asList("Название", "Количество упаковок"));
+                    Intent intent = new Intent(CreateManufacturerActivity.this, MedicineActivity.class);
+                    intent.putExtra("id", 0);
+                    startActivity(intent);
+
+                    mStartForResult.launch(intent);
+
+                    fillTable(Arrays.asList("Название", "Дозировка", "Форма выпуска"), medicines);
                 }
         );
 
         button_save.setOnClickListener(
                 v -> { ;
 
-                    SaleModel model = new SaleModel(date.getTime(), userId, null);
+                    ManufacturerModel model = new ManufacturerModel(edit_text_name.getText().toString(), edit_text_email.getText().toString(),
+                            edit_text_address.getText().toString(), userId);
                     logic.open();
 
+                    int manufactureId;
                     if(id != 0){
                         model.setId(id);
                         logic.update(model);
+                        manufactureId = id;
                     } else {
                         logic.insert(model);
+                        manufactureId = logic.getFullList().get(logic.getFullList().size()-1).getId();
                     }
-                    int saleId = logic.getFullList().get(logic.getFullList().size()-1).getId();
-                    logicSM.open();
-                    for(Map.Entry<MedicineModel, Integer> entry: mapMedicine.entrySet()){
-                        MedicineModel key = entry.getKey();
-                        Integer value = entry.getValue();
-                        SaleMedicinesModel modelSM = new SaleMedicinesModel(saleId, key.getId(), value);
-                        logicSM.insert(modelSM);
+
+                    logicMed.open();
+                    for(MedicineModel medicine: medicines){
+                        if(medicine.getId() != -1){
+                            logicMed.update(medicine);
+                        }else {
+                            medicine.setManufacturerId(manufactureId);
+                            logicMed.insert(medicine);
+                        }
+
                     }
-                    logicSM.close();
+                    logicMed.close();
                     logic.close();
                     this.finish();
                 }
@@ -130,7 +135,7 @@ public class SaleActivity extends AppCompatActivity {
         );
     }
 
-    void fillTable(List<String> titles) {
+    void fillTable(List<String> titles, List<MedicineModel> medicines) {
 
         TableLayout tableLayoutCustomers = findViewById(R.id.tableLayoutMed);
 
@@ -153,34 +158,37 @@ public class SaleActivity extends AppCompatActivity {
         tableLayoutCustomers.addView(tableRowTitles);
 
 
-        for(Map.Entry<MedicineModel, Integer> entry: mapMedicine.entrySet()) {
-            MedicineModel key = entry.getKey();
-            Integer value = entry.getValue();
-
-
-
+        for(MedicineModel medicine: medicines) {
             TableRow tableRow = new TableRow(this);
 
             TextView textViewName = new TextView(this);
-            textViewName.setText(key.getName());
+            textViewName.setText(medicine.getName());
             textViewName.setHeight(100);
             textViewName.setTextSize(16);
             textViewName.setTextColor(Color.WHITE);
             textViewName.setGravity(Gravity.CENTER);
 
-            TextView textViewCount = new TextView(this);
+            TextView textViewDosage = new TextView(this);
             textViewName.setHeight(100);
-            textViewCount.setTextSize(16);
-            textViewCount.setText(String.valueOf(value));
-            textViewCount.setTextColor(Color.WHITE);
-            textViewCount.setGravity(Gravity.CENTER);
+            textViewDosage.setTextSize(16);
+            textViewDosage.setText(String.valueOf(medicine.getDosage()));
+            textViewDosage.setTextColor(Color.WHITE);
+            textViewDosage.setGravity(Gravity.CENTER);
+
+            TextView textViewForm = new TextView(this);
+            textViewName.setHeight(100);
+            textViewForm.setTextSize(16);
+            textViewForm.setText(String.valueOf(medicine.getForm()));
+            textViewForm.setTextColor(Color.WHITE);
+            textViewForm.setGravity(Gravity.CENTER);
 
             TextView textViewId = new TextView(this);
             textViewId.setVisibility(View.INVISIBLE);
-            textViewId.setText(String.valueOf(key.getId()));
+            textViewId.setText(String.valueOf(medicine.getId()));
 
             tableRow.addView(textViewName);
-            tableRow.addView(textViewCount);
+            tableRow.addView(textViewDosage);
+            tableRow.addView(textViewForm);
             tableRow.addView(textViewId);
 
             tableRow.setBackgroundColor(Color.parseColor("#FF03DAC5"));
