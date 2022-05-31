@@ -17,16 +17,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
 
         db.execSQL("create table Storage(\n" +
-                "\tStorageId integer primary key autoincrement,\n" +
-                "\tStorageName varchar(255) not null,\n" +
-                "\tStoragePassword varchar(255) not null,\n" +
+                "\tId integer primary key autoincrement,\n" +
+                "\tName varchar(255) not null,\n" +
+                "\tPassword varchar(255) not null,\n" +
                 "\tEmail varchar(255) not null,\n" +
                 "\tEmailPassword varchar(255) not null\n" +
                 ");\n");
 
         db.execSQL("create table Pharmacy(\n" +
-                "\tPharmacyId integer primary key autoincrement,\n" +
-                "\tPharmacyName varchar(255) not null,\n" +
+                "\tId integer primary key autoincrement,\n" +
+                "\tName varchar(255) not null,\n" +
                 "\tEmail varchar(255) not null,\n" +
                 "\tAddress varchar(255) not null,\n" +
                 "\tStorageId int not null,\n" +
@@ -35,7 +35,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 ")\n");
 
         db.execSQL("create table Sending(\n" +
-                "\tSendingId integer primary key autoincrement,\n" +
+                "\tId integer primary key autoincrement,\n" +
                 "\tDate varchar(255) not null,\n" +
                 "\tStorageId int not null,\n" +
                 "\tPharmacyId int,\n" +
@@ -46,8 +46,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 ");\n");
 
         db.execSQL("create table Manufacturer(\n" +
-                "\tManufacturerId integer primary key autoincrement,\n" +
-                "\tManufacturerName varchar(255) not null,\n" +
+                "\tId integer primary key autoincrement,\n" +
+                "\tName varchar(255) not null,\n" +
                 "\tEmail varchar(255) not null,\n" +
                 "\tAddress varchar(255) not null,\n" +
                 "\tStorageId int not null,\n" +
@@ -56,7 +56,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 ");\n");
 
         db.execSQL("create table Request(\n" +
-                "\tRequestId integer primary key autoincrement,\n" +
+                "\tId integer primary key autoincrement,\n" +
                 "\tDate varchar(255) not null,\n" +
                 "\tStorageId int not null,\n" +
                 "\tManufacturerId int,\n" +
@@ -67,15 +67,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 ");\n");
 
         db.execSQL("create table Basket(\n" +
-                "\tBasketId integer primary key autoincrement,\n" +
+                "\tId integer primary key autoincrement,\n" +
                 "\tStorageId int not null,\n" +
                 "\tFOREIGN KEY (StorageId) \n" +
                 "\tREFERENCES Storage (StorageId) ON DELETE CASCADE\n" +
                 ");\n");
 
         db.execSQL("create table Medicine(\n" +
-                "\tMedicineId integer primary key autoincrement,\n" +
-                "\tMedicineName varchar(255) not null,\n" +
+                "\tId integer primary key autoincrement,\n" +
+                "\tName varchar(255) not null,\n" +
                 "\tDosage int not null,\n" +
                 "\tForm varchar(255) not null,\n" +
                 "\tManufacturerId int not null,\n" +
@@ -84,7 +84,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 ");\n");
 
         db.execSQL("create table Supply(\n" +
-                "\tSupplyId integer primary key autoincrement,\n" +
+                "\tId integer primary key autoincrement,\n" +
                 "\tDate varchar(255) not null,\n" +
                 "\tStorageId int not null,\n" +
                 "\tFOREIGN KEY (StorageId) \n" +

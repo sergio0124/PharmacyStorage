@@ -14,12 +14,12 @@ import java.util.List;
 public class StorageLogic {
     DatabaseHelper sqlHelper;
     SQLiteDatabase db;
-    final String TABLE = "storage";
-    final String COLUMN_ID = "id";
-    final String COLUMN_NAME = "name";
-    final String COLUMN_PASSWORD = "password";
-    final String COLUMN_EMAIL = "email";
-    final String COLUMN_EMAIL_PASSWORD = "emailPassword";
+    final String TABLE = "Storage";
+    final String COLUMN_ID = "Id";
+    final String COLUMN_NAME = "Name";
+    final String COLUMN_PASSWORD = "Password";
+    final String COLUMN_EMAIL = "Email";
+    final String COLUMN_EMAIL_PASSWORD = "EmailPassword";
 
     public StorageLogic(Context context) {
         sqlHelper = new DatabaseHelper(context);

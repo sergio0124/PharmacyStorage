@@ -14,12 +14,12 @@ import java.util.List;
 public class PharmacyLogic {
     DatabaseHelper sqlHelper;
     SQLiteDatabase db;
-    final String TABLE = "medicine";
-    final String COLUMN_ID = "id";
-    final String COLUMN_NAME = "name";
-    final String COLUMN_EMAIL = "email";
-    final String COLUMN_ADDRESS = "address";
-    final String COLUMN_STORAGE_ID = "storageId";
+    final String TABLE = "Pharmacy";
+    final String COLUMN_ID = "Id";
+    final String COLUMN_NAME = "Name";
+    final String COLUMN_EMAIL = "Email";
+    final String COLUMN_ADDRESS = "Address";
+    final String COLUMN_STORAGE_ID = "StorageId";
 
     public PharmacyLogic(Context context) {
         sqlHelper = new DatabaseHelper(context);

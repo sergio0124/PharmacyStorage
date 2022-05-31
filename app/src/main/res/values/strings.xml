@@ -6,7 +6,9 @@
     <string name="button_exit_text">Выйти из личного кабинета</string>
     <string name="button_report_text">Получить отчет</string>
     <string name="text_view_password_text">Пароль: </string>
-    <string name="text_view_password_login">Почта: </string>
+    <string name="text_view_login_text">Логин: </string>
+    <string name="text_view_email_text">Почта: </string>
+    <string name="text_view_email_password_text">Пароль от почты: </string>
     <string name="button_enter_text">Войти</string>
     <string name="button_register_text">Зарегестрироваться</string>
     <string name="button_create_text">Создать</string>

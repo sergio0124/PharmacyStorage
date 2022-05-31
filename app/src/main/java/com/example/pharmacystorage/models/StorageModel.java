@@ -1,6 +1,20 @@
 package com.example.pharmacystorage.models;
 
 public class StorageModel {
+    public StorageModel(String name, String password, String email, String emailPassword) {
+        Name = name;
+        Password = password;
+        Email = email;
+        EmailPassword = emailPassword;
+    }
+
+    public StorageModel(String name, String password) {
+        Name = name;
+        Password = password;
+    }
+
+    public StorageModel() {
+    }
 
     private int Id;
     private String Name;

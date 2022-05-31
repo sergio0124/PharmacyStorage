@@ -15,12 +15,12 @@ import java.util.List;
 public class MedicineLogic {
     DatabaseHelper sqlHelper;
     SQLiteDatabase db;
-    final String TABLE = "medicine";
-    final String COLUMN_ID = "id";
-    final String COLUMN_NAME = "name";
-    final String COLUMN_DOSAGE = "dosage";
-    final String COLUMN_FORM = "form";
-    final String COLUMN_MANUFACTURE_ID = "manufactureId";
+    final String TABLE = "Medicine";
+    final String COLUMN_ID = "Id";
+    final String COLUMN_NAME = "Name";
+    final String COLUMN_DOSAGE = "Dosage";
+    final String COLUMN_FORM = "Form";
+    final String COLUMN_MANUFACTURE_ID = "ManufactureId";
 
     public MedicineLogic(Context context) {
         sqlHelper = new DatabaseHelper(context);
