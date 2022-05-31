@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.pharmacystorage.database.DatabaseHelper;
+import com.example.pharmacystorage.models.StorageModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,14 +35,14 @@ public class StorageLogic {
         db.close();
     }
 
-    public List<MedicineModel> getFullList() {
+    public List<StorageModel> getFullList() {
         Cursor cursor = db.rawQuery("select * from " + TABLE, null);
-        List<MedicineModel> list = new ArrayList<>();
+        List<StorageModel> list = new ArrayList<>();
         if (!cursor.moveToFirst()) {
             return list;
         }
         do {
-            MedicineModel obj = new MedicineModel();
+            StorageModel obj = new StorageModel();
 
             obj.setId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_ID)));
             obj.setName(cursor.getString((int) cursor.getColumnIndex(COLUMN_NAME)));
@@ -55,14 +56,14 @@ public class StorageLogic {
         return list;
     }
 
-    public List<MedicineModel> getFilteredList(int manufactureId) {
+    public List<StorageModel> getFilteredList(int manufactureId) {
             return null;
     }
 
-    public MedicineModel getElement(int id) {
+    public StorageModel getElement(int id) {
         Cursor cursor = db.rawQuery("select * from " + TABLE + " where "
                 + COLUMN_ID + " = " + id, null);
-        MedicineModel obj = new MedicineModel();
+        StorageModel obj = new StorageModel();
         if (!cursor.moveToFirst()) {
             return null;
         }
@@ -76,7 +77,7 @@ public class StorageLogic {
         return obj;
     }
 
-    public void insert(MedicineModel model) {
+    public void insert(StorageModel model) {
         ContentValues content = new ContentValues();
         content.put(COLUMN_NAME,model.getName());
         content.put(COLUMN_PASSWORD,model.getPassword());
@@ -88,7 +89,7 @@ public class StorageLogic {
         db.insert(TABLE,null,content);
     }
 
-    public void update(MedicineModel model) {
+    public void update(StorageModel model) {
         ContentValues content=new ContentValues();
         content.put(COLUMN_NAME,model.getName());
         content.put(COLUMN_PASSWORD,model.getPassword());

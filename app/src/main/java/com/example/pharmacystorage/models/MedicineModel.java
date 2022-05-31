@@ -3,7 +3,7 @@ package com.example.pharmacystorage.models;
 public class MedicineModel {
 
     int Id;
-    int Name;
+    String Name;
     int Dosage;
     String Form;
     int ManufacturerId;
@@ -12,7 +12,7 @@ public class MedicineModel {
         Id = id;
     }
 
-    public void setName(int name) {
+    public void setName(String name) {
         Name = name;
     }
 
@@ -32,7 +32,7 @@ public class MedicineModel {
         return Id;
     }
 
-    public int getName() {
+    public String getName() {
         return Name;
     }
 

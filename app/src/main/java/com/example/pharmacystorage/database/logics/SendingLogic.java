@@ -103,7 +103,7 @@ public class SendingLogic {
 
     public void insert(SendingModel model) {
         ContentValues content = new ContentValues();
-        content.put(COLUMN_DATE,model.getDate());
+        content.put(COLUMN_DATE,sdf.format(model.getDate()));
         content.put(COLUMN_STORAGE_ID,model.getStorageId());
         content.put(COLUMN_PHARMACY_ID,model.getPharmacyId());
         if(model.getId() != 0){
@@ -114,7 +114,7 @@ public class SendingLogic {
 
     public void update(SendingModel model) {
         ContentValues content=new ContentValues();
-        content.put(COLUMN_DATE,model.getDate());
+        content.put(COLUMN_DATE, sdf.format(model.getDate()));
         content.put(COLUMN_STORAGE_ID,model.getStorageId());
         content.put(COLUMN_PHARMACY_ID,model.getPharmacyId());
         String where = COLUMN_ID + " = " + model.getId();

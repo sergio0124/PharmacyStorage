@@ -49,7 +49,7 @@ public class MedicineLogic {
             obj.setName(cursor.getString((int) cursor.getColumnIndex(COLUMN_NAME)));
             obj.setDosage(cursor.getInt((int) cursor.getColumnIndex(COLUMN_DOSAGE)));
             obj.setForm(cursor.getString((int) cursor.getColumnIndex(COLUMN_FORM)));
-            obj.setManufactureId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_MANUFACTURE_ID)));
+            obj.setManufacturerId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_MANUFACTURE_ID)));
 
             list.add(obj);
             cursor.moveToNext();
@@ -84,7 +84,7 @@ public class MedicineLogic {
         obj.setName(cursor.getString((int) cursor.getColumnIndex(COLUMN_NAME)));
         obj.setDosage(cursor.getInt((int) cursor.getColumnIndex(COLUMN_DOSAGE)));
         obj.setForm(cursor.getString((int) cursor.getColumnIndex(COLUMN_FORM)));
-        obj.setManufactureId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_MANUFACTURE_ID)));
+        obj.setManufacturerId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_MANUFACTURE_ID)));
 
         return obj;
     }
@@ -94,7 +94,7 @@ public class MedicineLogic {
         content.put(COLUMN_NAME,model.getName());
         content.put(COLUMN_DOSAGE,model.getDosage());
         content.put(COLUMN_FORM,model.getForm());
-        content.put(COLUMN_MANUFACTURE_ID,model.getManufactureId());
+        content.put(COLUMN_MANUFACTURE_ID,model.getManufacturerId());
         if(model.getId() != 0){
             content.put(COLUMN_ID, model.getId());
         }
@@ -106,7 +106,7 @@ public class MedicineLogic {
         content.put(COLUMN_NAME,model.getName());
         content.put(COLUMN_DOSAGE,model.getDosage());
         content.put(COLUMN_FORM,model.getForm());
-        content.put(COLUMN_MANUFACTURE_ID,model.getManufactureId());
+        content.put(COLUMN_MANUFACTURE_ID,model.getManufacturerId());
         String where = COLUMN_ID + " = " + model.getId();
         db.update(TABLE,content,where,null);
     }

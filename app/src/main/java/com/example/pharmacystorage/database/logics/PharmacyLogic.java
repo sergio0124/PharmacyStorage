@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.pharmacystorage.database.DatabaseHelper;
+import com.example.pharmacystorage.models.PharmacyModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,14 +35,14 @@ public class PharmacyLogic {
         db.close();
     }
 
-    public List<MedicineModel> getFullList() {
+    public List<PharmacyModel> getFullList() {
         Cursor cursor = db.rawQuery("select * from " + TABLE, null);
-        List<MedicineModel> list = new ArrayList<>();
+        List<PharmacyModel> list = new ArrayList<>();
         if (!cursor.moveToFirst()) {
             return list;
         }
         do {
-            MedicineModel obj = new MedicineModel();
+            PharmacyModel obj = new PharmacyModel();
 
             obj.setId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_ID)));
             obj.setName(cursor.getString((int) cursor.getColumnIndex(COLUMN_NAME)));
@@ -55,25 +56,25 @@ public class PharmacyLogic {
         return list;
     }
 
-    public List<MedicineModel> getFilteredList(int storageId) {
+    public List<PharmacyModel> getFilteredList(int storageId) {
         Cursor cursor = db.rawQuery("select * from " + TABLE + " where "
                 + COLUMN_STORAGE_ID + " = " + storageId, null);
-        List<MedicineModel> list = new ArrayList<>();
+        List<PharmacyModel> list = new ArrayList<>();
         if (!cursor.moveToFirst()) {
             return list;
         }
         do {
-            MedicineModel obj = getElement(cursor.getInt((int) cursor.getColumnIndex(COLUMN_ID)));
+            PharmacyModel obj = getElement(cursor.getInt((int) cursor.getColumnIndex(COLUMN_ID)));
             list.add(obj);
             cursor.moveToNext();
         } while (!cursor.isAfterLast());
         return list;
     }
 
-    public MedicineModel getElement(int id) {
+    public PharmacyModel getElement(int id) {
         Cursor cursor = db.rawQuery("select * from " + TABLE + " where "
                 + COLUMN_ID + " = " + id, null);
-        MedicineModel obj = new MedicineModel();
+        PharmacyModel obj = new PharmacyModel();
         if (!cursor.moveToFirst()) {
             return null;
         }
@@ -87,7 +88,7 @@ public class PharmacyLogic {
         return obj;
     }
 
-    public void insert(MedicineModel model) {
+    public void insert(PharmacyModel model) {
         ContentValues content = new ContentValues();
         content.put(COLUMN_NAME,model.getName());
         content.put(COLUMN_EMAIL,model.getEmail());
@@ -99,7 +100,7 @@ public class PharmacyLogic {
         db.insert(TABLE,null,content);
     }
 
-    public void update(MedicineModel model) {
+    public void update(PharmacyModel model) {
         ContentValues content=new ContentValues();
         content.put(COLUMN_NAME,model.getName());
         content.put(COLUMN_EMAIL,model.getEmail());
