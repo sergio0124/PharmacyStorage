@@ -4,7 +4,8 @@
     <string name="button_medicine_text">Лекарства</string>
     <string name="button_save">Сохранить</string>
     <string name="button_exit_text">Выйти из личного кабинета</string>
-    <string name="button_report_text">Получить отчет</string>
+    <string name="button_pharmacy_text">Клиенты</string>
+    <string name="button_manufacturer_text">Поставщики</string>
     <string name="text_view_password_text">Пароль: </string>
     <string name="text_view_login_text">Логин: </string>
     <string name="text_view_email_text">Почта: </string>
@@ -23,4 +24,9 @@
     <string name="text_view_price">Цена за упаковку: </string>
     <string name="button_date_from"> От </string>
     <string name="button_date_to"> До </string>
+    <string name="button_create_request_text">Создать заявку</string>
+    <string name="button_create_manufacturer_text">Создать производителя</string>
+    <string name="button_to_acceptance_supply_text">Прием поставок</string>
+    <string name="text_view_address_text">Адрес</string>
+    <string name="button_create_medicine_text">Создать лекарство</string>
 </resources>

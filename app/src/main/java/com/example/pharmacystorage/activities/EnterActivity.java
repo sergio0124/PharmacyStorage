@@ -63,8 +63,8 @@ public class EnterActivity extends AppCompatActivity {
                             logic.close();
 
                             this.finish();
-                            Intent intent = new Intent(EnterActivity.this, MainActivity.class);
-                            intent.putExtra("storageId", storage.getId());
+                            Intent intent = new Intent(EnterActivity.this, MainMenuActivity.class);
+                            intent.putExtra("StorageId", storage.getId());
                             startActivity(intent);
 
                             return;
