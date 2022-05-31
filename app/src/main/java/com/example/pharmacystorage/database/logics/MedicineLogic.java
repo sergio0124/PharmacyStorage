@@ -5,10 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.example.coursework.database.DatabaseHelper;
-import com.example.coursework.database.models.MedicineModel;
-import com.example.coursework.database.models.SaleModel;
-import com.example.coursework.database.models.UserModel;
+import com.example.pharmacystorage.database.DatabaseHelper;
+import com.example.pharmacystorage.models.MedicineModel;
+import com.example.pharmacystorage.database.DatabaseHelper;
 
 import java.util.ArrayList;
 import java.util.List;
