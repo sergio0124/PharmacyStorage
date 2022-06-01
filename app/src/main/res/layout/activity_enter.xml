@@ -33,25 +33,25 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="10dp">
+        android:layout_margin="10dp"
+        android:orientation="horizontal">
 
 
         <TextView
             android:id="@+id/text_view_password"
-            android:gravity="right"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="2"
+            android:gravity="right"
             android:text="@string/text_view_password_text" />
 
         <EditText
-            android:password="true"
             android:id="@+id/edit_text_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:ems="10"
-            android:layout_weight="1" />
+            android:password="true" />
 
     </LinearLayout>
 

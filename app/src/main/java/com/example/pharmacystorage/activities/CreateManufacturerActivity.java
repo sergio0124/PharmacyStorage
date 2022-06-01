@@ -45,14 +45,16 @@ public class CreateManufacturerActivity extends AppCompatActivity {
     MedicineLogic logicMed;
     TableRow selectedRow;
     List<MedicineModel> medicines;
+    int userId;
+    int id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_manufacturer);
 
-        int userId = getIntent().getExtras().getInt("userId");
-        int id = getIntent().getExtras().getInt("id");
+        userId = getIntent().getExtras().getInt("userId");
+        id = getIntent().getExtras().getInt("id");
 
         logic = new ManufacturerLogic(this);
         logicMed = new MedicineLogic(this);

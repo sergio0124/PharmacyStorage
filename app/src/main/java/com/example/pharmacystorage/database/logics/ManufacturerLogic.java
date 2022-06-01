@@ -15,15 +15,18 @@ public class ManufacturerLogic {
     DatabaseHelper sqlHelper;
     SQLiteDatabase db;
     final String TABLE = "Manufacturer";
-    final String COLUMN_ID = "id";
-    final String COLUMN_NAME = "name";
-    final String COLUMN_EMAIL = "address";
-    final String COLUMN_STORAGE_ID = "storageId";
+    final String COLUMN_ID = "Id";
+    final String COLUMN_NAME = "Name";
+    final String COLUMN_EMAIL = "Email";
+    final String COLUMN_ADDRESS = "Address";
+    final String COLUMN_STORAGE_ID = "StorageId";
 
     public ManufacturerLogic(Context context) {
         sqlHelper = new DatabaseHelper(context);
         db = sqlHelper.getWritableDatabase();
     }
+
+    //db.rawQuery("insert into Manufacturer(name, address, storageId) values ('aaa','111', 0)", null)
 
     public ManufacturerLogic open() {
         db = sqlHelper.getWritableDatabase();
@@ -88,6 +91,7 @@ public class ManufacturerLogic {
         ContentValues content = new ContentValues();
         content.put(COLUMN_NAME,model.getName());
         content.put(COLUMN_EMAIL,model.getEmail());
+        content.put(COLUMN_ADDRESS,model.getAddress());
         content.put(COLUMN_STORAGE_ID,model.getStorageId());
         if(model.getId() != 0){
             content.put(COLUMN_ID, model.getId());
