@@ -5,10 +5,14 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.Toast;
 import java.util.Properties;
+
+import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.NoSuchProviderException;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
+import javax.mail.Store;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -53,6 +57,8 @@ public class JavaMailApi extends AsyncTask<Void,Void,Void>  {
     protected Void doInBackground(Void... params) {
         //Creating properties
         Properties props = new Properties();
+
+
 
         //Configuring properties for gmail
         //If you are not using gmail you may need to change the values

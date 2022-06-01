@@ -20,6 +20,7 @@ import com.example.pharmacystorage.R;
 import com.example.pharmacystorage.database.logics.ManufacturerLogic;
 import com.example.pharmacystorage.database.logics.MedicineLogic;
 import com.example.pharmacystorage.helper_models.JavaMailApi;
+import com.example.pharmacystorage.helper_models.JavaMailApi2;
 import com.example.pharmacystorage.models.ManufacturerModel;
 import com.example.pharmacystorage.models.MedicineAmount;
 import com.example.pharmacystorage.models.MedicineModel;
@@ -28,6 +29,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+
+import javax.mail.MessagingException;
 
 public class RequestActivity extends AppCompatActivity {
 
@@ -81,7 +84,11 @@ public class RequestActivity extends AppCompatActivity {
         });
 
         button_send.setOnClickListener(v -> {
-            SendMessage();
+            try {
+                SendMessage();
+            } catch (MessagingException e) {
+                e.printStackTrace();
+            }
             Intent intent = new Intent(RequestActivity.this, ManufacturerActivity.class);
             intent.putExtra("userId", userId);
             startActivity(intent);
@@ -94,16 +101,18 @@ public class RequestActivity extends AppCompatActivity {
         LoadData();
     }
 
-    private void SendMessage(){
+    private void SendMessage() throws MessagingException {
         //"wengarelo@mail.ru"
         ManufacturerModel item = (ManufacturerModel) spinner_manufacturer.getItemAtPosition(spinner_manufacturer.getSelectedItemPosition());
         String Email = item.getEmail();
 
         String subject = "subject";
         String message = "message";
-        JavaMailApi javaMailAPI = new JavaMailApi(this,Email,subject,message);
+    //    JavaMailApi javaMailAPI = new JavaMailApi(this,Email,subject,message);
+        JavaMailApi2 jma = new JavaMailApi2();
+        jma.message();
 
-        javaMailAPI.execute();
+    //    javaMailAPI.execute();
     }
 
     private void LoadData() {
