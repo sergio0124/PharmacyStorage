@@ -32,13 +32,14 @@ public class ManufacturerActivity extends AppCompatActivity {
     Button button_create_request;
     Button button_acceptance_supply;
     ManufacturerLogic logic;
+    int userId;
 
 
     @Override
     public void onResume() {
         super.onResume();
         logic.open();
-        fillTable(Arrays.asList("Название", "Почта", "Адрес"), logic.getFullList());
+        fillTable(Arrays.asList("Название", "Почта", "Адрес"), logic.getFilteredList(userId));
         logic.close();
     }
 
@@ -46,7 +47,7 @@ public class ManufacturerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manufacturer);
-        int userId = getIntent().getExtras().getInt("userId");
+        userId = getIntent().getExtras().getInt("userId");
 
         button_create_manufacturer = findViewById(R.id.button_to_create_manufacturer_activity);
         button_create_request = findViewById(R.id.button_to_create_request_activity);
@@ -78,7 +79,7 @@ public class ManufacturerActivity extends AppCompatActivity {
         );
 
         logic.open();
-        fillTable(Arrays.asList("Название", "Почта", "Адрес"), logic.getFullList());
+        fillTable(Arrays.asList("Название", "Почта", "Адрес"), logic.getFilteredList(userId));
         logic.close();
 
     }
