@@ -2,12 +2,15 @@ package com.example.pharmacystorage.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -16,6 +19,7 @@ import android.widget.TextView;
 import com.example.pharmacystorage.R;
 import com.example.pharmacystorage.database.logics.ManufacturerLogic;
 import com.example.pharmacystorage.database.logics.MedicineLogic;
+import com.example.pharmacystorage.helper_models.JavaMailApi;
 import com.example.pharmacystorage.models.ManufacturerModel;
 import com.example.pharmacystorage.models.MedicineAmount;
 import com.example.pharmacystorage.models.MedicineModel;
@@ -34,8 +38,13 @@ public class RequestActivity extends AppCompatActivity {
     MedicineLogic logicM;
     Date date;
     ArrayList<MedicineAmount> medicineAmounts = new ArrayList<>();
-    List<String> titles = Arrays.asList("Наименование","Кол-во", "Цена шт.");
+    List<String> titles = Arrays.asList("Наименование", "Кол-во", "Цена шт.");
     int userId;
+    Button button_add;
+    Button button_send;
+    Button button_cancel;
+    EditText edit_count;
+    EditText edit_cost;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +58,52 @@ public class RequestActivity extends AppCompatActivity {
         spinner_medicine = findViewById(R.id.spinner_medicine_name);
 
         userId = getIntent().getExtras().getInt("userId");
+
+        button_add = findViewById(R.id.button_add);
+        button_send = findViewById(R.id.button_save);
+        button_cancel = findViewById(R.id.button_cancel);
+        edit_cost = findViewById(R.id.edit_text_cost);
+        edit_count = findViewById(R.id.edit_text_count);
+
+        button_add.setOnClickListener(v -> {
+            MedicineModel item =
+                    (MedicineModel) spinner_medicine.getItemAtPosition(spinner_medicine.getSelectedItemPosition());
+            String Name = item.toString();
+            int count = Integer.parseInt(edit_count.getText().toString());
+            int cost = Integer.parseInt(edit_cost.getText().toString());
+            MedicineAmount amount = new MedicineAmount();
+            amount.setMedicineId(item.getId());
+            amount.setCost(cost);
+            amount.setName(Name);
+            amount.setQuantity(count);
+            medicineAmounts.add(amount);
+            fillTable();
+        });
+
+        button_send.setOnClickListener(v -> {
+            SendMessage();
+            Intent intent = new Intent(RequestActivity.this, ManufacturerActivity.class);
+            intent.putExtra("userId", userId);
+            startActivity(intent);
+        });
+
+        button_cancel.setOnClickListener(v -> {
+            finish();
+        });
+
         LoadData();
+    }
+
+    private void SendMessage(){
+        //"wengarelo@mail.ru"
+        ManufacturerModel item = (ManufacturerModel) spinner_manufacturer.getItemAtPosition(spinner_manufacturer.getSelectedItemPosition());
+        String Email = item.getEmail();
+
+        String subject = "subject";
+        String message = "message";
+        JavaMailApi javaMailAPI = new JavaMailApi(this,Email,subject,message);
+
+        javaMailAPI.execute();
     }
 
     private void LoadData() {
@@ -86,11 +140,7 @@ public class RequestActivity extends AppCompatActivity {
             }
         };
         spinner_manufacturer.setOnItemSelectedListener(itemSelectedListener);
-
-
     }
-
-
 
     void fillTable() {
 
@@ -107,7 +157,7 @@ public class RequestActivity extends AppCompatActivity {
             textView.setText(title);
             textView.setTextColor(Color.WHITE);
             textView.setGravity(Gravity.CENTER);
-            textView.setWidth( (int)(getWindowManager().getDefaultDisplay().getWidth() / 3.2));
+            textView.setWidth((int) (getWindowManager().getDefaultDisplay().getWidth() / 3.2));
             tableRowTitles.addView(textView);
         }
 
@@ -128,7 +178,7 @@ public class RequestActivity extends AppCompatActivity {
             TextView textViewEmail = new TextView(this);
             textViewName.setHeight(100);
             textViewEmail.setTextSize(16);
-            textViewEmail.setText(amount.getQuantity());
+            textViewEmail.setText(String.valueOf(amount.getQuantity()));
             textViewEmail.setTextColor(Color.WHITE);
             textViewEmail.setGravity(Gravity.CENTER);
 
@@ -139,14 +189,9 @@ public class RequestActivity extends AppCompatActivity {
             textViewAddress.setTextColor(Color.WHITE);
             textViewAddress.setGravity(Gravity.CENTER);
 
-            TextView textViewId = new TextView(this);
-            textViewId.setVisibility(View.INVISIBLE);
-            textViewId.setText(String.valueOf(amount.getId()));
-
             tableRow.addView(textViewName);
             tableRow.addView(textViewEmail);
             tableRow.addView(textViewAddress);
-            tableRow.addView(textViewId);
 
             tableRow.setBackgroundColor(Color.parseColor("#FF03DAC5"));
 
@@ -154,9 +199,9 @@ public class RequestActivity extends AppCompatActivity {
 
                 selectedRow = tableRow;
 
-                for(int i = 0; i < tableLayoutMedicines.getChildCount(); i++){
+                for (int i = 0; i < tableLayoutMedicines.getChildCount(); i++) {
                     View view = tableLayoutMedicines.getChildAt(i);
-                    if (view instanceof TableRow){
+                    if (view instanceof TableRow) {
                         view.setBackgroundColor(Color.parseColor("#FF03DAC5"));
                     }
                 }
