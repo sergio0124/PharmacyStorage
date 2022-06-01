@@ -103,6 +103,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("create table Request_Medicine(\n" +
                 "\tMedicineId int not null,\n" +
                 "\tRequestId int not null,\n" +
+                "\tCost int not null,\n" +
+                "\tQuantity int not null,\n" +
                 "\tFOREIGN KEY (MedicineId) \n" +
                 "\tREFERENCES Medicine (MedicineId) ON DELETE CASCADE,\n" +
                 "\tFOREIGN KEY (RequestId) \n" +

@@ -2,7 +2,7 @@ package com.example.pharmacystorage.helper_models;
 
 import android.content.Context;
 
-import com.example.pharmacystorage.models.MedicineAmount;
+import com.example.pharmacystorage.models.RequestAmount;
 import com.google.gson.Gson;
 
 import java.io.FileInputStream;
@@ -13,9 +13,9 @@ import java.util.List;
 
 class JSONHelper {
 
-    private static final String FILE_NAME = "user.json";
+    public static final String FILE_NAME = "user.json";
 
-    static boolean exportToJSON(Context context, List<MedicineAmount> dataList) {
+    static boolean exportToJSON(Context context, List<RequestAmount> dataList) {
 
         Gson gson = new Gson();
         DataItems dataItems = new DataItems();
@@ -60,7 +60,7 @@ class JSONHelper {
         }
     }
 
-    static List<MedicineAmount> importFromJSON(Context context) {
+    static List<RequestAmount> importFromJSON(Context context) {
 
         InputStreamReader streamReader = null;
         FileInputStream fileInputStream = null;

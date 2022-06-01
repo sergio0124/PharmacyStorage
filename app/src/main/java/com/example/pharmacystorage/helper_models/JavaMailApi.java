@@ -6,13 +6,10 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 import java.util.Properties;
 
-import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.NoSuchProviderException;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
-import javax.mail.Store;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
@@ -25,15 +22,19 @@ public class JavaMailApi extends AsyncTask<Void,Void,Void>  {
     private String mEmail;
     private String mSubject;
     private String mMessage;
+    private String sEmail;
+    private String sPassword;
 
     private ProgressDialog mProgressDialog;
 
     //Constructor
-    public JavaMailApi(Context mContext, String mEmail, String mSubject, String mMessage) {
+    public JavaMailApi(Context mContext, String mEmail, String mSubject, String mMessage, String sEmail, String sPassword) {
         this.mContext = mContext;
         this.mEmail = mEmail;
         this.mSubject = mSubject;
         this.mMessage = mMessage;
+        this.sEmail = sEmail;
+        this.sPassword = sPassword;
     }
 
     @Override
@@ -62,7 +63,7 @@ public class JavaMailApi extends AsyncTask<Void,Void,Void>  {
 
         //Configuring properties for gmail
         //If you are not using gmail you may need to change the values
-        props.put("mail.smtp.host", "smtp.mail.ru");
+        props.put("mail.smtp.host", "smtp.yandex.ru");
         props.put("mail.smtp.socketFactory.port", "465");
         props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
         props.put("mail.smtp.auth", "true");
@@ -74,7 +75,7 @@ public class JavaMailApi extends AsyncTask<Void,Void,Void>  {
                 new javax.mail.Authenticator() {
                     //Authenticating the password
                     protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(Utils.EMAIL, Utils.PASSWORD);
+                        return new PasswordAuthentication(sEmail, sPassword);
                     }
                 });
 
@@ -83,7 +84,7 @@ public class JavaMailApi extends AsyncTask<Void,Void,Void>  {
             MimeMessage mm = new MimeMessage(mSession);
 
             //Setting sender address
-            mm.setFrom(new InternetAddress(Utils.EMAIL));
+            mm.setFrom(new InternetAddress(sEmail));
             //Adding receiver
             mm.addRecipient(Message.RecipientType.TO, new InternetAddress(mEmail));
             //Adding subject

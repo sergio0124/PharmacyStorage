@@ -1,6 +1,8 @@
 package com.example.pharmacystorage.models;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class RequestModel {
 
@@ -8,6 +10,15 @@ public class RequestModel {
     Calendar Date;
     int StorageId;
     int ManufacturerId;
+    List<RequestAmount> requestAmounts;
+
+    public List<RequestAmount> getRequestAmounts() {
+        return requestAmounts;
+    }
+
+    public void setRequestAmounts(ArrayList<RequestAmount> requestAmounts) {
+        this.requestAmounts = requestAmounts;
+    }
 
     public void setId(int id) {
         Id = id;

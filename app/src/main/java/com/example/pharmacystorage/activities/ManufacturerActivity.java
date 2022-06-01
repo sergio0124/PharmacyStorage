@@ -1,12 +1,7 @@
 package com.example.pharmacystorage.activities;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -68,7 +63,7 @@ public class ManufacturerActivity extends AppCompatActivity {
 
         button_create_request.setOnClickListener(
                 v -> {
-                    Intent intent = new Intent(ManufacturerActivity.this, RequestActivity.class);
+                    Intent intent = new Intent(ManufacturerActivity.this, CreateRequestActivity.class);
                     intent.putExtra("userId", userId);
                     startActivity(intent);
                 }
