@@ -49,6 +49,7 @@ public class ManufacturerLogic {
             obj.setId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_ID)));
             obj.setName(cursor.getString((int) cursor.getColumnIndex(COLUMN_NAME)));
             obj.setEmail(cursor.getString((int) cursor.getColumnIndex(COLUMN_EMAIL)));
+            obj.setAddress(cursor.getString((int) cursor.getColumnIndex(COLUMN_ADDRESS)));
             obj.setStorageId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_STORAGE_ID)));
             list.add(obj);
             cursor.moveToNext();
@@ -82,6 +83,7 @@ public class ManufacturerLogic {
         obj.setId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_ID)));
         obj.setName(cursor.getString((int) cursor.getColumnIndex(COLUMN_NAME)));
         obj.setEmail(cursor.getString((int) cursor.getColumnIndex(COLUMN_EMAIL)));
+        obj.setAddress(cursor.getString((int) cursor.getColumnIndex(COLUMN_ADDRESS)));
         obj.setStorageId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_STORAGE_ID)));
 
         return obj;
@@ -103,6 +105,7 @@ public class ManufacturerLogic {
         ContentValues content=new ContentValues();
         content.put(COLUMN_NAME,model.getName());
         content.put(COLUMN_EMAIL,model.getEmail());
+        content.put(COLUMN_ADDRESS,model.getAddress());
         content.put(COLUMN_STORAGE_ID,model.getStorageId());
         String where = COLUMN_ID + " = " + model.getId();
         db.update(TABLE,content,where,null);

@@ -1,12 +1,14 @@
 package com.example.pharmacystorage.models;
 
-public class MedicineModel {
+import java.io.Serializable;
 
-    int Id;
+public class MedicineModel implements Serializable {
+
+    int Id = 0;
     String Name;
     int Dosage;
     String Form;
-    int ManufacturerId;
+    int ManufacturerId = 0;
 
     public MedicineModel(int id, String name, int dosage, String form, int manufacturerId) {
         Id = id;

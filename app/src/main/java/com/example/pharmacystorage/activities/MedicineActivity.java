@@ -51,7 +51,10 @@ public class MedicineActivity extends AppCompatActivity {
 
         button_create.setOnClickListener(
                 v -> {
-                    MedicineModel model = new MedicineModel(edit_text_medicine_name.getText().toString(), Integer.parseInt(edit_text_dosage.getText().toString()), edit_text_dosage.getText().toString());
+                    MedicineModel model = new MedicineModel(
+                            edit_text_medicine_name.getText().toString(),
+                            Integer.parseInt(edit_text_dosage.getText().toString()),
+                            edit_text_form.getText().toString());
                     logic.open();
                     if (manufacturerId != 0){
                         model.setManufacturerId(manufacturerId);
@@ -62,7 +65,7 @@ public class MedicineActivity extends AppCompatActivity {
                         logic.update(model);
                     } else {
                         Intent intent = new Intent(this, CreateManufacturerActivity.class);
-                        intent.putExtra("MedicineModel", String.valueOf(model));
+                        intent.putExtra("MedicineModel", model);
                         setResult(RESULT_OK, intent);
                     }
 

@@ -85,6 +85,7 @@ public class CreateManufacturerActivity extends AppCompatActivity {
                         Bundle arguments = intent.getExtras();
                         MedicineModel model = (MedicineModel)arguments.getSerializable(MedicineModel.class.getSimpleName());
                         medicines.add(model);
+                        fillTable(Arrays.asList("Название", "Дозировка", "Форма выпуска"), medicines);
                     }
                 });
 
@@ -92,8 +93,6 @@ public class CreateManufacturerActivity extends AppCompatActivity {
                 v -> { ;
                     Intent intent = new Intent(CreateManufacturerActivity.this, MedicineActivity.class);
                     intent.putExtra("id", 0);
-                    startActivity(intent);
-
                     mStartForResult.launch(intent);
 
                     fillTable(Arrays.asList("Название", "Дозировка", "Форма выпуска"), medicines);
@@ -153,7 +152,7 @@ public class CreateManufacturerActivity extends AppCompatActivity {
             textView.setText(title);
             textView.setTextColor(Color.WHITE);
             textView.setGravity(Gravity.CENTER);
-            textView.setWidth( (int)(getWindowManager().getDefaultDisplay().getWidth() / 2.2));
+            textView.setWidth( (int)(getWindowManager().getDefaultDisplay().getWidth() / 3.2));
             tableRowTitles.addView(textView);
         }
 
