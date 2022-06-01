@@ -63,7 +63,7 @@ public class ManufacturerActivity extends AppCompatActivity {
 
         button_create_request.setOnClickListener(
                 v -> {
-                    Intent intent = new Intent(ManufacturerActivity.this, CreateRequestActivity.class);
+                    Intent intent = new Intent(ManufacturerActivity.this, RequestActivity.class);
                     intent.putExtra("userId", userId);
                     startActivity(intent);
                 }
@@ -83,9 +83,6 @@ public class ManufacturerActivity extends AppCompatActivity {
     }
 
     void fillTable(List<String> titles, List<ManufacturerModel> manufacturers) {
-
-
-
         tableLayoutMedicines.removeAllViews();
 
         TableRow tableRowTitles = new TableRow(this);

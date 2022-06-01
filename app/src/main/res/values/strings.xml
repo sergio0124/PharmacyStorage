@@ -34,4 +34,5 @@
     <string name="button_add_pharmacy">Добавить аптеку</string>
     <string name="text_view_manufacturer_name">Название производителя</string>
     <string name="text_view_cost">Цена за шт.</string>
+    <string name="button_get_supply">Принять поставку</string>
 </resources>

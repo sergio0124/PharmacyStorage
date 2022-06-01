@@ -24,12 +24,14 @@ public class RequestLogic {
     final String COLUMN_ID = "Id";
     final String COLUMN_DATE = "Date";
     final String COLUMN_STORAGE_ID = "StorageId";
+    final String COLUMN_MANUFACTURER_NAME = "Name";
     final String COLUMN_MANUFACTURER_ID = "StorageId";
-    final SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
+    final SimpleDateFormat sdf = new SimpleDateFormat("dd-mm-yyyy", Locale.ENGLISH);
 
     public RequestLogic(Context context) {
         this.sqlHelper = new DatabaseHelper(context);
         this.db = sqlHelper.getReadableDatabase();
+        sdf.setTimeZone(GregorianCalendar.getInstance().getTimeZone());
     }
 
     public RequestLogic open() {
@@ -53,7 +55,8 @@ public class RequestLogic {
 
             try {
                 cal.setTime(sdf.parse(cursor.getString((int) cursor.getColumnIndex(COLUMN_DATE))));
-            }catch (Exception ex){}
+            } catch (Exception ex) {
+            }
 
             obj.setId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_ID)));
             obj.setDate(cal);
@@ -80,7 +83,8 @@ public class RequestLogic {
 
             try {
                 cal.setTime(sdf.parse(cursor.getString((int) cursor.getColumnIndex(COLUMN_DATE))));
-            }catch (Exception ex){}
+            } catch (Exception ex) {
+            }
 
             obj.setId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_ID)));
             obj.setDate(cal);
@@ -94,8 +98,10 @@ public class RequestLogic {
     }
 
     public RequestModel getElement(int id) {
-        Cursor cursor = db.rawQuery("select * from " + TABLE + " where "
-                + COLUMN_ID + " = " + id, null);
+
+        Cursor cursor = db.rawQuery("select " + COLUMN_ID + ", " + COLUMN_DATE + ", " + COLUMN_STORAGE_ID +
+                ", " + COLUMN_MANUFACTURER_ID + ", " + COLUMN_MANUFACTURER_NAME + ", from " + TABLE +
+                " JOIN Manufacturer ON Manufacturer.Id = " + COLUMN_MANUFACTURER_ID + " AND " + TABLE + "." + COLUMN_ID + " = " + id, null);
         if (!cursor.moveToFirst()) {
             return null;
         }
@@ -104,50 +110,76 @@ public class RequestLogic {
 
         try {
             cal.setTime(sdf.parse(cursor.getString((int) cursor.getColumnIndex(COLUMN_DATE))));
-        }catch (Exception ex){}
+        } catch (Exception ex) {
+        }
 
         obj.setId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_ID)));
         obj.setDate(cal);
         obj.setStorageId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_STORAGE_ID)));
         obj.setManufacturerId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_MANUFACTURER_ID)));
+        obj.setManufacturerName(cursor.getString(cursor.getColumnIndex(COLUMN_MANUFACTURER_NAME)));
 
         return obj;
     }
 
     public void insert(RequestModel model) {
         ContentValues content = new ContentValues();
-        content.put(COLUMN_DATE,sdf.format(model.getDate()));
-        content.put(COLUMN_STORAGE_ID,model.getStorageId());
-        content.put(COLUMN_MANUFACTURER_ID,model.getManufacturerId());
-        if(model.getId() != 0){
+        content.put(COLUMN_DATE, sdf.format(model.getDate()));
+        content.put(COLUMN_STORAGE_ID, model.getStorageId());
+        content.put(COLUMN_MANUFACTURER_ID, model.getManufacturerId());
+        if (model.getId() != 0) {
             content.put(COLUMN_ID, model.getId());
         }
-        db.insert(TABLE,null,content);
+        db.insert(TABLE, null, content);
     }
 
     public void update(RequestModel model) {
-        ContentValues content=new ContentValues();
+        ContentValues content = new ContentValues();
         content.put(COLUMN_DATE, sdf.format(model.getDate()));
-        content.put(COLUMN_STORAGE_ID,model.getStorageId());
-        content.put(COLUMN_ID,model.getId());
-        content.put(COLUMN_MANUFACTURER_ID,model.getManufacturerId());
+        content.put(COLUMN_STORAGE_ID, model.getStorageId());
+        content.put(COLUMN_ID, model.getId());
+        content.put(COLUMN_MANUFACTURER_ID, model.getManufacturerId());
         String where = COLUMN_ID + " = " + model.getId();
-        db.update(TABLE,content,where,null);
+        db.update(TABLE, content, where, null);
     }
 
     public void delete(int id) {
-        String where = COLUMN_ID+" = "+id;
-        db.delete(TABLE,where,null);
+        String where = COLUMN_ID + " = " + id;
+        db.delete(TABLE, where, null);
     }
 
     public void insertRequestMedicines(ArrayList<RequestAmount> requestAmounts) {
-        requestAmounts.stream().forEach(v->{
+        requestAmounts.stream().forEach(v -> {
             ContentValues content = new ContentValues();
-            content.put("RequestId",v.getRequestId());
-            content.put("MedicineId",v.getMedicineId());
-            content.put("Cost",v.getCost());
-            content.put("Quantity",v.getQuantity());
-            db.insert(TABLE,null,content);
+            content.put("RequestId", v.getRequestId());
+            content.put("MedicineId", v.getMedicineId());
+            content.put("Cost", v.getCost());
+            content.put("Quantity", v.getQuantity());
+            db.insert(TABLE, null, content);
         });
+    }
+
+    public ArrayList<RequestAmount> getRequestAmountsById(int id) {
+        Cursor cursor = db.rawQuery("SELECT RequestId, Cost, MedicineId, Quantity, Name, Dosage, Form FROM Request_Medicine JOIN Medicine ON MedicineId = Medicine.Id AND RequestId = " + id, null);
+        ArrayList<RequestAmount> list = new ArrayList<>();
+        if (!cursor.moveToFirst()) {
+            return list;
+        }
+        do {
+            RequestAmount obj = new RequestAmount();
+
+            obj.setRequestId(cursor.getInt((int) cursor.getColumnIndex("RequestId")));
+            obj.setCost(cursor.getInt((int) cursor.getColumnIndex("Cost")));
+            obj.setQuantity(cursor.getInt((int) cursor.getColumnIndex("Quantity")));
+            obj.setMedicineId(cursor.getInt((int) cursor.getColumnIndex("MedicineId")));
+            String name = cursor.getString((int) cursor.getColumnIndex("Name")) + ", " +
+                    cursor.getString((int) cursor.getColumnIndex("Dosage")) + ", " +
+                    cursor.getString((int) cursor.getColumnIndex("Form"));
+            obj.setName(name);
+
+            list.add(obj);
+            cursor.moveToNext();
+        } while (!cursor.isAfterLast());
+        return list;
     }
 }

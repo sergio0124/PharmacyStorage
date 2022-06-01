@@ -49,6 +49,7 @@ public class CreateRequestActivity extends AppCompatActivity {
     ArrayList<RequestAmount> requestAmounts = new ArrayList<>();
     List<String> titles = Arrays.asList("Наименование", "Кол-во", "Цена шт.");
     int userId;
+    int id = 0;
     Button button_add;
     Button button_send;
     Button button_cancel;
@@ -69,6 +70,7 @@ public class CreateRequestActivity extends AppCompatActivity {
         spinner_medicine = findViewById(R.id.spinner_medicine_name);
 
         userId = getIntent().getExtras().getInt("userId");
+        id = getIntent().getExtras().getInt("Id");
 
         button_add = findViewById(R.id.button_add);
         button_send = findViewById(R.id.button_save);
@@ -144,6 +146,7 @@ public class CreateRequestActivity extends AppCompatActivity {
     }
 
     private void LoadData() {
+
         logic.open();
         List<ManufacturerModel> spinnerArray = new ArrayList<ManufacturerModel>();
         spinnerArray.addAll(logic.getFilteredList(userId));
@@ -177,6 +180,22 @@ public class CreateRequestActivity extends AppCompatActivity {
             }
         };
         spinner_manufacturer.setOnItemSelectedListener(itemSelectedListener);
+
+        if(id>0){
+            button_add.setVisibility(View.INVISIBLE);
+            button_add.setVisibility(View.INVISIBLE);
+            RequestModel requestModel = logicR.getElement(id);
+            ManufacturerModel manufacturerModel = logic.getElement(requestModel.getManufacturerId());
+            ArrayAdapter<String> adapterNoChoose = new ArrayAdapter<>(
+                    CreateRequestActivity.this, android.R.layout.simple_spinner_item, Arrays.asList(manufacturerModel.getName()));
+            spinner_manufacturer.setAdapter(adapterNoChoose);
+            spinner_manufacturer.setEnabled(false);
+            spinner_medicine.setAdapter(null);
+
+            ArrayList<RequestAmount> amounts = logicR.getRequestAmountsById(id);
+            requestAmounts = amounts;
+            fillTable();
+        }
     }
 
     void fillTable() {
@@ -249,5 +268,4 @@ public class CreateRequestActivity extends AppCompatActivity {
             tableLayoutMedicines.addView(tableRow);
         }
     }
-
 }

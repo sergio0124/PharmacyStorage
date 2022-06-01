@@ -10,14 +10,23 @@ public class RequestModel {
     Calendar Date;
     int StorageId;
     int ManufacturerId;
+    String ManufacturerName;
     List<RequestAmount> requestAmounts;
+
+    public String getManufacturerName() {
+        return ManufacturerName;
+    }
+
+    public void setManufacturerName(String manufacturerName) {
+        ManufacturerName = manufacturerName;
+    }
+
+    public void setRequestAmounts(List<RequestAmount> requestAmounts) {
+        this.requestAmounts = requestAmounts;
+    }
 
     public List<RequestAmount> getRequestAmounts() {
         return requestAmounts;
-    }
-
-    public void setRequestAmounts(ArrayList<RequestAmount> requestAmounts) {
-        this.requestAmounts = requestAmounts;
     }
 
     public void setId(int id) {
