@@ -68,7 +68,8 @@ public class ManufacturerActivity extends AppCompatActivity {
 
         button_create_request.setOnClickListener(
                 v -> {
-                    Intent intent = new Intent(ManufacturerActivity.this, MainActivity.class);
+                    Intent intent = new Intent(ManufacturerActivity.this, RequestActivity.class);
+                    intent.putExtra("userId", userId);
                     startActivity(intent);
                 }
         );

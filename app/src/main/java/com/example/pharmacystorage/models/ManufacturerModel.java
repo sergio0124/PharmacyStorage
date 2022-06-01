@@ -1,5 +1,7 @@
 package com.example.pharmacystorage.models;
 
+import androidx.annotation.NonNull;
+
 public class ManufacturerModel {
 
     int Id;
@@ -64,5 +66,10 @@ public class ManufacturerModel {
 
     public String getAddress() {
         return Address;
+    }
+
+    @Override
+    public String toString(){
+        return Name;
     }
 }

@@ -32,4 +32,6 @@
     <string name="text_view_dosage">Дозировка</string>
     <string name="text_view_form">Форма выпуска</string>
     <string name="button_add_pharmacy">Добавить аптеку</string>
+    <string name="text_view_manufacturer_name">Название производителя</string>
+    <string name="text_view_cost">Цена за шт.</string>
 </resources>

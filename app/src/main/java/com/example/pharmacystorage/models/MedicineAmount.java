@@ -38,4 +38,9 @@ public class MedicineAmount {
     public int getCost() {
         return Cost;
     }
+
+    @Override
+    public String toString(){
+        return Name;
+    }
 }

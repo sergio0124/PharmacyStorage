@@ -66,4 +66,9 @@ public class MedicineModel implements Serializable {
     public int getManufacturerId() {
         return ManufacturerId;
     }
+
+    @Override
+    public String toString() {
+        return Name + ", " + Dosage + "мл, " + Form;
+    }
 }
