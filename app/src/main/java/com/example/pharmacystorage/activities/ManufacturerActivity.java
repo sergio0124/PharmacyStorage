@@ -33,6 +33,7 @@ public class ManufacturerActivity extends AppCompatActivity {
     Button button_acceptance_supply;
     ManufacturerLogic logic;
     int userId;
+    TableLayout tableLayoutMedicines;
 
 
     @Override
@@ -48,6 +49,7 @@ public class ManufacturerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manufacturer);
         userId = getIntent().getExtras().getInt("userId");
+        tableLayoutMedicines = findViewById(R.id.tableLayoutMedicines);
 
         button_create_manufacturer = findViewById(R.id.button_to_create_manufacturer_activity);
         button_create_request = findViewById(R.id.button_to_create_request_activity);
@@ -86,7 +88,7 @@ public class ManufacturerActivity extends AppCompatActivity {
 
     void fillTable(List<String> titles, List<ManufacturerModel> manufacturers) {
 
-        TableLayout tableLayoutMedicines = findViewById(R.id.tableLayoutMedicines);
+
 
         tableLayoutMedicines.removeAllViews();
 
@@ -152,8 +154,25 @@ public class ManufacturerActivity extends AppCompatActivity {
                         view.setBackgroundColor(Color.parseColor("#FF03DAC5"));
                     }
                 }
-
                 tableRow.setBackgroundColor(Color.parseColor("#FFBB86FC"));
+
+                String child = ((TextView) selectedRow.getChildAt(3)).getText().toString();
+                ManufacturerModel model = new ManufacturerModel();
+                model.setId(Integer.parseInt(child));
+
+                logic.open();
+
+                model = logic.getElement(model.getId());
+                Intent intent = new Intent(ManufacturerActivity.this, CreateManufacturerActivity.class);
+                intent.putExtra("userId", userId);
+                intent.putExtra("id", model.getId());
+                intent.putExtra("name", model.getName());
+                intent.putExtra("email", model.getEmail());
+                intent.putExtra("address", model.getAddress());
+                startActivity(intent);
+
+                logic.close();
+
             });
 
             tableLayoutMedicines.addView(tableRow);

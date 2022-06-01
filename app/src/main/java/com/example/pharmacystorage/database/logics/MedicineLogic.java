@@ -20,7 +20,7 @@ public class MedicineLogic {
     final String COLUMN_NAME = "Name";
     final String COLUMN_DOSAGE = "Dosage";
     final String COLUMN_FORM = "Form";
-    final String COLUMN_MANUFACTURE_ID = "ManufactureId";
+    final String COLUMN_MANUFACTURE_ID = "ManufacturerId";
 
     public MedicineLogic(Context context) {
         sqlHelper = new DatabaseHelper(context);

@@ -67,9 +67,14 @@ public class CreateManufacturerActivity extends AppCompatActivity {
         edit_text_address = findViewById(R.id.edit_text_address);
 
         if(id != 0){
+            edit_text_name.setText(getIntent().getExtras().getString("name"));
+            edit_text_email.setText(getIntent().getExtras().getString("email"));
+            edit_text_address.setText(getIntent().getExtras().getString("address"));
+            logicMed.open();
             if (logicMed.getFilteredList(id).size() != 0){
                 medicines = logicMed.getFilteredList(id);
             }
+            logicMed.close();
             fillTable(Arrays.asList("Название", "Дозировка", "Форма выпуска"), medicines);
         }else {
             medicines = new ArrayList<>();
@@ -115,7 +120,7 @@ public class CreateManufacturerActivity extends AppCompatActivity {
 
                     logicMed.open();
                     for(MedicineModel medicine: medicines){
-                        if(medicine.getId() != -1){
+                        if(medicine.getId() != 0){
                             logicMed.update(medicine);
                         }else {
                             medicine.setManufacturerId(manufactureId);
