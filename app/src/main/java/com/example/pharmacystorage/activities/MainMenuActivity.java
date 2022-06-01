@@ -39,7 +39,7 @@ public class MainMenuActivity extends AppCompatActivity {
 
         button_pharmacy.setOnClickListener(
                 v -> {
-                    Intent intent = new Intent(MainMenuActivity.this, MainActivity.class);
+                    Intent intent = new Intent(MainMenuActivity.this, ClientActivity.class);
                     intent.putExtra("userId", userId);
                     startActivity(intent);
                 }

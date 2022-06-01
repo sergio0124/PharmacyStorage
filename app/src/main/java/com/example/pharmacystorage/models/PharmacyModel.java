@@ -8,6 +8,16 @@ public class PharmacyModel {
     private String Address;
     private int StorageId;
 
+    public PharmacyModel() {
+    }
+
+    public PharmacyModel(String name, String email, String address, int storageId) {
+        StorageId = storageId;
+        Name = name;
+        Email = email;
+        Address = address;
+    }
+
     public void setId(int id) {
         Id = id;
     }

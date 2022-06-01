@@ -78,15 +78,12 @@ public class CreateManufacturerActivity extends AppCompatActivity {
 
         ActivityResultLauncher<Intent> mStartForResult = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
-                new ActivityResultCallback<ActivityResult>() {
-                    @Override
-                    public void onActivityResult(ActivityResult result) {
-                        Intent intent = result.getData();
-                        Bundle arguments = intent.getExtras();
-                        MedicineModel model = (MedicineModel)arguments.getSerializable(MedicineModel.class.getSimpleName());
-                        medicines.add(model);
-                        fillTable(Arrays.asList("Название", "Дозировка", "Форма выпуска"), medicines);
-                    }
+                result -> {
+                    Intent intent = result.getData();
+                    Bundle arguments = intent.getExtras();
+                    MedicineModel model = (MedicineModel)arguments.getSerializable(MedicineModel.class.getSimpleName());
+                    medicines.add(model);
+                    fillTable(Arrays.asList("Название", "Дозировка", "Форма выпуска"), medicines);
                 });
 
         button_create_medicine.setOnClickListener(

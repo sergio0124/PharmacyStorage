@@ -3,6 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/AndroidStudioProjects/PharmacyStorage/app/src/main/res/layout/activity_client.xml" value="0.1" />
+        <entry key="..\:/AndroidStudioProjects/PharmacyStorage/app/src/main/res/layout/activity_create_client.xml" value="0.35260416666666666" />
         <entry key="..\:/AndroidStudioProjects/PharmacyStorage/app/src/main/res/layout/activity_create_manufacturer.xml" value="0.15" />
         <entry key="..\:/AndroidStudioProjects/PharmacyStorage/app/src/main/res/layout/activity_enter.xml" value="0.33" />
         <entry key="..\:/AndroidStudioProjects/PharmacyStorage/app/src/main/res/layout/activity_main.xml" value="0.18802083333333333" />

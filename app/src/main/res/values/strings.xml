@@ -31,4 +31,5 @@
     <string name="button_create_medicine_text">Создать лекарство</string>
     <string name="text_view_dosage">Дозировка</string>
     <string name="text_view_form">Форма выпуска</string>
+    <string name="button_add_pharmacy">Добавить аптеку</string>
 </resources>
