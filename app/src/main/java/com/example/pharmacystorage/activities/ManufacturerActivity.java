@@ -25,7 +25,6 @@ public class ManufacturerActivity extends AppCompatActivity {
     TableRow selectedRow;
     Button button_create_manufacturer;
     Button button_create_request;
-    Button button_acceptance_supply;
     ManufacturerLogic logic;
     int userId;
     TableLayout tableLayoutMedicines;
@@ -48,7 +47,6 @@ public class ManufacturerActivity extends AppCompatActivity {
 
         button_create_manufacturer = findViewById(R.id.button_to_create_manufacturer_activity);
         button_create_request = findViewById(R.id.button_to_create_request_activity);
-        button_acceptance_supply = findViewById(R.id.button_to_acceptance_supply_activity);
 
         logic = new ManufacturerLogic(this);
 
@@ -65,13 +63,6 @@ public class ManufacturerActivity extends AppCompatActivity {
                 v -> {
                     Intent intent = new Intent(ManufacturerActivity.this, RequestActivity.class);
                     intent.putExtra("userId", userId);
-                    startActivity(intent);
-                }
-        );
-
-        button_acceptance_supply.setOnClickListener(
-                v -> {
-                    Intent intent = new Intent(ManufacturerActivity.this, MainActivity.class);
                     startActivity(intent);
                 }
         );

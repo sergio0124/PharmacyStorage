@@ -27,6 +27,7 @@ public class RequestActivity extends AppCompatActivity {
     RequestLogic logic;
     Button button_create_request;
     Button button_get_supply;
+    Button button_check_request;
     int userId;
     TableLayout tableLayoutRequest;
     final SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
@@ -42,6 +43,7 @@ public class RequestActivity extends AppCompatActivity {
         logic = new RequestLogic(this);
         button_create_request = findViewById(R.id.button_to_create_request_activity);
         button_get_supply = findViewById(R.id.button_get_supply);
+        button_check_request = findViewById(R.id.button_check_request);
 
         button_create_request.setOnClickListener(v->{
             Intent intent = new Intent(RequestActivity.this, CreateRequestActivity.class);
@@ -52,6 +54,17 @@ public class RequestActivity extends AppCompatActivity {
 
         button_get_supply.setOnClickListener(v->{
 
+        });
+
+        button_check_request.setOnClickListener(v->{
+            String child = ((TextView) selectedRow.getChildAt(2)).getText().toString();
+            RequestModel model = new RequestModel();
+            model.setId(Integer.parseInt(child));
+
+            Intent intent = new Intent(RequestActivity.this, CreateRequestActivity.class);
+            intent.putExtra("userId", userId);
+            intent.putExtra("id", model.getId());
+            startActivity(intent);
         });
 
         fillTable();
@@ -117,15 +130,6 @@ public class RequestActivity extends AppCompatActivity {
                     }
                 }
                 tableRow.setBackgroundColor(Color.parseColor("#FFBB86FC"));
-
-                String child = ((TextView) selectedRow.getChildAt(2)).getText().toString();
-                RequestModel model = new RequestModel();
-                model.setId(Integer.parseInt(child));
-
-                Intent intent = new Intent(RequestActivity.this, CreateRequestActivity.class);
-                intent.putExtra("userId", userId);
-                intent.putExtra("id", model.getId());
-                startActivity(intent);
             });
 
             tableLayoutRequest.addView(tableRow);
