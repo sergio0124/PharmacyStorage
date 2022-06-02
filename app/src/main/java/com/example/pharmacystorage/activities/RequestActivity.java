@@ -16,8 +16,10 @@ import com.example.pharmacystorage.R;
 import com.example.pharmacystorage.database.logics.RequestLogic;
 import com.example.pharmacystorage.models.RequestModel;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 public class RequestActivity extends AppCompatActivity {
 
@@ -27,6 +29,7 @@ public class RequestActivity extends AppCompatActivity {
     Button button_get_supply;
     int userId;
     TableLayout tableLayoutRequest;
+    final SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
     List<String> titles = Arrays.asList("Дата", "Предприятие");
 
     @Override
@@ -79,7 +82,8 @@ public class RequestActivity extends AppCompatActivity {
             TableRow tableRow = new TableRow(this);
 
             TextView textViewName = new TextView(this);
-            textViewName.setText(requestModel.getDate().toString());
+            sdf.setTimeZone(requestModel.getDate().getTimeZone());
+            textViewName.setText(sdf.format(requestModel.getDate().getTime()));
             textViewName.setHeight(100);
             textViewName.setTextSize(16);
             textViewName.setTextColor(Color.WHITE);
@@ -118,16 +122,10 @@ public class RequestActivity extends AppCompatActivity {
                 RequestModel model = new RequestModel();
                 model.setId(Integer.parseInt(child));
 
-                logic.open();
-
-                model = logic.getElement(model.getId());
                 Intent intent = new Intent(RequestActivity.this, CreateRequestActivity.class);
                 intent.putExtra("userId", userId);
                 intent.putExtra("id", model.getId());
                 startActivity(intent);
-
-                logic.close();
-
             });
 
             tableLayoutRequest.addView(tableRow);

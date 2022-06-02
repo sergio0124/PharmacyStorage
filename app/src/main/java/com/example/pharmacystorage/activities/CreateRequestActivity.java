@@ -21,6 +21,7 @@ import com.example.pharmacystorage.database.logics.ManufacturerLogic;
 import com.example.pharmacystorage.database.logics.MedicineLogic;
 import com.example.pharmacystorage.database.logics.RequestLogic;
 import com.example.pharmacystorage.database.logics.StorageLogic;
+import com.example.pharmacystorage.helper_models.JSONHelper;
 import com.example.pharmacystorage.helper_models.JavaMailApi;
 import com.example.pharmacystorage.models.ManufacturerModel;
 import com.example.pharmacystorage.models.RequestAmount;
@@ -49,7 +50,7 @@ public class CreateRequestActivity extends AppCompatActivity {
     ArrayList<RequestAmount> requestAmounts = new ArrayList<>();
     List<String> titles = Arrays.asList("Наименование", "Кол-во", "Цена шт.");
     int userId;
-    int id = 0;
+    int iid = 0;
     Button button_add;
     Button button_send;
     Button button_cancel;
@@ -70,7 +71,7 @@ public class CreateRequestActivity extends AppCompatActivity {
         spinner_medicine = findViewById(R.id.spinner_medicine_name);
 
         userId = getIntent().getExtras().getInt("userId");
-        id = getIntent().getExtras().getInt("Id");
+        iid = getIntent().getExtras().getInt("id");
 
         button_add = findViewById(R.id.button_add);
         button_send = findViewById(R.id.button_save);
@@ -141,7 +142,12 @@ public class CreateRequestActivity extends AppCompatActivity {
         String sEmail = storageModel.getEmail();
         String sPassword = storageModel.getEmailPassword();
 
-        JavaMailApi javaMailAPI = new JavaMailApi(this, Email, LETTER_SUBJECT, "", sEmail, sPassword);
+        JSONHelper jsonHelper = new JSONHelper();
+        jsonHelper.exportToJSON(this, requestAmounts);
+        String path = jsonHelper.getPath();
+
+        JavaMailApi javaMailAPI = new JavaMailApi(this, Email, LETTER_SUBJECT, "", sEmail, sPassword, path);
+        jsonHelper.deleteFile(this);
         javaMailAPI.execute();
     }
 
@@ -160,19 +166,21 @@ public class CreateRequestActivity extends AppCompatActivity {
         AdapterView.OnItemSelectedListener itemSelectedListener = new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                ManufacturerModel item = (ManufacturerModel) parent.getItemAtPosition(position);
-                requestAmounts.clear();
-                fillTable();
-                logicM.open();
+                if(iid==0){
+                    ManufacturerModel item = (ManufacturerModel) parent.getItemAtPosition(position);
+                    requestAmounts.clear();
+                    fillTable();
+                    logicM.open();
 
-                List<MedicineModel> spinnerArrayMeds = new ArrayList<>();
-                spinnerArrayMeds.addAll(logicM.getFilteredList(item.getId()));
-                ArrayAdapter<MedicineModel> adapterMeds = new ArrayAdapter<>(
-                        CreateRequestActivity.this, android.R.layout.simple_spinner_item, spinnerArrayMeds);
-                adapterMeds.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                spinner_medicine.setAdapter(adapterMeds);
+                    List<MedicineModel> spinnerArrayMeds = new ArrayList<>();
+                    spinnerArrayMeds.addAll(logicM.getFilteredList(item.getId()));
+                    ArrayAdapter<MedicineModel> adapterMeds = new ArrayAdapter<>(
+                            CreateRequestActivity.this, android.R.layout.simple_spinner_item, spinnerArrayMeds);
+                    adapterMeds.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    spinner_medicine.setAdapter(adapterMeds);
 
-                logicM.close();
+                    logicM.close();
+                }
             }
 
             @Override
@@ -181,10 +189,13 @@ public class CreateRequestActivity extends AppCompatActivity {
         };
         spinner_manufacturer.setOnItemSelectedListener(itemSelectedListener);
 
-        if(id>0){
+        if(iid >0){
             button_add.setVisibility(View.INVISIBLE);
-            button_add.setVisibility(View.INVISIBLE);
-            RequestModel requestModel = logicR.getElement(id);
+            button_send.setVisibility(View.INVISIBLE);
+            logicR.open();
+            logic.open();
+
+            RequestModel requestModel = logicR.getElement(iid);
             ManufacturerModel manufacturerModel = logic.getElement(requestModel.getManufacturerId());
             ArrayAdapter<String> adapterNoChoose = new ArrayAdapter<>(
                     CreateRequestActivity.this, android.R.layout.simple_spinner_item, Arrays.asList(manufacturerModel.getName()));
@@ -192,7 +203,9 @@ public class CreateRequestActivity extends AppCompatActivity {
             spinner_manufacturer.setEnabled(false);
             spinner_medicine.setAdapter(null);
 
-            ArrayList<RequestAmount> amounts = logicR.getRequestAmountsById(id);
+            ArrayList<RequestAmount> amounts = logicR.getRequestAmountsById(iid);
+            logicR.close();
+            logic.close();
             requestAmounts = amounts;
             fillTable();
         }

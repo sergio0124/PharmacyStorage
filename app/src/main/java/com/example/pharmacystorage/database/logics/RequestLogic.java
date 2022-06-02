@@ -25,8 +25,8 @@ public class RequestLogic {
     final String COLUMN_DATE = "Date";
     final String COLUMN_STORAGE_ID = "StorageId";
     final String COLUMN_MANUFACTURER_NAME = "Name";
-    final String COLUMN_MANUFACTURER_ID = "StorageId";
-    final SimpleDateFormat sdf = new SimpleDateFormat("dd-mm-yyyy", Locale.ENGLISH);
+    final String COLUMN_MANUFACTURER_ID = "ManufacturerId";
+    final SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
 
     public RequestLogic(Context context) {
         this.sqlHelper = new DatabaseHelper(context);
@@ -71,8 +71,9 @@ public class RequestLogic {
 
     public List<RequestModel> getFilteredList(int storageId) {
 
-        Cursor cursor = db.rawQuery("select * from " + TABLE + " where "
-                + COLUMN_STORAGE_ID + " = " + storageId, null);
+        Cursor cursor = db.rawQuery("select Request.Id, Date, Request.StorageId, ManufacturerId, " +
+                "Manufacturer.Name from Request JOIN Manufacturer ON " +
+                "ManufacturerId = Manufacturer.Id AND Request.StorageId = " + storageId, null);
         List<RequestModel> list = new ArrayList<>();
         if (!cursor.moveToFirst()) {
             return list;
@@ -90,6 +91,7 @@ public class RequestLogic {
             obj.setDate(cal);
             obj.setStorageId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_STORAGE_ID)));
             obj.setManufacturerId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_MANUFACTURER_ID)));
+            obj.setManufacturerName(cursor.getString((int) cursor.getColumnIndex("Name")));
 
             list.add(obj);
             cursor.moveToNext();
@@ -99,9 +101,9 @@ public class RequestLogic {
 
     public RequestModel getElement(int id) {
 
-        Cursor cursor = db.rawQuery("select " + COLUMN_ID + ", " + COLUMN_DATE + ", " + COLUMN_STORAGE_ID +
-                ", " + COLUMN_MANUFACTURER_ID + ", " + COLUMN_MANUFACTURER_NAME + ", from " + TABLE +
-                " JOIN Manufacturer ON Manufacturer.Id = " + COLUMN_MANUFACTURER_ID + " AND " + TABLE + "." + COLUMN_ID + " = " + id, null);
+        Cursor cursor = db.rawQuery("select Request.Id, Date, Request.StorageId, ManufacturerId, " +
+                "Manufacturer.Name from Request JOIN Manufacturer ON " +
+                "ManufacturerId = Manufacturer.Id AND Request.Id = " + id, null);
         if (!cursor.moveToFirst()) {
             return null;
         }
@@ -124,18 +126,17 @@ public class RequestLogic {
 
     public void insert(RequestModel model) {
         ContentValues content = new ContentValues();
-        content.put(COLUMN_DATE, sdf.format(model.getDate()));
+        sdf.setTimeZone(model.getDate().getTimeZone());
+        content.put(COLUMN_DATE, sdf.format(model.getDate().getTime()));
         content.put(COLUMN_STORAGE_ID, model.getStorageId());
         content.put(COLUMN_MANUFACTURER_ID, model.getManufacturerId());
-        if (model.getId() != 0) {
-            content.put(COLUMN_ID, model.getId());
-        }
         db.insert(TABLE, null, content);
     }
 
     public void update(RequestModel model) {
         ContentValues content = new ContentValues();
-        content.put(COLUMN_DATE, sdf.format(model.getDate()));
+        sdf.setTimeZone(model.getDate().getTimeZone());
+        content.put(COLUMN_DATE, sdf.format(model.getDate().getTime()));
         content.put(COLUMN_STORAGE_ID, model.getStorageId());
         content.put(COLUMN_ID, model.getId());
         content.put(COLUMN_MANUFACTURER_ID, model.getManufacturerId());
@@ -155,12 +156,13 @@ public class RequestLogic {
             content.put("MedicineId", v.getMedicineId());
             content.put("Cost", v.getCost());
             content.put("Quantity", v.getQuantity());
-            db.insert(TABLE, null, content);
+            db.insert("Request_Medicine", null, content);
         });
     }
 
     public ArrayList<RequestAmount> getRequestAmountsById(int id) {
-        Cursor cursor = db.rawQuery("SELECT RequestId, Cost, MedicineId, Quantity, Name, Dosage, Form FROM Request_Medicine JOIN Medicine ON MedicineId = Medicine.Id AND RequestId = " + id, null);
+        Cursor cursor = db.rawQuery("SELECT RequestId, Cost, MedicineId, Quantity, Name, Dosage, " +
+                "Form FROM Request_Medicine JOIN Medicine ON MedicineId = Medicine.Id AND RequestId = " + id, null);
         ArrayList<RequestAmount> list = new ArrayList<>();
         if (!cursor.moveToFirst()) {
             return list;

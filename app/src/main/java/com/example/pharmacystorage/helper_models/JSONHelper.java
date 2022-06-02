@@ -11,11 +11,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
-class JSONHelper {
+public class JSONHelper {
 
     public static final String FILE_NAME = "user.json";
 
-    static boolean exportToJSON(Context context, List<RequestAmount> dataList) {
+    public boolean exportToJSON(Context context, List<RequestAmount> dataList) {
 
         Gson gson = new Gson();
         DataItems dataItems = new DataItems();
@@ -42,7 +42,7 @@ class JSONHelper {
         return false;
     }
 
-    static void deleteFile(Context context) {
+    public void deleteFile(Context context) {
         FileOutputStream fileOutputStream = null;
         try {
             fileOutputStream = context.openFileOutput(FILE_NAME, Context.MODE_PRIVATE);
@@ -60,7 +60,7 @@ class JSONHelper {
         }
     }
 
-    static List<RequestAmount> importFromJSON(Context context) {
+    public List<RequestAmount> importFromJSON(Context context) {
 
         InputStreamReader streamReader = null;
         FileInputStream fileInputStream = null;
@@ -91,5 +91,9 @@ class JSONHelper {
         }
 
         return null;
+    }
+
+    public String getPath() {
+        return FILE_NAME;
     }
 }
