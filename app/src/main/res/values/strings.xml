@@ -35,4 +35,6 @@
     <string name="text_view_manufacturer_name">Название производителя</string>
     <string name="text_view_cost">Цена за шт.</string>
     <string name="button_get_supply">Принять поставку</string>
+    <string name="button_check_request">Перейти к заявкам</string>
+    <string name="button_check_iternal">Посмотреть содержание</string>
 </resources>

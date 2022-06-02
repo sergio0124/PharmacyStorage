@@ -19,7 +19,7 @@ public class JSONHelper {
 
         Gson gson = new Gson();
         DataItems dataItems = new DataItems();
-        dataItems.setUsers(dataList);
+        dataItems.setRequest_Medicines(dataList);
         String jsonString = gson.toJson(dataItems);
 
         FileOutputStream fileOutputStream = null;
@@ -69,7 +69,7 @@ public class JSONHelper {
             streamReader = new InputStreamReader(fileInputStream);
             Gson gson = new Gson();
             DataItems dataItems = gson.fromJson(streamReader, DataItems.class);
-            if (dataItems != null) return dataItems.getUsers();
+            if (dataItems != null) return dataItems.getRequest_Medicines();
             else return null;
         } catch (IOException ex) {
             ex.printStackTrace();

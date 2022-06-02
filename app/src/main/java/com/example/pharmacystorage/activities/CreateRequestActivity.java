@@ -2,6 +2,7 @@ package com.example.pharmacystorage.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -97,8 +98,8 @@ public class CreateRequestActivity extends AppCompatActivity {
         button_send.setOnClickListener(v -> {
             if(requestAmounts.size()>0){
                 try {
-                    SendMessage();
                     SaveRequest();
+                    SendMessage();
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -144,10 +145,9 @@ public class CreateRequestActivity extends AppCompatActivity {
 
         JSONHelper jsonHelper = new JSONHelper();
         jsonHelper.exportToJSON(this, requestAmounts);
-        String path = jsonHelper.getPath();
+        String path = this.getFileStreamPath(jsonHelper.getPath()).getAbsolutePath();
 
         JavaMailApi javaMailAPI = new JavaMailApi(this, Email, LETTER_SUBJECT, "", sEmail, sPassword, path);
-        jsonHelper.deleteFile(this);
         javaMailAPI.execute();
     }
 

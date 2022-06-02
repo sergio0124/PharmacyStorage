@@ -45,7 +45,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:layout_weight="1"
-        android:text="@string/button_create_request_text" />
+        android:text="@string/button_check_request" />
 
     <Button
         android:id="@+id/button_to_create_manufacturer_activity"
@@ -54,13 +54,6 @@
         android:layout_margin="10dp"
         android:layout_weight="1"
         android:text="@string/button_create_manufacturer_text" />
-
-    <Button
-        android:id="@+id/button_to_acceptance_supply_activity"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:layout_weight="1"
-        android:text="@string/button_to_acceptance_supply_text" />
+    
 
 </LinearLayout>
