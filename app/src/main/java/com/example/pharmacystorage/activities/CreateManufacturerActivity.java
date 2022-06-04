@@ -108,6 +108,12 @@ public class CreateManufacturerActivity extends AppCompatActivity {
 
                     logic.open();
 
+                    for (ManufacturerModel mod : logic.getFullList()){
+                        if (mod.getEmail().equals(model.getEmail()) && model.getId() != mod.getId()){
+                            errorDialog("Такая почта уже есть");
+                        }
+                    }
+
                     int manufactureId;
                     if(id != 0){
                         model.setId(id);
