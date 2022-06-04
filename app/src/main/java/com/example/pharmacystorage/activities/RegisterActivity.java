@@ -1,9 +1,11 @@
 package com.example.pharmacystorage.activities;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,7 +15,16 @@ import com.example.pharmacystorage.database.logics.StorageLogic;
 import com.example.pharmacystorage.helper_models.Validators;
 import com.example.pharmacystorage.models.StorageModel;
 
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
+import java.util.Arrays;
+import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
+
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -24,6 +35,7 @@ public class RegisterActivity extends AppCompatActivity {
     EditText editTextEmailPassword;
     StorageLogic logic;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +66,8 @@ public class RegisterActivity extends AppCompatActivity {
                         errorDialog("Неверный формат почты");
                         return;
                     }
+
+                    model.setPassword(hashPassword(model.getPassword(), salt).get().toString());
 
                     logic.open();
 
@@ -87,5 +101,56 @@ public class RegisterActivity extends AppCompatActivity {
 
         AlertDialog alert = builder.create();
         alert.show();
+    }
+
+    private static final int ITERATIONS = 65536;
+    private static final int KEY_LENGTH = 512;
+    private static final String ALGORITHM = "PBKDF2WithHmacSHA512";
+    String salt = "gghisghsighf'lkgh;lkbnhojkfbnhoisdhfoi[dhf[oidshf'lskanghsld;fkghsf;lgkhfd'kglhfdlskghoiah[praio;fhg[oiafh;oiha;khg;lfahg;lglfdhglkahgoafh'";
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static Optional hashPassword (String password, String salt) {
+
+        char[] chars = password.toCharArray();
+        byte[] bytes = salt.getBytes();
+
+        PBEKeySpec spec = new PBEKeySpec(chars, bytes, ITERATIONS, KEY_LENGTH);
+
+        Arrays.fill(chars, Character.MIN_VALUE);
+
+        try {
+            SecretKeyFactory fac = SecretKeyFactory.getInstance(ALGORITHM);
+            byte[] securePassword = fac.generateSecret(spec).getEncoded();
+            return Optional.of(Base64.getEncoder().encodeToString(securePassword));
+
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
+            System.err.println("Exception encountered in hashPassword()");
+            return Optional.empty();
+
+        } finally {
+            spec.clearPassword();
+        }
+    }
+
+    private static final SecureRandom RAND = new SecureRandom();
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static Optional generateSalt (final int length) {
+
+        if (length < 1) {
+            System.err.println("error in generateSalt: length must be > 0");
+            return Optional.empty();
+        }
+
+        byte[] salt = new byte[length];
+        RAND.nextBytes(salt);
+
+        return Optional.of(Base64.getEncoder().encodeToString(salt));
+    }
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public static boolean verifyPassword (String password, String key, String salt) {
+        Optional optEncrypted = hashPassword(password, salt);
+        if (!optEncrypted.isPresent()) return false;
+        return optEncrypted.get().equals(key);
     }
 }
