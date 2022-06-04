@@ -2,22 +2,16 @@ package com.example.pharmacystorage.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.graphics.Color;
+import android.app.AlertDialog;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TableLayout;
 import android.widget.TableRow;
-import android.widget.TextView;
 
 import com.example.pharmacystorage.R;
 import com.example.pharmacystorage.database.logics.PharmacyLogic;
+import com.example.pharmacystorage.helper_models.Validators;
 import com.example.pharmacystorage.models.PharmacyModel;
-
-import java.util.Arrays;
-import java.util.List;
 
 public class CreateClientActivity extends AppCompatActivity {
 
@@ -50,6 +44,12 @@ public class CreateClientActivity extends AppCompatActivity {
 
                     PharmacyModel model = new PharmacyModel(edit_text_name.getText().toString(), edit_text_email.getText().toString(),
                             edit_text_address.getText().toString(), userId);
+
+                    if (!Validators.validateEmail(model.getEmail())){
+                        errorDialog("Неверный формат почты");
+                        return;
+                    }
+
                     logic.open();
 
                     if(id != 0){
@@ -71,5 +71,16 @@ public class CreateClientActivity extends AppCompatActivity {
 
     }
 
+    private void errorDialog(String err){
+        AlertDialog.Builder builder = new AlertDialog.Builder(CreateClientActivity.this);
+        builder.setMessage(err);
+        builder.setCancelable(true);
 
+        builder.setPositiveButton(
+                "ОК",
+                (dialog, id) -> dialog.cancel());
+
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
 }

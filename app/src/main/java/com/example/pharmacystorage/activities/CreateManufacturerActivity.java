@@ -1,21 +1,17 @@
 package com.example.pharmacystorage.activities;
 
-import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,15 +19,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.pharmacystorage.R;
 import com.example.pharmacystorage.database.logics.ManufacturerLogic;
 import com.example.pharmacystorage.database.logics.MedicineLogic;
+import com.example.pharmacystorage.helper_models.Validators;
 import com.example.pharmacystorage.models.ManufacturerModel;
 import com.example.pharmacystorage.models.MedicineModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class CreateManufacturerActivity extends AppCompatActivity {
 
@@ -106,6 +100,12 @@ public class CreateManufacturerActivity extends AppCompatActivity {
 
                     ManufacturerModel model = new ManufacturerModel(edit_text_name.getText().toString(), edit_text_email.getText().toString(),
                             edit_text_address.getText().toString(), userId);
+
+                    if (!Validators.validateEmail(model.getEmail())){
+                        errorDialog("Неверный формат почты");
+                        return;
+                    }
+
                     logic.open();
 
                     int manufactureId;
@@ -213,5 +213,18 @@ public class CreateManufacturerActivity extends AppCompatActivity {
 
             tableLayoutCustomers.addView(tableRow);
         }
+    }
+
+    private void errorDialog(String err){
+        AlertDialog.Builder builder = new AlertDialog.Builder(CreateManufacturerActivity.this);
+        builder.setMessage(err);
+        builder.setCancelable(true);
+
+        builder.setPositiveButton(
+                "ОК",
+                (dialog, id) -> dialog.cancel());
+
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 }
