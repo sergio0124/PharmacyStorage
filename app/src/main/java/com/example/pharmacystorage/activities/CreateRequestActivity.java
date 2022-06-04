@@ -86,6 +86,16 @@ public class CreateRequestActivity extends AppCompatActivity {
             String Name = item.toString();
             int count = Integer.parseInt(edit_count.getText().toString());
             int cost = Integer.parseInt(edit_cost.getText().toString());
+
+            for (RequestAmount model: requestAmounts) {
+                if (model.getMedicineId() == item.getId()){
+                    model.setCost(cost);
+                    model.setQuantity(count);
+                    fillTable();
+                    return;
+                }
+            }
+
             RequestAmount amount = new RequestAmount();
             amount.setMedicineId(item.getId());
             amount.setCost(cost);

@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
  */
 public class Validators {
     // Email Regex java
-    private static final String EMAIL_REGEX = "^[\\w-\\+]+(\\.[\\w]+)*@[\\w-]+(\\.[\\w]+)*(\\.[a-z]{2,})$";
+    private static final String EMAIL_REGEX = "^(.+)@(\\S+)$";
 
     // static Pattern object, since pattern is fixed
     private static Pattern patternEmail = Pattern.compile(EMAIL_REGEX, Pattern.CASE_INSENSITIVE);
@@ -45,8 +45,8 @@ public class Validators {
 
     private static final Pattern patternLogin = Pattern.compile(PASSWORD_PATTERN);
 
-    public static boolean validateLogin(final String password) {
-        Matcher matcher = patternPassword.matcher(password);
+    public static boolean validateLogin(final String login) {
+        Matcher matcher = patternLogin.matcher(login);
         return matcher.matches();
     }
 }
