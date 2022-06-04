@@ -86,6 +86,7 @@ public class JavaMailApi extends AsyncTask<Void, Void, Void> {
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.port", "465");
 
+
         //Creating a new session
         //Authenticating the password
         Session mSession = Session.getDefaultInstance(props,
