@@ -63,13 +63,13 @@ public class MedicineActivity extends AppCompatActivity {
                     if (id != 0) {
                         model.setId(id);
                         logic.update(model);
-                    } else {
-                        Intent intent = new Intent(this, CreateManufacturerActivity.class);
-                        intent.putExtra("MedicineModel", model);
-                        setResult(RESULT_OK, intent);
-                    }
+                        logic.close();
 
-                    logic.close();
+
+                    }
+                    Intent intent = new Intent(this, CreateManufacturerActivity.class);
+                    intent.putExtra("MedicineModel", model);
+                    setResult(RESULT_OK, intent);
                     this.finish();
                 }
         );

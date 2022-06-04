@@ -1,6 +1,7 @@
 package com.example.pharmacystorage.activities;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -41,6 +42,7 @@ public class CreateManufacturerActivity extends AppCompatActivity {
     List<MedicineModel> medicines;
     int userId;
     int id;
+    ActivityResultLauncher<Intent> mStartForResult;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,12 +77,20 @@ public class CreateManufacturerActivity extends AppCompatActivity {
         }
 
 
-        ActivityResultLauncher<Intent> mStartForResult = registerForActivityResult(
+        mStartForResult = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
                     Intent intent = result.getData();
+                    if (intent == null) return;
                     Bundle arguments = intent.getExtras();
                     MedicineModel model = (MedicineModel)arguments.getSerializable(MedicineModel.class.getSimpleName());
+                    for(int i = 0; i < medicines.size(); i++){
+                        if (model.getId() == ((MedicineModel) medicines.get(i)).getId()){
+                            medicines.set(i, model);
+                            fillTable(Arrays.asList("Название", "Дозировка", "Форма выпуска"), medicines);
+                            return;
+                        }
+                    }
                     medicines.add(model);
                     fillTable(Arrays.asList("Название", "Дозировка", "Форма выпуска"), medicines);
                 });
@@ -109,7 +119,7 @@ public class CreateManufacturerActivity extends AppCompatActivity {
                     logic.open();
 
                     for (ManufacturerModel mod : logic.getFullList()){
-                        if (mod.getEmail().equals(model.getEmail()) && model.getId() != mod.getId()){
+                        if (mod.getEmail().equals(model.getEmail()) && id != mod.getId()){
                             errorDialog("Такая почта уже есть");
                         }
                     }
@@ -147,9 +157,9 @@ public class CreateManufacturerActivity extends AppCompatActivity {
 
     void fillTable(List<String> titles, List<MedicineModel> medicines) {
 
-        TableLayout tableLayoutCustomers = findViewById(R.id.tableLayoutMed);
+        TableLayout tableLayoutMedicines = findViewById(R.id.tableLayoutMed);
 
-        tableLayoutCustomers.removeAllViews();
+        tableLayoutMedicines.removeAllViews();
 
         TableRow tableRowTitles = new TableRow(this);
 
@@ -165,7 +175,7 @@ public class CreateManufacturerActivity extends AppCompatActivity {
         }
 
         tableRowTitles.setBackgroundColor(Color.parseColor("#FF6200EE"));
-        tableLayoutCustomers.addView(tableRowTitles);
+        tableLayoutMedicines.addView(tableRowTitles);
 
 
         for(MedicineModel medicine: medicines) {
@@ -207,17 +217,76 @@ public class CreateManufacturerActivity extends AppCompatActivity {
 
                 selectedRow = tableRow;
 
-                for(int i = 0; i < tableLayoutCustomers.getChildCount(); i++){
-                    View view = tableLayoutCustomers.getChildAt(i);
+                for(int i = 0; i < tableLayoutMedicines.getChildCount(); i++){
+                    View view = tableLayoutMedicines.getChildAt(i);
                     if (view instanceof TableRow){
                         view.setBackgroundColor(Color.parseColor("#FF03DAC5"));
                     }
                 }
+                tableRow.setBackgroundColor(Color.parseColor("#FFBB86FC"));
 
-                tableRow.setBackgroundColor(Color.parseColor("#FF03DAC5"));
+                String child = ((TextView) selectedRow.getChildAt(3)).getText().toString();
+
+                if (!child.equals("0")){
+                    MedicineModel model = new MedicineModel();
+                    model.setId(Integer.parseInt(child));
+
+                    logicMed.open();
+
+                    model = logicMed.getElement(model.getId());
+                    Intent intent = new Intent(CreateManufacturerActivity.this, MedicineActivity.class);
+                    intent.putExtra("manufacturerId", model.getManufacturerId());
+                    intent.putExtra("id", model.getId());
+
+                    mStartForResult.launch(intent);
+
+                    logicMed.close();
+                }
+
+
             });
 
-            tableLayoutCustomers.addView(tableRow);
+            tableRow.setOnLongClickListener(v -> {
+
+                selectedRow = tableRow;
+
+                for(int i = 0; i < tableLayoutMedicines.getChildCount(); i++){
+                    View view = tableLayoutMedicines.getChildAt(i);
+                    if (view instanceof TableRow){
+                        view.setBackgroundColor(Color.parseColor("#FF03DAC5"));
+                    }
+                }
+                tableRow.setBackgroundColor(Color.parseColor("#FFBB86FC"));
+
+                String child = ((TextView) selectedRow.getChildAt(3)).getText().toString();
+                ManufacturerModel model = new ManufacturerModel();
+                model.setId(Integer.parseInt(child));
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(CreateManufacturerActivity.this);
+                builder.setMessage("Удалить запись?");
+                builder.setNegativeButton("Отмена", (dialog, id) -> dialog.cancel());
+
+                builder.setPositiveButton("Да",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                logicMed.open();
+                                logicMed.delete(Integer.parseInt(child));
+                                medicines.clear();
+                                medicines.addAll(logicMed.getFilteredList(id));
+
+                                fillTable(Arrays.asList("Название", "Почта", "Адрес"), medicines);
+                                dialog.dismiss();
+                                logicMed.close();
+                            }
+                        }).create();
+
+                AlertDialog alert = builder.create();
+                alert.show();
+                return false;
+            });
+
+            tableLayoutMedicines.addView(tableRow);
         }
     }
 
