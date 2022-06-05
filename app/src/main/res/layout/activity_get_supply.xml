@@ -30,7 +30,7 @@
                 android:orientation="vertical" >
 
                 <TableLayout
-                    android:id="@+id/tableLayoutRequest"
+                    android:id="@+id/tableLayoutSupply"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true" >
@@ -40,12 +40,12 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/button_to_create_request_activity"
+        android:id="@+id/button_to_accept_supply"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:layout_weight="1"
-        android:text="@string/button_create_request_text" />
+        android:text="@string/button_accept_supply" />
 
     <Button
         android:id="@+id/button_get_supply"
@@ -53,14 +53,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:layout_weight="1"
-        android:text="@string/button_get_supply" />
+        android:text="@string/button_cancel_text" />
 
-    <Button
-        android:id="@+id/button_check_request"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:layout_weight="1"
-        android:text="@string/button_check_iternal" />
 
 </LinearLayout>
