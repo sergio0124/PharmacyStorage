@@ -14,15 +14,19 @@ import android.widget.TextView;
 
 import com.example.pharmacystorage.R;
 import com.example.pharmacystorage.database.logics.PharmacyLogic;
+import com.example.pharmacystorage.helper_models.ReadEmail;
 import com.example.pharmacystorage.models.PharmacyModel;
 
 import java.util.Arrays;
 import java.util.List;
 
+import javax.mail.MessagingException;
+
 public class ClientActivity extends AppCompatActivity {
 
     TableRow selectedRow;
     Button button_create_pharmacy;
+    Button button_sending;
     PharmacyLogic logic;
     int userId;
 
@@ -33,6 +37,7 @@ public class ClientActivity extends AppCompatActivity {
         userId = getIntent().getExtras().getInt("userId");
 
         button_create_pharmacy = findViewById(R.id.button_to_create_pharmacy_activity);
+        button_sending = findViewById(R.id.button_to_sending);
 
         logic = new PharmacyLogic(this);
 
@@ -42,6 +47,13 @@ public class ClientActivity extends AppCompatActivity {
                     intent.putExtra("userId", userId);
                     intent.putExtra("id", 0);
                     startActivity(intent);
+                }
+        );
+
+        button_sending.setOnClickListener(
+                v -> {
+                    ReadEmail readEmail = new ReadEmail(ClientActivity.this);
+                    readEmail.execute();
                 }
         );
         logic.open();

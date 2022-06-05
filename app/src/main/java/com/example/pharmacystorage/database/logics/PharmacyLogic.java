@@ -88,6 +88,23 @@ public class PharmacyLogic {
         return obj;
     }
 
+    public PharmacyModel getElement(String email) {
+        Cursor cursor = db.rawQuery("select * from " + TABLE + " where "
+                + COLUMN_EMAIL + " = " + email, null);
+        PharmacyModel obj = new PharmacyModel();
+        if (!cursor.moveToFirst()) {
+            return null;
+        }
+
+        obj.setId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_ID)));
+        obj.setName(cursor.getString((int) cursor.getColumnIndex(COLUMN_NAME)));
+        obj.setEmail(cursor.getString((int) cursor.getColumnIndex(COLUMN_EMAIL)));
+        obj.setAddress(cursor.getString((int) cursor.getColumnIndex(COLUMN_ADDRESS)));
+        obj.setStorageId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_STORAGE_ID)));
+
+        return obj;
+    }
+
     public void insert(PharmacyModel model) {
         ContentValues content = new ContentValues();
         content.put(COLUMN_NAME,model.getName());
