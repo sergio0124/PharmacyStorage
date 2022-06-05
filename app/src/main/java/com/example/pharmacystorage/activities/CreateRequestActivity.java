@@ -153,7 +153,7 @@ public class CreateRequestActivity extends AppCompatActivity {
         String sEmail = storageModel.getEmail();
         String sPassword = storageModel.getEmailPassword();
 
-        JSONHelper jsonHelper = new JSONHelper();
+        JSONHelper<RequestAmount> jsonHelper = new JSONHelper<>();
         jsonHelper.exportToJSON(this, requestAmounts);
         String path = this.getFileStreamPath(jsonHelper.getPath()).getAbsolutePath();
 

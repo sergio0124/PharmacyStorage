@@ -5,56 +5,82 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".activities.MedicineActivity">
+    tools:context=".activities.CheckSupplyActivity">
+
 
     <TextView
-        android:id="@+id/text_view_medicine_name"
+        android:id="@+id/text_view_name"
         android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/text_view_medicine_name" />
+        android:text="@string/text_view_name" />
 
     <EditText
-        android:id="@+id/edit_text_medicine_name"
+        android:id="@+id/edit_text_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:layout_margin="10dp"/>
+        android:ems="10"/>
 
     <TextView
-        android:id="@+id/text_view_dosage"
+        android:id="@+id/text_view_quality"
         android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/text_view_dosage" />
+        android:text="@string/text_view_count" />
 
     <EditText
-        android:id="@+id/edit_text_dosage"
+        android:id="@+id/edit_text_quality"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:layout_margin="10dp"/>
+        android:ems="10"/>
 
     <TextView
-        android:id="@+id/text_view_form"
+        android:id="@+id/text_view_cost"
         android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/text_view_form" />
+        android:text="@string/text_view_cost" />
 
-    <Spinner
-        android:id="@+id/spinner_form"
+    <EditText
+        android:id="@+id/edit_text_cost"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
-        android:layout_margin="10dp"/>
+        android:ems="10"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/DateString"
+        android:textAlignment="center"
+        android:ems="10"/>
 
     <Button
-        android:id="@+id/button_create"
+        android:id="@+id/buttonDate"
+        android:layout_width="match_parent"
+        android:layout_height="37dp"
+        android:height="100dp"
+        android:layout_margin="15dp"
+        android:text="@string/ChooseDateAction" />
+
+
+
+
+
+
+
+    <Button
+        android:id="@+id/button_accept"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:text="@string/button_create_text"/>
+        android:text="@string/button_confirm"/>
+
+    <Button
+        android:id="@+id/button_defective"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="@string/button_set_defective"/>
 
     <Button
         android:id="@+id/button_cancel"
@@ -62,5 +88,6 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:text="@string/button_cancel_text"/>
+
 
 </LinearLayout>

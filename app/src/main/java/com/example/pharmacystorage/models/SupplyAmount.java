@@ -1,6 +1,9 @@
 package com.example.pharmacystorage.models;
 
-public class SupplyAmount {
+import java.io.Serializable;
+import java.util.Calendar;
+
+public class SupplyAmount implements Serializable {
 
     int SupplyId;
     int MedicineId;
@@ -8,6 +11,15 @@ public class SupplyAmount {
     int Quantity;
     int Cost;
     String State;
+    Calendar EndDate;
+
+    public Calendar getEndDate() {
+        return EndDate;
+    }
+
+    public void setEndDate(Calendar endDate) {
+        EndDate = endDate;
+    }
 
     public SupplyAmount(int medicineId, String name, int quantity, int cost, String state) {
         MedicineId = medicineId;
@@ -64,4 +76,8 @@ public class SupplyAmount {
     public void setState(String state) {
         State = state;
     }
+
+
+
+
 }

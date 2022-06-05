@@ -4,15 +4,18 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 
 import com.example.pharmacystorage.R;
 import com.example.pharmacystorage.database.logics.MedicineLogic;
 import com.example.pharmacystorage.models.MedicineModel;
 
-import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class MedicineActivity extends AppCompatActivity {
 
@@ -20,8 +23,9 @@ public class MedicineActivity extends AppCompatActivity {
     Button button_cancel;
     EditText edit_text_medicine_name;
     EditText edit_text_dosage;
-    EditText edit_text_form;
+    Spinner spinner_form;
     MedicineLogic logic;
+    List<String> spinnerTitles = new ArrayList<String>(Arrays.asList("Таблетки", "Сироп", "Крем"));
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +41,12 @@ public class MedicineActivity extends AppCompatActivity {
         button_cancel = findViewById(R.id.button_cancel);
         edit_text_medicine_name = findViewById(R.id.edit_text_medicine_name);
         edit_text_dosage = findViewById(R.id.edit_text_dosage);
-        edit_text_form = findViewById(R.id.edit_text_form);
+        spinner_form = findViewById(R.id.spinner_form);
+
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(
+                this, android.R.layout.simple_spinner_item, spinnerTitles);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner_form.setAdapter(spinnerAdapter);
 
         if (id != 0) {
             logic.open();
@@ -46,7 +55,7 @@ public class MedicineActivity extends AppCompatActivity {
 
             edit_text_medicine_name.setText(model.getName());
             edit_text_dosage.setText(String.valueOf(model.getDosage()));
-            edit_text_form.setText(String.valueOf(model.getForm()));
+            spinner_form.setSelection(spinnerTitles.indexOf(model.getForm()));
         }
 
         button_create.setOnClickListener(
@@ -54,7 +63,7 @@ public class MedicineActivity extends AppCompatActivity {
                     MedicineModel model = new MedicineModel(
                             edit_text_medicine_name.getText().toString(),
                             Integer.parseInt(edit_text_dosage.getText().toString()),
-                            edit_text_form.getText().toString());
+                            (String) spinner_form.getSelectedItem());
                     logic.open();
                     if (manufacturerId != 0){
                         model.setManufacturerId(manufacturerId);

@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.pharmacystorage.R;
 import com.example.pharmacystorage.database.logics.RequestLogic;
@@ -53,7 +54,20 @@ public class RequestActivity extends AppCompatActivity {
         });
 
         button_get_supply.setOnClickListener(v->{
+            if (selectedRow == null){
+                Toast.makeText(this, "Выберете строчку",
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
 
+            String child = ((TextView) selectedRow.getChildAt(2)).getText().toString();
+            RequestModel model = new RequestModel();
+            model.setId(Integer.parseInt(child));
+
+            Intent intent = new Intent(RequestActivity.this, GetSupplyActivity.class);
+            intent.putExtra("userId", userId);
+            intent.putExtra("requestId", model.getId());
+            startActivity(intent);
         });
 
         button_check_request.setOnClickListener(v->{

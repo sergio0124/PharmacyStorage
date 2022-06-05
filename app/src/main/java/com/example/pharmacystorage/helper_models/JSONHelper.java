@@ -11,15 +11,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.List;
 
-public class JSONHelper {
+public class JSONHelper<T> {
 
     public static final String FILE_NAME = "user.json";
 
-    public boolean exportToJSON(Context context, List<RequestAmount> dataList) {
+    public boolean exportToJSON(Context context, List<T> dataList) {
 
         Gson gson = new Gson();
-        DataItems dataItems = new DataItems();
-        dataItems.setRequest_Medicines(dataList);
+        DataItems<T> dataItems = new DataItems();
+        dataItems.setCollection(dataList);
         String jsonString = gson.toJson(dataItems);
 
         FileOutputStream fileOutputStream = null;
@@ -69,7 +69,7 @@ public class JSONHelper {
             streamReader = new InputStreamReader(fileInputStream);
             Gson gson = new Gson();
             DataItems dataItems = gson.fromJson(streamReader, DataItems.class);
-            if (dataItems != null) return dataItems.getRequest_Medicines();
+            if (dataItems != null) return dataItems.getCollection();
             else return null;
         } catch (IOException ex) {
             ex.printStackTrace();
