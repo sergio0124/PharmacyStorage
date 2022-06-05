@@ -6,19 +6,26 @@ import android.os.AsyncTask;
 import com.example.pharmacystorage.database.logics.PharmacyLogic;
 import com.example.pharmacystorage.models.RequestAmount;
 
-import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeUtility;
-import javax.mail.search.FlagTerm;
-
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+
+import javax.mail.BodyPart;
+import javax.mail.Flags;
+import javax.mail.Folder;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.Part;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Store;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeUtility;
+import javax.mail.search.FlagTerm;
 
 public class ReadEmail extends AsyncTask<Void, Void, Void> {
     PharmacyLogic logic;
@@ -29,7 +36,7 @@ public class ReadEmail extends AsyncTask<Void, Void, Void> {
         jsonHelper = new JSONHelper();
     }
 
-    public List<RequestAmount> readMessages() throws MessagingException {
+    public List<List<RequestAmount>> readMessages() throws MessagingException {
         //Объект properties содержит параметры соединения
         Properties properties = new Properties();
         //Так как для чтения Yandex требует SSL-соединения - нужно использовать фабрику SSL-сокетов
@@ -72,7 +79,7 @@ public class ReadEmail extends AsyncTask<Void, Void, Void> {
                 Message[] messages = inbox.search(new FlagTerm(new Flags(
                         Flags.Flag.SEEN), false));
                 //Циклом пробегаемся по всем сообщениям
-                List<RequestAmount> list = new ArrayList<>();
+                List<List<RequestAmount>> list = new ArrayList<>();
                 logic.open();
                 for (Message message : messages) {
                     //От кого
@@ -91,8 +98,7 @@ public class ReadEmail extends AsyncTask<Void, Void, Void> {
                             // Получаем InputStream
                             InputStream is = bodyPart.getInputStream();
                             // Далее можем записать файл, или что-угодно от нас требуется
-                            list.add((RequestAmount) jsonHelper.importFromJSON(is));
-
+                            list.add(jsonHelper.importFromJSON(is));
                         }
 
                         message.setFlag(Flags.Flag.SEEN, true);
