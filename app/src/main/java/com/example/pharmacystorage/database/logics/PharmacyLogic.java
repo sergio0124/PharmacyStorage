@@ -90,7 +90,7 @@ public class PharmacyLogic {
 
     public PharmacyModel getElement(String email) {
         Cursor cursor = db.rawQuery("select * from " + TABLE + " where "
-                + COLUMN_EMAIL + " = " + email, null);
+                + COLUMN_EMAIL + " = " + "'" + email + "'", null);
         PharmacyModel obj = new PharmacyModel();
         if (!cursor.moveToFirst()) {
             return null;
