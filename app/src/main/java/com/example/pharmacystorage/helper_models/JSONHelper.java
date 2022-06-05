@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 
@@ -91,6 +92,34 @@ public class JSONHelper<T> {
         }
 
         return null;
+    }
+
+    public List<RequestAmount> importFromJSON(InputStream is) {
+
+        InputStreamReader streamReader = null;
+        try {
+
+            streamReader = new InputStreamReader(is);
+            Gson gson = new Gson();
+            DataItems dataItems = gson.fromJson(streamReader, DataItems.class);
+            if (dataItems != null) return dataItems.getRequest_Medicines();
+            else return null;
+        } finally {
+            if (streamReader != null) {
+                try {
+                    streamReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (is != null) {
+                try {
+                    is.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     public String getPath() {

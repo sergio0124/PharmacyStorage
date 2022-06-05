@@ -4,19 +4,32 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import com.example.pharmacystorage.database.logics.PharmacyLogic;
+import com.example.pharmacystorage.models.RequestAmount;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeUtility;
 import javax.mail.search.FlagTerm;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 public class ReadEmail extends AsyncTask<Void, Void, Void> {
+    PharmacyLogic logic;
+    JSONHelper jsonHelper;
+
     public ReadEmail(Context context){
         logic = new PharmacyLogic(context);
+        jsonHelper = new JSONHelper();
     }
-    PharmacyLogic logic;
-    public void readMessages() throws MessagingException {
+
+    public List<RequestAmount> readMessages() throws MessagingException {
         //Объект properties содержит параметры соединения
         Properties properties = new Properties();
         //Так как для чтения Yandex требует SSL-соединения - нужно использовать фабрику SSL-сокетов
@@ -59,6 +72,7 @@ public class ReadEmail extends AsyncTask<Void, Void, Void> {
                 Message[] messages = inbox.search(new FlagTerm(new Flags(
                         Flags.Flag.SEEN), false));
                 //Циклом пробегаемся по всем сообщениям
+                List<RequestAmount> list = new ArrayList<>();
                 logic.open();
                 for (Message message : messages) {
                     //От кого
@@ -66,14 +80,30 @@ public class ReadEmail extends AsyncTask<Void, Void, Void> {
                     if(logic.getElement(from) == null){
                         message.setFlag(Flags.Flag.DELETED, true);
                     }else{
-                        // код
+
+                        Multipart multipart = (Multipart) message.getContent();
+
+                        BodyPart bodyPart = multipart.getBodyPart(1);
+
+                        if(Part.ATTACHMENT.equalsIgnoreCase(bodyPart.getDisposition())){
+                            // Опускаю проверку на совпадение имен. Имя может быть закодировано, используем decode
+                            String fileName = MimeUtility.decodeText(bodyPart.getFileName());
+                            // Получаем InputStream
+                            InputStream is = bodyPart.getInputStream();
+                            // Далее можем записать файл, или что-угодно от нас требуется
+                            list.add((RequestAmount) jsonHelper.importFromJSON(is));
+
+                        }
+
                         message.setFlag(Flags.Flag.SEEN, true);
                     }
-                    System.out.println("FROM: " + from);
-                    //Тема письма
-                    System.out.println("SUBJECT: " + message.getSubject());
                 }
                 logic.close();
+                return list;
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             } finally {
                 if (inbox != null) {
                     //Не забываем закрыть собой папку сообщений.
@@ -87,6 +117,7 @@ public class ReadEmail extends AsyncTask<Void, Void, Void> {
                 store.close();
             }
         }
+        return null;
     }
 
     @Override
