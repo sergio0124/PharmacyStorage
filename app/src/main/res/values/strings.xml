@@ -39,4 +39,5 @@
     <string name="button_check_iternal">Посмотреть содержание</string>
     <string name="button_sending">Отправления</string>
     <string name="button_accept_supply">Принять поставку</string>
+    <string name="button_report_text">Создать отчет</string>
 </resources>
