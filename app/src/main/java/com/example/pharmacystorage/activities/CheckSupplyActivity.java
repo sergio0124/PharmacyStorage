@@ -1,7 +1,5 @@
 package com.example.pharmacystorage.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +9,8 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.pharmacystorage.R;
 import com.example.pharmacystorage.models.SupplyAmount;
@@ -29,16 +29,19 @@ public class CheckSupplyActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_supply);
+        Intent intent = getIntent();
 
-        supplyAmount = getIntent().getExtras().getParcelable("supplyAmount");
+        Bundle arguments = intent.getExtras();
+
+        supplyAmount =(SupplyAmount)arguments.getSerializable(SupplyAmount.class.getSimpleName());
         buttonDate = findViewById(R.id.buttonDate);
         date = GregorianCalendar.getInstance();
         String text = date==null? "Choose date" : date.get(Calendar.DAY_OF_MONTH) + " / " +
                 date.get(Calendar.MONTH) + " / " + (date.get(Calendar.YEAR));
         buttonDate.setText(text);
 
-        quantityEditText = (EditText) findViewById(R.id.edit_text_count);
-        quantityEditText.setText(supplyAmount.getQuantity());
+        quantityEditText = (EditText) findViewById(R.id.edit_text_quality);
+        quantityEditText.setText(String.valueOf(supplyAmount.getQuantity()));
         quantityEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -59,7 +62,7 @@ public class CheckSupplyActivity extends AppCompatActivity {
                 }
 
                 if (count > supplyAmount.getQuantity()) {
-                    quantityEditText.setText("0");
+                    quantityEditText.setText(String.valueOf(supplyAmount.getQuantity()));
                     Toast.makeText(quantityEditText.getContext(), "Количество не может быть больше того, что планировалось", Toast.LENGTH_LONG).show();
                     return;
                 }
@@ -91,7 +94,7 @@ public class CheckSupplyActivity extends AppCompatActivity {
         ((EditText) findViewById(R.id.edit_text_name)).setText(supplyAmount.getName());
         ((EditText) findViewById(R.id.edit_text_name)).setEnabled(false);
 
-        ((EditText) findViewById(R.id.edit_text_cost)).setText(supplyAmount.getCost());
+        ((EditText) findViewById(R.id.edit_text_cost)).setText(String.valueOf(supplyAmount.getCost()));
         ((EditText) findViewById(R.id.edit_text_cost)).setEnabled(false);
 
         ((Button) findViewById(R.id.button_accept)).setOnClickListener(v->{
@@ -115,9 +118,10 @@ public class CheckSupplyActivity extends AppCompatActivity {
             status = "Недостача";
         }
         supplyAmount.setState(status);
-
+        supplyAmount.setQuantity(Integer.parseInt(quantityEditText.getText().toString()));
+        supplyAmount.setEndDate(date);
         Intent intent = new Intent(this, GetSupplyActivity.class);
-        intent.putExtra("supplyAmount", supplyAmount);
+        intent.putExtra("SupplyAmount", supplyAmount);
         setResult(RESULT_OK, intent);
         this.finish();
     }

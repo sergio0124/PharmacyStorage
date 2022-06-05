@@ -6,8 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.pharmacystorage.database.DatabaseHelper;
-import com.example.pharmacystorage.models.PharmacyModel;
-import com.example.pharmacystorage.models.RequestModel;
 import com.example.pharmacystorage.models.SupplyAmount;
 import com.example.pharmacystorage.models.SupplyModel;
 
@@ -94,7 +92,7 @@ public class SupplyLogic {
             content.put("Quantity", v.getQuantity());
             content.put("CurrentQuantity", v.getQuantity());
             content.put("isEmpty", 0);
-            db.insert("Request_Medicine", null, content);
+            db.insert("Medicine_Supply", null, content);
         });
 
     }

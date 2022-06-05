@@ -1,8 +1,5 @@
 package com.example.pharmacystorage.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -17,6 +14,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.pharmacystorage.R;
 import com.example.pharmacystorage.database.logics.ManufacturerLogic;
 import com.example.pharmacystorage.database.logics.MedicineLogic;
@@ -25,8 +24,8 @@ import com.example.pharmacystorage.database.logics.StorageLogic;
 import com.example.pharmacystorage.helper_models.JSONHelper;
 import com.example.pharmacystorage.helper_models.JavaMailApi;
 import com.example.pharmacystorage.models.ManufacturerModel;
-import com.example.pharmacystorage.models.RequestAmount;
 import com.example.pharmacystorage.models.MedicineModel;
+import com.example.pharmacystorage.models.RequestAmount;
 import com.example.pharmacystorage.models.RequestModel;
 import com.example.pharmacystorage.models.StorageModel;
 
@@ -88,7 +87,7 @@ public class CreateRequestActivity extends AppCompatActivity {
             int cost = Integer.parseInt(edit_cost.getText().toString());
 
             for (RequestAmount model: requestAmounts) {
-                if (model.getMedicineId() == item.getId()){
+                if (model.getMedicineId() == item.getId() && item.getId() != 0){
                     model.setCost(cost);
                     model.setQuantity(count);
                     fillTable();

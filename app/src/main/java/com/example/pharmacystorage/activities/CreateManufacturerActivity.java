@@ -85,7 +85,7 @@ public class CreateManufacturerActivity extends AppCompatActivity {
                     Bundle arguments = intent.getExtras();
                     MedicineModel model = (MedicineModel)arguments.getSerializable(MedicineModel.class.getSimpleName());
                     for(int i = 0; i < medicines.size(); i++){
-                        if (model.getId() == ((MedicineModel) medicines.get(i)).getId()){
+                        if (model.getId() == ((MedicineModel) medicines.get(i)).getId() && model.getId() !=0){
                             medicines.set(i, model);
                             fillTable(Arrays.asList("Название", "Дозировка", "Форма выпуска"), medicines);
                             return;

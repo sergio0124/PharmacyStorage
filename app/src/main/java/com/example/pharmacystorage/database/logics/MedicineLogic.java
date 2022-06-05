@@ -7,12 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.example.pharmacystorage.database.DatabaseHelper;
 import com.example.pharmacystorage.models.MedicineModel;
-import com.example.pharmacystorage.database.DatabaseHelper;
-import com.example.pharmacystorage.models.SupplyModel;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.BlockingDeque;
 
 public class MedicineLogic {
     DatabaseHelper sqlHelper;
@@ -120,16 +117,16 @@ public class MedicineLogic {
 
     public MedicineModel getMedicineByFullName(String name) {
         MedicineModel model = new MedicineModel();
-        name.replaceAll("\\s+", "");
-        String[] fields = name.split(name, ',');
+
+        String[] fields = name.split(", ");
 
         String MedicineName = fields[0];
         String MedicineFormat = fields[2];
         int MedicineDosage = Integer.parseInt(fields[1]);
 
         Cursor cursor = db.rawQuery("select * from " + TABLE + " where "
-                + COLUMN_FORM + " = " + MedicineFormat + " AND Name = "
-                + MedicineName + " AND Dosage = " + MedicineDosage + " LIMIT 1", null);
+                + COLUMN_FORM + " = " + "'"+MedicineFormat+"'" + " AND Name = "
+                + "'"+MedicineName+"'" + " AND Dosage = " + "'"+MedicineDosage+"'" + " LIMIT 1", null);
 
         if (!cursor.moveToFirst()) {
             return null;

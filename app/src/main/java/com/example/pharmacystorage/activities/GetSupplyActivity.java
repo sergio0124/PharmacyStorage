@@ -1,9 +1,5 @@
 package com.example.pharmacystorage.activities;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -13,6 +9,10 @@ import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.pharmacystorage.R;
 import com.example.pharmacystorage.database.logics.ManufacturerLogic;
@@ -71,7 +71,7 @@ public class GetSupplyActivity extends AppCompatActivity {
                     Bundle arguments = intent.getExtras();
                     SupplyAmount model = (SupplyAmount) arguments.getSerializable(SupplyAmount.class.getSimpleName());
                     for (int i = 0; i < supplyAmounts.size(); i++) {
-                        if (model.getMedicineId() == ((SupplyAmount) supplyAmounts.get(i)).getMedicineId()) {
+                        if (model.getMedicineId() == ((SupplyAmount) supplyAmounts.get(i)).getMedicineId() && ((SupplyAmount) supplyAmounts.get(i)).getMedicineId() != 0) {
                             supplyAmounts.set(i, model);
                             fillTable();
                             return;
@@ -145,10 +145,11 @@ public class GetSupplyActivity extends AppCompatActivity {
         logicS.insert(model);
 
         SupplyModel supplyModel = logicS.getFilteredByStorageList(userId).get(0);
-        supplyAmounts.stream().forEach(v -> v.setSupplyId(supplyModel.getId()));
-        supplyAmounts.stream().forEach(v -> v.setMedicineId( logicM.getMedicineByFullName(v.getName()).getId()));
+        List<SupplyAmount> listSA = supplyAmounts.stream().filter(v -> !v.getState().contains("Брак")).collect(Collectors.toList());
+        listSA.stream().forEach(v -> v.setSupplyId(supplyModel.getId()));
+        listSA.stream().forEach(v -> v.setMedicineId( logicM.getMedicineByFullName(v.getName()).getId()));
 
-        logicS.insertSupplyAmounts(supplyAmounts);
+        logicS.insertSupplyAmounts(listSA);
 
         logicS.close();
         logicM.close();
@@ -261,8 +262,9 @@ public class GetSupplyActivity extends AppCompatActivity {
                         .filter(rec -> rec.getName().contains(child)).collect(Collectors.toList()).get(0);
 
                 Intent intent = new Intent(GetSupplyActivity.this, CheckSupplyActivity.class);
-                intent.putExtra("supplyAmount", supplyAmo);
+                intent.putExtra("SupplyAmount", supplyAmo);
                 mStartForResult.launch(intent);
+
 
                 fillTable();
 

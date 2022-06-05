@@ -1,7 +1,5 @@
 package com.example.pharmacystorage.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -12,6 +10,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.pharmacystorage.R;
 import com.example.pharmacystorage.database.logics.RequestLogic;
@@ -71,6 +71,11 @@ public class RequestActivity extends AppCompatActivity {
         });
 
         button_check_request.setOnClickListener(v->{
+            if (selectedRow == null){
+                Toast.makeText(this, "Выберете строчку",
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
             String child = ((TextView) selectedRow.getChildAt(2)).getText().toString();
             RequestModel model = new RequestModel();
             model.setId(Integer.parseInt(child));

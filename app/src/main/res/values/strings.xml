@@ -43,4 +43,5 @@
     <string name="button_set_defective">Брак</string>
     <string name="DateString">Выберите дату окончания срока годности</string>
     <string name="ChooseDateAction">"Выберите дату "</string>
+    <string name="button_report_text">Отчет</string>
 </resources>
