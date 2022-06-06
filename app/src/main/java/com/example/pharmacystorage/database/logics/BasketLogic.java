@@ -2,6 +2,7 @@ package com.example.pharmacystorage.database.logics;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.pharmacystorage.database.DatabaseHelper;
@@ -32,5 +33,15 @@ public class BasketLogic {
         ContentValues content = new ContentValues();
         content.put(COLUMN_STORAGE_ID, userId);
         db.insert(TABLE, null, content);
+    }
+
+    public void insertMedicineById(int medicineId, int userId){
+        Cursor cursor = db.rawQuery("select * from " + TABLE + " JOIN Medicine_Basket ON Medicine_Basket.StorageId = Storage.Id AND Storage.Id = " + userId, null);
+        int basketId = cursor.getInt((int) cursor.getColumnIndex("Basket.Id"));
+
+        ContentValues content = new ContentValues();
+        content.put("BasketId", basketId);
+        content.put("MedicineId", medicineId);
+        db.insert("Medicine_Basket", null, content);
     }
 }

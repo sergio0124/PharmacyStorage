@@ -5,13 +5,44 @@ import java.util.Calendar;
 
 public class SupplyAmount implements Serializable {
 
+    int Id;
     int SupplyId;
     int MedicineId;
     String Name;
     int Quantity;
+    int OldQuantity;
     int Cost;
     String State;
     Calendar EndDate;
+    byte isEmpty;
+
+    public int getId() {
+        return Id;
+    }
+
+    public void setId(int id) {
+        Id = id;
+    }
+
+    public byte getIsEmpty() {
+        return isEmpty;
+    }
+
+    public void setIsEmpty(byte isEmpty) {
+        this.isEmpty = isEmpty;
+    }
+
+    public SupplyAmount() {
+
+    }
+
+    public int getOldQuantity() {
+        return OldQuantity;
+    }
+
+    public void setOldQuantity(int oldQuantity) {
+        OldQuantity = oldQuantity;
+    }
 
     public Calendar getEndDate() {
         return EndDate;

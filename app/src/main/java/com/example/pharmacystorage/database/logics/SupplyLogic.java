@@ -81,7 +81,6 @@ public class SupplyLogic {
 
 
     public void insertSupplyAmounts(List<SupplyAmount> supplyAmounts) {
-
         supplyAmounts.stream().forEach(v -> {
             ContentValues content = new ContentValues();
             content.put("SupplyId", v.getSupplyId());
@@ -94,6 +93,51 @@ public class SupplyLogic {
             content.put("isEmpty", 0);
             db.insert("Medicine_Supply", null, content);
         });
+    }
+
+
+    public List<SupplyAmount> getSupplyAmountsByStorage(int userId) {
+        Cursor cursor = db.rawQuery("select * from " + TABLE + " JOIN Medicine_Supply " +
+                        "ON Medicine_Supply.Id = Supply.MedicineId AND StorageId = " + userId, null);
+        List<SupplyAmount> list = new ArrayList<>();
+        if (!cursor.moveToFirst()) {
+            return list;
+        }
+        do {
+
+            SupplyAmount obj = new SupplyAmount();
+            Calendar cal = new GregorianCalendar();
+            try {
+                cal.setTime(sdf.parse(cursor.getString((int) cursor.getColumnIndex(COLUMN_DATE))));
+            } catch (Exception ex) {
+            }
+
+            obj.setSupplyId(cursor.getInt((int) cursor.getColumnIndex("SupplyId")));
+            obj.setMedicineId(cursor.getInt((int) cursor.getColumnIndex("MedicineId")));
+            obj.setEndDate(cal);
+            obj.setCost(cursor.getInt((int) cursor.getColumnIndex("Cost")));
+            obj.setQuantity(cursor.getInt((int) cursor.getColumnIndex("Quantity")));
+            obj.setId(cursor.getInt((int) cursor.getColumnIndex("Id")));
+
+            list.add(obj);
+            cursor.moveToNext();
+        } while (!cursor.isAfterLast());
+        return list;
+    }
+
+    public void updateSupplyAmount(SupplyAmount supplyAmount) {
+
+        ContentValues content = new ContentValues();
+        content.put("SupplyId", supplyAmount.getSupplyId());
+        content.put("MedicineId", supplyAmount.getMedicineId());
+        content.put("Cost", supplyAmount.getCost());
+        sdf.setTimeZone(supplyAmount.getEndDate().getTimeZone());
+        content.put("EndDate", sdf.format(supplyAmount.getEndDate().getTime()));
+        content.put("Quantity", supplyAmount.getQuantity());
+        content.put("CurrentQuantity", supplyAmount.getOldQuantity());
+        content.put("isEmpty", supplyAmount.getIsEmpty());
+        String where = COLUMN_ID + " = " + supplyAmount.getId();
+        db.update("Medicine_Supply", content, where, null);
 
     }
 }
