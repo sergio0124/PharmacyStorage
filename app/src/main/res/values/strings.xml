@@ -48,4 +48,5 @@
     <string name="button_medicines_text">Лекарства на складе</string>
     <string name="button_create_sending">Создать отправку</string>
     <string name="button_send_sending">Отправить</string>
+    <string name="button_basket_check">"Просмотреть корзину "</string>
 </resources>

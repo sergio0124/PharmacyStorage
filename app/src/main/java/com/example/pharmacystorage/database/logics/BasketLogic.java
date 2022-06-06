@@ -6,6 +6,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.pharmacystorage.database.DatabaseHelper;
+import com.example.pharmacystorage.models.MedicineModel;
+import com.example.pharmacystorage.models.RequestAmount;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BasketLogic {
 
@@ -43,5 +48,27 @@ public class BasketLogic {
         content.put("BasketId", basketId);
         content.put("MedicineId", medicineId);
         db.insert("Medicine_Basket", null, content);
+    }
+
+    public List<MedicineModel> getMedicinesInBasket(){
+        Cursor cursor = db.rawQuery("SELECT * FROM Medicine_Basket JOIN Medicine ON Medicine.Id = Medicine_Basket.MedicineId",null);
+
+        ArrayList<MedicineModel> list = new ArrayList<>();
+        if (!cursor.moveToFirst()) {
+            return list;
+        }
+        do {
+            MedicineModel obj = new MedicineModel();
+
+            obj.setId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_ID)));
+            obj.setName(cursor.getString((int) cursor.getColumnIndex("Name")));
+            obj.setDosage(cursor.getInt((int) cursor.getColumnIndex("Dosage")));
+            obj.setForm(cursor.getString((int) cursor.getColumnIndex("Form")));
+            obj.setManufacturerId(cursor.getInt((int) cursor.getColumnIndex("ManufacturerId")));
+
+            list.add(obj);
+            cursor.moveToNext();
+        } while (!cursor.isAfterLast());
+        return list;
     }
 }
