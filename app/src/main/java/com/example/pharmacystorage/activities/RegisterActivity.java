@@ -1,14 +1,14 @@
 package com.example.pharmacystorage.activities;
 
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.pharmacystorage.R;
 import com.example.pharmacystorage.database.logics.BasketLogic;
@@ -131,7 +131,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
             System.err.println("Exception encountered in hashPassword()");
-            return Optional.empty();
+            return Optional.of(password);
 
         } finally {
             spec.clearPassword();
