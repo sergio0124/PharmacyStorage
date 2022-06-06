@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.pharmacystorage.database.DatabaseHelper;
-import com.example.pharmacystorage.models.RequestAmount;
 import com.example.pharmacystorage.models.SendingAmount;
 import com.example.pharmacystorage.models.SendingModel;
 
@@ -61,7 +60,7 @@ public class SendingLogic {
             obj.setDate(cal);
             obj.setStorageId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_STORAGE_ID)));
             obj.setPharmacyId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_PHARMACY_ID)));
-            obj.setIsSent(cursor.getInt((byte) cursor.getColumnIndex(COLUMN_IS_SENT)));
+            obj.setSent(cursor.getInt((byte) cursor.getColumnIndex(COLUMN_IS_SENT)));
 
             list.add(obj);
             cursor.moveToNext();
@@ -101,7 +100,7 @@ public class SendingLogic {
         obj.setDate(cal);
         obj.setStorageId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_STORAGE_ID)));
         obj.setPharmacyId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_PHARMACY_ID)));
-        obj.setIsSent(cursor.getInt((byte) cursor.getColumnIndex(COLUMN_IS_SENT)));
+        obj.setSent(cursor.getInt((byte) cursor.getColumnIndex(COLUMN_IS_SENT)));
 
         return obj;
     }

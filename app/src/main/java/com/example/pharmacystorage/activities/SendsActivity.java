@@ -1,7 +1,5 @@
 package com.example.pharmacystorage.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -13,13 +11,14 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.pharmacystorage.R;
 import com.example.pharmacystorage.database.logics.MedicineLogic;
 import com.example.pharmacystorage.database.logics.PharmacyLogic;
 import com.example.pharmacystorage.database.logics.SendingLogic;
 import com.example.pharmacystorage.database.logics.StorageLogic;
 import com.example.pharmacystorage.helper_models.ReadEmail;
-import com.example.pharmacystorage.models.MedicineModel;
 import com.example.pharmacystorage.models.PharmacyModel;
 import com.example.pharmacystorage.models.RequestAmount;
 import com.example.pharmacystorage.models.RequestModel;
@@ -37,9 +36,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.stream.Collectors;
-
-import javax.mail.MessagingException;
 
 public class SendsActivity extends AppCompatActivity {
 
@@ -52,7 +48,7 @@ public class SendsActivity extends AppCompatActivity {
     Button button_send_send;
     Button button_cancel;
     int userId;
-    TableLayout tableLayoutRequest;
+    TableLayout tableLayoutSending;
     final SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
     List<String> titles = Arrays.asList("Дата", "Предприятие");
     Map<String, List<RequestAmount>> stringListMap = new HashMap<>();
@@ -60,10 +56,10 @@ public class SendsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_request);
+        setContentView(R.layout.activity_sends);
         userId = getIntent().getExtras().getInt("userId");
 
-        tableLayoutRequest = findViewById(R.id.tableLayoutRequest);
+        tableLayoutSending = findViewById(R.id.tableLayoutSending);
         logicS = new SendingLogic(this);
         logicStorage = new StorageLogic(this);
         logicP = new PharmacyLogic(this);
@@ -174,7 +170,7 @@ public class SendsActivity extends AppCompatActivity {
 
     void fillTable() {
         List<SendingModel> sendingModels = logicS.getFilteredList(userId);
-        tableLayoutRequest.removeAllViews();
+        tableLayoutSending.removeAllViews();
 
         TableRow tableRowTitles = new TableRow(this);
 
@@ -190,7 +186,7 @@ public class SendsActivity extends AppCompatActivity {
         }
 
         tableRowTitles.setBackgroundColor(Color.parseColor("#FF03DAC5"));
-        tableLayoutRequest.addView(tableRowTitles);
+        tableLayoutSending.addView(tableRowTitles);
 
 
         for (SendingModel sendingModel : sendingModels) {
@@ -225,8 +221,8 @@ public class SendsActivity extends AppCompatActivity {
 
                 selectedRow = tableRow;
 
-                for (int i = 0; i < tableLayoutRequest.getChildCount(); i++) {
-                    View view = tableLayoutRequest.getChildAt(i);
+                for (int i = 0; i < tableLayoutSending.getChildCount(); i++) {
+                    View view = tableLayoutSending.getChildAt(i);
                     if (view instanceof TableRow) {
                         view.setBackgroundColor(Color.parseColor("#FF03DAC5"));
                     }
@@ -234,7 +230,7 @@ public class SendsActivity extends AppCompatActivity {
                 tableRow.setBackgroundColor(Color.parseColor("#FFBB86FC"));
             });
 
-            tableLayoutRequest.addView(tableRow);
+            tableLayoutSending.addView(tableRow);
         }
     }
 }
