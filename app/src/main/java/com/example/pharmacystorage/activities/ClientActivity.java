@@ -50,12 +50,6 @@ public class ClientActivity extends AppCompatActivity {
                 }
         );
 
-        button_sending.setOnClickListener(
-                v -> {
-                    ReadEmail readEmail = new ReadEmail(ClientActivity.this);
-                    readEmail.execute();
-                }
-        );
         logic.open();
         fillTable(Arrays.asList("Название", "Почта", "Адрес"), logic.getFilteredList(userId));
         logic.close();

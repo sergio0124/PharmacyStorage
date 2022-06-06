@@ -76,8 +76,8 @@ public class CheckSupplyActivity extends AppCompatActivity {
                         @Override
                         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                             date.set(year, monthOfYear + 1, dayOfMonth);
-                            String text = date.getTime().getDate() + " / " +
-                                    date.getTime().getMonth() + " / " + (date.getTime().getYear()+ 1900);
+                            String text = date.get(Calendar.DAY_OF_MONTH) + "/" +
+                                    date.get(Calendar.MONTH) + "/" + (date.get(Calendar.YEAR));
                             buttonDate.setText(text);
                             supplyAmount.setEndDate(date);
                         }

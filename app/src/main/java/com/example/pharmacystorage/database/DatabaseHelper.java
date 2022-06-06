@@ -39,6 +39,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "\tDate varchar(255) not null,\n" +
                 "\tStorageId int not null,\n" +
                 "\tPharmacyId int,\n" +
+                "\t IsSent bit not null\n," +
                 "\tFOREIGN KEY (StorageId) \n" +
                 "\tREFERENCES Storage (StorageId) ON DELETE CASCADE,\n" +
                 "\tFOREIGN KEY (PharmacyId) \n" +

@@ -10,7 +10,9 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.mail.BodyPart;
@@ -30,13 +32,20 @@ import javax.mail.search.FlagTerm;
 public class ReadEmail extends AsyncTask<Void, Void, Void> {
     PharmacyLogic logic;
     JSONHelper jsonHelper;
+    String sPassword;
+    String sName;
+    Map<String, List<RequestAmount>> stringListMap = null;
 
-    public ReadEmail(Context context){
+    public ReadEmail(Context context, String password, String name, Map<String, List<RequestAmount>> stringListMap1){
         logic = new PharmacyLogic(context);
         jsonHelper = new JSONHelper();
+
+        sPassword = password;
+        sName = name;
+        this.stringListMap = stringListMap1;
     }
 
-    public List<List<RequestAmount>> readMessages() throws MessagingException {
+    public Map<String, List<RequestAmount>> readMessages() throws MessagingException {
         //Объект properties содержит параметры соединения
         Properties properties = new Properties();
         //Так как для чтения Yandex требует SSL-соединения - нужно использовать фабрику SSL-сокетов
@@ -58,12 +67,12 @@ public class ReadEmail extends AsyncTask<Void, Void, Void> {
                     new javax.mail.Authenticator() {
                         //Authenticating the password
                         protected PasswordAuthentication getPasswordAuthentication() {
-                            return new PasswordAuthentication("VladAppanov@yandex.ru", "itpdvkaewbdhdllc");
+                            return new PasswordAuthentication(sName, sPassword);
                         }
                     });
             mSession.setDebug(false);
             store = mSession.getStore();
-            store.connect("imap.yandex.ru", "VladAppanov@yandex.ru", "4Aaz3995aS31");
+            store.connect("imap.yandex.ru", sName, sPassword);
 
             //Это папка, которую будем читать
             Folder inbox = null;
@@ -79,11 +88,12 @@ public class ReadEmail extends AsyncTask<Void, Void, Void> {
                 Message[] messages = inbox.search(new FlagTerm(new Flags(
                         Flags.Flag.SEEN), false));
                 //Циклом пробегаемся по всем сообщениям
-                List<List<RequestAmount>> list = new ArrayList<>();
+                Map<String, List<RequestAmount>> list = new HashMap<>();
                 logic.open();
                 for (Message message : messages) {
                     //От кого
                     String from = ((InternetAddress) message.getFrom()[0]).getAddress();
+
                     if(logic.getElement(from) == null){
                         message.setFlag(Flags.Flag.DELETED, true);
                     }else{
@@ -98,7 +108,10 @@ public class ReadEmail extends AsyncTask<Void, Void, Void> {
                             // Получаем InputStream
                             InputStream is = bodyPart.getInputStream();
                             // Далее можем записать файл, или что-угодно от нас требуется
-                            list.add(jsonHelper.importFromJSON(is));
+                            List<RequestAmount> tmpList = jsonHelper.importFromJSON(is);
+
+                            stringListMap.put(from, tmpList);
+
                         }
 
                         message.setFlag(Flags.Flag.SEEN, true);

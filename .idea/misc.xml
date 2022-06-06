@@ -11,12 +11,15 @@
         <entry key="..\:/AndroidStudioProjects/PharmacyStorage/app/src/main/res/layout/activity_client.xml" value="0.1" />
         <entry key="..\:/AndroidStudioProjects/PharmacyStorage/app/src/main/res/layout/activity_create_client.xml" value="0.35260416666666666" />
         <entry key="..\:/AndroidStudioProjects/PharmacyStorage/app/src/main/res/layout/activity_create_manufacturer.xml" value="0.15" />
+        <entry key="..\:/AndroidStudioProjects/PharmacyStorage/app/src/main/res/layout/activity_create_send.xml" value="0.36666666666666664" />
         <entry key="..\:/AndroidStudioProjects/PharmacyStorage/app/src/main/res/layout/activity_enter.xml" value="0.33" />
+        <entry key="..\:/AndroidStudioProjects/PharmacyStorage/app/src/main/res/layout/activity_get_supply.xml" value="0.2803442028985507" />
         <entry key="..\:/AndroidStudioProjects/PharmacyStorage/app/src/main/res/layout/activity_main.xml" value="0.18802083333333333" />
         <entry key="..\:/AndroidStudioProjects/PharmacyStorage/app/src/main/res/layout/activity_main_menu.xml" value="0.36666666666666664" />
         <entry key="..\:/AndroidStudioProjects/PharmacyStorage/app/src/main/res/layout/activity_manufacturer.xml" value="0.18802083333333333" />
         <entry key="..\:/AndroidStudioProjects/PharmacyStorage/app/src/main/res/layout/activity_medicine_list.xml" value="0.36666666666666664" />
         <entry key="..\:/AndroidStudioProjects/PharmacyStorage/app/src/main/res/layout/activity_request.xml" value="0.33" />
+        <entry key="..\:/AndroidStudioProjects/PharmacyStorage/app/src/main/res/layout/activity_sends.xml" value="0.36666666666666664" />
       </map>
     </option>
   </component>
