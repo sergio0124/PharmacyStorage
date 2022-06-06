@@ -1,9 +1,59 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".activities.GetSendActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_margin="10dp"
+        android:layout_weight="1000"
+        >
+        <ScrollView
+            android:id="@+id/scrollViewMedicines"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:layout_weight="100"
+            android:layout_alignParentLeft="true" >
+
+            <RelativeLayout
+                android:id="@+id/relativeLayoutMedicines"
+                android:layout_width="fill_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="top"
+                android:orientation="vertical" >
+
+                <TableLayout
+                    android:id="@+id/tableLayoutSupply"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true" >
+                </TableLayout>
+            </RelativeLayout>
+        </ScrollView>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/button_to_accept_supply"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_weight="1"
+        android:text="@string/button_accept_supply" />
+
+    <Button
+        android:id="@+id/button_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_weight="1"
+        android:text="@string/button_cancel_text" />
+
+
+</LinearLayout>

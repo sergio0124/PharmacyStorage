@@ -57,4 +57,9 @@ public class PharmacyModel {
     public int getStorageId() {
         return StorageId;
     }
+
+    @Override
+    public String toString(){
+        return Name;
+    }
 }

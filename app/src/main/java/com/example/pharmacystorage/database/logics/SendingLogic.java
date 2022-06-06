@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.pharmacystorage.database.DatabaseHelper;
+import com.example.pharmacystorage.models.RequestAmount;
 import com.example.pharmacystorage.models.SendingAmount;
 import com.example.pharmacystorage.models.SendingModel;
 
@@ -142,5 +143,32 @@ public class SendingLogic {
             db.insert("Sending_Medicine", null, content);
         });
 
+    }
+
+    public List<SendingAmount> getSendingAmountsById(int sendingId) {
+
+        Cursor cursor = db.rawQuery("SELECT Id, SendingId, Cost, MedicineId, Quantity, Name, Dosage, " +
+                "Form FROM Sending_Medicine JOIN Medicine ON MedicineId = Medicine.Id AND SendingId = " + sendingId, null);
+        ArrayList<SendingAmount> list = new ArrayList<>();
+        if (!cursor.moveToFirst()) {
+            return list;
+        }
+        do {
+            SendingAmount obj = new SendingAmount();
+
+            obj.setId(cursor.getInt((int) cursor.getColumnIndex("Id")));
+            obj.setSendingId(cursor.getInt((int) cursor.getColumnIndex("SendingId")));
+            obj.setCost(cursor.getInt((int) cursor.getColumnIndex("Cost")));
+            obj.setQuantity(cursor.getInt((int) cursor.getColumnIndex("Quantity")));
+            obj.setMedicineId(cursor.getInt((int) cursor.getColumnIndex("MedicineId")));
+            String name = cursor.getString((int) cursor.getColumnIndex("Name")) + ", " +
+                    cursor.getString((int) cursor.getColumnIndex("Dosage")) + ", " +
+                    cursor.getString((int) cursor.getColumnIndex("Form"));
+            obj.setName(name);
+
+            list.add(obj);
+            cursor.moveToNext();
+        } while (!cursor.isAfterLast());
+        return list;
     }
 }

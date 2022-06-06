@@ -1,12 +1,41 @@
 package com.example.pharmacystorage.models;
 
-public class SendingAmount {
+import java.io.Serializable;
+
+public class SendingAmount implements Serializable {
 
     int Id;
     int MedicineId;
     int SendingId;
     int Quantity;
     int Cost;
+    String Name;
+    String Status;
+
+    public SendingAmount(int medicineId, int sendingId, int quantity, int cost, String name, String status) {
+        MedicineId = medicineId;
+        SendingId = sendingId;
+        Quantity = quantity;
+        Cost = cost;
+        Name = name;
+        Status = status;
+    }
+
+    public String getStatus() {
+        return Status;
+    }
+
+    public void setStatus(String status) {
+        Status = status;
+    }
+
+    public String getName() {
+        return Name;
+    }
+
+    public void setName(String name) {
+        Name = name;
+    }
 
     public SendingAmount() {
     }

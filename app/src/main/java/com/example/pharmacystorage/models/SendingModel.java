@@ -11,13 +11,6 @@ public class SendingModel {
     private String PharmacyName;
     int isSent = 0;
 
-    public int getIsSent() {
-        return isSent;
-    }
-
-    public void setIsSent(int isSent) {
-        this.isSent = isSent;
-    }
 
     public int getId() {
         return Id;

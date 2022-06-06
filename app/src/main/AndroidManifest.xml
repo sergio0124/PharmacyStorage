@@ -15,6 +15,9 @@
         android:theme="@style/Theme.PharmacyStorage"
         tools:targetApi="31">
         <activity
+            android:name=".CheckSendingActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.CreateSendActivity"
             android:exported="false" />
         <activity

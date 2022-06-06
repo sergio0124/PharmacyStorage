@@ -120,6 +120,7 @@ public class SendsActivity extends AppCompatActivity {
                 if(stringListMap.size()>0){
                     LoadSendings();
                     fillTable();
+                    Toast.makeText(button_cancel.getContext(), "Message Sent", Toast.LENGTH_SHORT).show();
                     timer.cancel();
                 }
 
