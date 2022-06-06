@@ -1,7 +1,6 @@
 package com.example.pharmacystorage.models;
 
 import java.util.Calendar;
-import java.util.Dictionary;
 
 public class SendingModel {
     private int Id;
@@ -52,16 +51,12 @@ public class SendingModel {
         PharmacyName = pharmacyName;
     }
 
-    public boolean isSent() {
-        if (isSent > 0) return true;
-        return false;
+    public int isSent() {
+        if (isSent > 0) return 1;
+        return 0;
     }
 
-    public void setSent(boolean sent) {
-        if (sent) {
-            isSent = 1;
-        } else {
-            isSent = 0;
-        }
+    public void setSent(int sent) {
+        isSent = sent;
     }
 }

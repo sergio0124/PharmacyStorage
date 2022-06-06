@@ -1,9 +1,5 @@
 package com.example.pharmacystorage.activities;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -14,22 +10,24 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.pharmacystorage.R;
 import com.example.pharmacystorage.database.logics.MedicineLogic;
 import com.example.pharmacystorage.database.logics.PharmacyLogic;
-import com.example.pharmacystorage.database.logics.StorageLogic;
 import com.example.pharmacystorage.database.logics.SendingLogic;
+import com.example.pharmacystorage.database.logics.StorageLogic;
 import com.example.pharmacystorage.helper_models.JSONHelper;
 import com.example.pharmacystorage.helper_models.JavaMailApi;
 import com.example.pharmacystorage.models.PharmacyModel;
 import com.example.pharmacystorage.models.SendingAmount;
 import com.example.pharmacystorage.models.SendingModel;
 import com.example.pharmacystorage.models.StorageModel;
-import com.example.pharmacystorage.models.SupplyModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -138,7 +136,7 @@ public class GetSendActivity extends AppCompatActivity {
         logicM.open();
 
         SendingModel model = logicS.getElement(sendingId);
-        model.setSent(true);
+        model.setSent(1);
         logicS.update(model);
 
         List<SendingAmount> listSA = sendingAmount;

@@ -14,7 +14,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.pharmacystorage.R;
 import com.example.pharmacystorage.database.logics.PharmacyLogic;
-import com.example.pharmacystorage.helper_models.ReadEmail;
 import com.example.pharmacystorage.models.PharmacyModel;
 
 import java.util.Arrays;
@@ -42,6 +41,14 @@ public class ClientActivity extends AppCompatActivity {
         button_create_pharmacy.setOnClickListener(
                 v -> {
                     Intent intent = new Intent(ClientActivity.this, CreateClientActivity.class);
+                    intent.putExtra("userId", userId);
+                    intent.putExtra("id", 0);
+                    startActivity(intent);
+                }
+        );
+        button_sending.setOnClickListener(
+                v -> {
+                    Intent intent = new Intent(ClientActivity.this, SendsActivity.class);
                     intent.putExtra("userId", userId);
                     intent.putExtra("id", 0);
                     startActivity(intent);
