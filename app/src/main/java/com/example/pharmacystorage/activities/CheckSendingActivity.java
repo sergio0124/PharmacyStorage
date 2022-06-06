@@ -13,7 +13,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.pharmacystorage.R;
+import com.example.pharmacystorage.database.logics.MedicineLogic;
 import com.example.pharmacystorage.database.logics.SendingLogic;
+import com.example.pharmacystorage.models.MedicineModel;
 import com.example.pharmacystorage.models.SendingAmount;
 
 import java.util.Calendar;
@@ -25,19 +27,32 @@ public class CheckSendingActivity extends AppCompatActivity {
     SendingAmount SendingAmount;
     EditText quantityEditText;
     SendingAmount databaseSending;
+    MedicineModel medicineData;
     SendingLogic sendingLogic;
+
+    int userId;
+    MedicineLogic medicineLogic;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_check_sending);
+
+        userId = getIntent().getExtras().getInt("userId");
         Intent intent = getIntent();
         sendingLogic = new SendingLogic(this);
-
         sendingLogic.open();
         databaseSending = sendingLogic.getSendingAmountsById(SendingAmount.getSendingId()).stream().filter(v -> v.getId() == SendingAmount.getId()).collect(Collectors.toList()).get(0);
         sendingLogic.close();
+
+        medicineLogic = new MedicineLogic(this);
+        medicineLogic.open();
+        medicineData = medicineLogic.getFilteredListWithQuantityByStorage(userId).stream()
+                .filter(v -> v.getId() == databaseSending.getMedicineId())
+                .collect(Collectors.toList())
+                .get(0);
+        medicineLogic.close();
 
         Bundle arguments = intent.getExtras();
 
@@ -69,6 +84,12 @@ public class CheckSendingActivity extends AppCompatActivity {
                     Toast.makeText(quantityEditText.getContext(), "Количество не может быть больше того, что планировалось", Toast.LENGTH_LONG).show();
                     return;
                 }
+
+                if (count > medicineData.getQuantityOnStorage()) {
+                    quantityEditText.setText(String.valueOf(medicineData.getQuantityOnStorage()));
+                    Toast.makeText(quantityEditText.getContext(), "Количество не может быть больше того, что есть на складе", Toast.LENGTH_LONG).show();
+                    return;
+                }
             }
         });
 
@@ -76,7 +97,11 @@ public class CheckSendingActivity extends AppCompatActivity {
         ((EditText) findViewById(R.id.edit_text_name)).setText(SendingAmount.getName());
         ((EditText) findViewById(R.id.edit_text_name)).setEnabled(false);
 
-        ((EditText) findViewById(R.id.edit_text_cost)).setText(String.valueOf(SendingAmount.getCost()));
+        if (SendingAmount.getCost() > medicineData.getQuantityOnStorage()) {
+            ((EditText) findViewById(R.id.edit_text_cost)).setText(String.valueOf(medicineData.getQuantityOnStorage()));
+        } else {
+            ((EditText) findViewById(R.id.edit_text_cost)).setText(String.valueOf(SendingAmount.getCost()));
+        }
         ((EditText) findViewById(R.id.edit_text_cost)).setEnabled(false);
 
         ((Button) findViewById(R.id.button_accept)).setOnClickListener(v -> {

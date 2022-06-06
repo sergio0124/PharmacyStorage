@@ -1,5 +1,9 @@
 package com.example.pharmacystorage.activities;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -10,24 +14,25 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.example.pharmacystorage.R;
+import com.example.pharmacystorage.database.logics.BasketLogic;
 import com.example.pharmacystorage.database.logics.MedicineLogic;
 import com.example.pharmacystorage.database.logics.PharmacyLogic;
-import com.example.pharmacystorage.database.logics.SendingLogic;
 import com.example.pharmacystorage.database.logics.StorageLogic;
+import com.example.pharmacystorage.database.logics.SendingLogic;
+import com.example.pharmacystorage.database.logics.SupplyLogic;
 import com.example.pharmacystorage.helper_models.JSONHelper;
 import com.example.pharmacystorage.helper_models.JavaMailApi;
 import com.example.pharmacystorage.models.PharmacyModel;
 import com.example.pharmacystorage.models.SendingAmount;
 import com.example.pharmacystorage.models.SendingModel;
 import com.example.pharmacystorage.models.StorageModel;
+import com.example.pharmacystorage.models.SupplyAmount;
+import com.example.pharmacystorage.models.SupplyModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +41,8 @@ public class GetSendActivity extends AppCompatActivity {
     SendingLogic logicS;
     MedicineLogic logicM;
     PharmacyLogic logicP;
+    BasketLogic logicB;
+    SupplyLogic logicSupply;
     StorageLogic logicStorage;
     Button acceptSupply;
     Button cancelButton;
@@ -90,6 +97,8 @@ public class GetSendActivity extends AppCompatActivity {
         userId = getIntent().getExtras().getInt("userId");
         logicS = new SendingLogic(this);
         logicM = new MedicineLogic(this);
+        logicB = new BasketLogic(this);
+        logicSupply = new SupplyLogic(this);
         logicStorage = new StorageLogic(this);
         logicP = new PharmacyLogic(this);
 
@@ -130,23 +139,50 @@ public class GetSendActivity extends AppCompatActivity {
     }
 
 
-
     private void SaveSending() {
         logicS.open();
         logicM.open();
+        logicB.open();
+        logicSupply.open();
 
         SendingModel model = logicS.getElement(sendingId);
-        model.setSent(1);
+        model.setSent(true);
         logicS.update(model);
 
         List<SendingAmount> listSA = sendingAmount;
+
+        List<SupplyAmount> supplyAmounts = logicSupply.getSupplyAmountsByStorage(userId);
+        listSA.stream().forEach(v -> {
+            int count = v.getQuantity();
+
+            int i = 0;
+            List<SupplyAmount> supplyAmountsByMedicine = supplyAmounts.stream().filter(rec -> rec.getMedicineId() == v.getMedicineId()).collect(Collectors.toList());
+            while (count > 0) {
+                SupplyAmount supplyAmount = supplyAmountsByMedicine.get(supplyAmountsByMedicine.size() -1 -i);
+                supplyAmount.setOldQuantity(supplyAmount.getQuantity());
+                if(supplyAmount.getQuantity()>count){
+                    supplyAmount.setQuantity(supplyAmount.getQuantity()-count);
+                    count = 0;
+                }
+                else {
+                    supplyAmount.setQuantity(0);
+                    count = count - supplyAmount.getQuantity();
+                }
+                logicSupply.updateSupplyAmount(supplyAmount);
+            }
+
+        });
+
+        listSA.stream().filter(v -> v.getStatus().contains("Недостача")).forEach(v -> logicB.insertMedicineById(v.getMedicineId(), userId));
         listSA.stream().forEach(v -> v.setSendingId(sendingId));
-        listSA.stream().forEach(v -> v.setMedicineId( logicM.getMedicineByFullName(v.getName()).getId()));
+        listSA.stream().forEach(v -> v.setMedicineId(logicM.getMedicineByFullName(v.getName()).getId()));
 
         logicS.insertSendingAmounts(listSA);
 
         logicS.close();
         logicM.close();
+        logicB.close();
+        logicSupply.close();
     }
 
 
@@ -257,6 +293,6 @@ public class GetSendActivity extends AppCompatActivity {
             tableLayoutSupplies.addView(tableRow);
         }
     }
-    
-    
+
+
 }
