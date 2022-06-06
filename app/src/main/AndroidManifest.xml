@@ -15,6 +15,9 @@
         android:theme="@style/Theme.PharmacyStorage"
         tools:targetApi="31">
         <activity
+            android:name=".activities.MedicineListActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.CheckSupplyActivity"
             android:exported="false" />
         <activity

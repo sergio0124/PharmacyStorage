@@ -23,4 +23,12 @@
         android:layout_weight="1"
         android:text="@string/button_manufacturer_text" />
 
+    <Button
+        android:id="@+id/button_to_medicines_activity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_weight="1"
+        android:text="@string/button_medicines_text"/>
+
 </LinearLayout>

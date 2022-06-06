@@ -44,4 +44,6 @@
     <string name="DateString">Выберите дату окончания срока годности</string>
     <string name="ChooseDateAction">"Выберите дату "</string>
     <string name="button_report_text">Отчет</string>
+    <string name="button_search_text">Поиск</string>
+    <string name="button_medicines_text">Лекарства на складе</string>
 </resources>

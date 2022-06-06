@@ -85,8 +85,8 @@ public class GetSupplyActivity extends AppCompatActivity {
         acceptSupply.setOnClickListener(v -> {
 
             SaveSupply();
-            DeleteRequest();
             SendMessage();
+            DeleteRequest();
         });
         cancelButton = findViewById(R.id.button_cancel);
         cancelButton.setOnClickListener(v -> {
@@ -123,8 +123,8 @@ public class GetSupplyActivity extends AppCompatActivity {
         String sEmail = storageModel.getEmail();
         String sPassword = storageModel.getEmailPassword();
 
-        JSONHelper<RequestAmount> jsonHelper = new JSONHelper<>();
-        jsonHelper.exportToJSON(this, requestAmounts);
+        JSONHelper<SupplyAmount> jsonHelper = new JSONHelper<>();
+        jsonHelper.exportToJSON(this, supplyAmounts);
         String path = this.getFileStreamPath(jsonHelper.getPath()).getAbsolutePath();
 
         logicR.close();
@@ -144,7 +144,7 @@ public class GetSupplyActivity extends AppCompatActivity {
         model.setStorageId(userId);
         logicS.insert(model);
 
-        SupplyModel supplyModel = logicS.getFilteredByStorageList(userId).get(0);
+        SupplyModel supplyModel = logicS.getFilteredByStorageList(userId).get(logicS.getFilteredByStorageList(userId).size() - 1);
         List<SupplyAmount> listSA = supplyAmounts.stream().filter(v -> !v.getState().contains("Брак")).collect(Collectors.toList());
         listSA.stream().forEach(v -> v.setSupplyId(supplyModel.getId()));
         listSA.stream().forEach(v -> v.setMedicineId( logicM.getMedicineByFullName(v.getName()).getId()));
@@ -207,13 +207,15 @@ public class GetSupplyActivity extends AppCompatActivity {
             textViewStatus.setTextSize(16);
             textViewStatus.setText(supplyAmount.getState());
             if (supplyAmount.getState().contains("Подтверждено")) {
+                textViewStatus.setTextColor(Color.WHITE);
                 textViewStatus.setBackgroundColor(Color.GREEN);
             } else if (supplyAmount.getState().contains("Недостача")) {
                 textViewStatus.setBackgroundColor(Color.YELLOW);
+                textViewStatus.setTextColor(Color.BLACK);
             } else if (supplyAmount.getState().contains("Брак")) {
+                textViewStatus.setTextColor(Color.BLACK);
                 textViewStatus.setBackgroundColor(Color.RED);
             }
-            textViewStatus.setTextColor(Color.WHITE);
             textViewStatus.setGravity(Gravity.CENTER);
 
             TextView textViewName = new TextView(this);

@@ -9,6 +9,7 @@ public class MedicineModel implements Serializable {
     int Dosage;
     String Form;
     int ManufacturerId = 0;
+    int QuantityOnStorage = 0;
 
     public MedicineModel(int id, String name, int dosage, String form, int manufacturerId) {
         Id = id;
@@ -25,6 +26,14 @@ public class MedicineModel implements Serializable {
         Name = name;
         Dosage = dosage;
         Form = form;
+    }
+
+    public int getQuantityOnStorage() {
+        return QuantityOnStorage;
+    }
+
+    public void setQuantityOnStorage(int quantityOnStorage) {
+        QuantityOnStorage = quantityOnStorage;
     }
 
     public void setId(int id) {
