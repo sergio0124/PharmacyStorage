@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.example.pharmacystorage.database.DatabaseHelper;
+import com.example.pharmacystorage.models.RequestAmount;
+import com.example.pharmacystorage.models.SendingAmount;
 import com.example.pharmacystorage.models.SendingModel;
 
 import java.text.SimpleDateFormat;
@@ -23,8 +25,9 @@ public class SendingLogic {
     final String COLUMN_DATE = "Date";
     final String COLUMN_STORAGE_ID = "StorageId";
     final String COLUMN_PHARMACY_ID = "PharmacyId";
+    final String COLUMN_IS_SENT = "IsSent";
 
-    final SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
+    final SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
 
     public SendingLogic(Context context) {
         sqlHelper = new DatabaseHelper(context);
@@ -58,6 +61,7 @@ public class SendingLogic {
             obj.setDate(cal);
             obj.setStorageId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_STORAGE_ID)));
             obj.setPharmacyId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_PHARMACY_ID)));
+            obj.setIsSent(cursor.getInt((byte) cursor.getColumnIndex(COLUMN_IS_SENT)));
 
             list.add(obj);
             cursor.moveToNext();
@@ -97,6 +101,7 @@ public class SendingLogic {
         obj.setDate(cal);
         obj.setStorageId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_STORAGE_ID)));
         obj.setPharmacyId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_PHARMACY_ID)));
+        obj.setIsSent(cursor.getInt((byte) cursor.getColumnIndex(COLUMN_IS_SENT)));
 
         return obj;
     }
@@ -106,6 +111,7 @@ public class SendingLogic {
         content.put(COLUMN_DATE,sdf.format(model.getDate()));
         content.put(COLUMN_STORAGE_ID,model.getStorageId());
         content.put(COLUMN_PHARMACY_ID,model.getPharmacyId());
+        content.put(COLUMN_IS_SENT,model.isSent());
         if(model.getId() != 0){
             content.put(COLUMN_ID, model.getId());
         }
@@ -117,6 +123,7 @@ public class SendingLogic {
         content.put(COLUMN_DATE, sdf.format(model.getDate()));
         content.put(COLUMN_STORAGE_ID,model.getStorageId());
         content.put(COLUMN_PHARMACY_ID,model.getPharmacyId());
+        content.put(COLUMN_IS_SENT,model.isSent());
         String where = COLUMN_ID + " = " + model.getId();
         db.update(TABLE,content,where,null);
     }
@@ -124,5 +131,44 @@ public class SendingLogic {
     public void delete(int id) {
         String where = COLUMN_ID+" = "+id;
         db.delete(TABLE,where,null);
+    }
+
+    public void insertSendingAmounts(List<SendingAmount> models) {
+        models.stream().forEach(v->{
+            ContentValues content = new ContentValues();
+            content.put("SendingId", v.getSendingId());
+            content.put("MedicineId", v.getMedicineId());
+            content.put("Cost", v.getCost());
+            content.put("Quantity", v.getQuantity());
+            db.insert("Sending_Medicine", null, content);
+        });
+
+    }
+
+    public List<SendingAmount> getSendingAmountsById(int sendingId) {
+
+        Cursor cursor = db.rawQuery("SELECT Id, SendingId, Cost, MedicineId, Quantity, Name, Dosage, " +
+                "Form FROM Sending_Medicine JOIN Medicine ON MedicineId = Medicine.Id AND SendingId = " + sendingId, null);
+        ArrayList<SendingAmount> list = new ArrayList<>();
+        if (!cursor.moveToFirst()) {
+            return list;
+        }
+        do {
+            SendingAmount obj = new SendingAmount();
+
+            obj.setId(cursor.getInt((int) cursor.getColumnIndex("Id")));
+            obj.setSendingId(cursor.getInt((int) cursor.getColumnIndex("SendingId")));
+            obj.setCost(cursor.getInt((int) cursor.getColumnIndex("Cost")));
+            obj.setQuantity(cursor.getInt((int) cursor.getColumnIndex("Quantity")));
+            obj.setMedicineId(cursor.getInt((int) cursor.getColumnIndex("MedicineId")));
+            String name = cursor.getString((int) cursor.getColumnIndex("Name")) + ", " +
+                    cursor.getString((int) cursor.getColumnIndex("Dosage")) + ", " +
+                    cursor.getString((int) cursor.getColumnIndex("Form"));
+            obj.setName(name);
+
+            list.add(obj);
+            cursor.moveToNext();
+        } while (!cursor.isAfterLast());
+        return list;
     }
 }

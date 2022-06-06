@@ -11,6 +11,7 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.pharmacystorage.R;
+import com.example.pharmacystorage.database.logics.BasketLogic;
 import com.example.pharmacystorage.database.logics.StorageLogic;
 import com.example.pharmacystorage.helper_models.Validators;
 import com.example.pharmacystorage.models.StorageModel;
@@ -34,6 +35,7 @@ public class RegisterActivity extends AppCompatActivity {
     EditText editTextEmail;
     EditText editTextEmailPassword;
     StorageLogic logic;
+    BasketLogic logicBasket;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -48,6 +50,7 @@ public class RegisterActivity extends AppCompatActivity {
         editTextEmailPassword = findViewById(R.id.edit_text_email_password);
 
         logic = new StorageLogic(this);
+        logicBasket = new BasketLogic(this);
 
         buttonRegister.setOnClickListener(
                 v -> {
@@ -70,6 +73,7 @@ public class RegisterActivity extends AppCompatActivity {
                     model.setPassword(hashPassword(model.getPassword(), salt).get().toString());
 
                     logic.open();
+                    logicBasket.open();
 
                     List<StorageModel> storages = logic.getFullList();
 
@@ -79,9 +83,11 @@ public class RegisterActivity extends AppCompatActivity {
                             return;
                         }
                     }
+                    int userId = logic.getFullList().get(logic.getFullList().size()-1).getId();
+                    logicBasket.createBasket(userId);
 
                     logic.insert(model);
-                    logic.close();
+                    logicBasket.close();
 
                     this.finish();
                     Intent intent = new Intent(RegisterActivity.this, EnterActivity.class);

@@ -8,6 +8,9 @@ public class SendingModel {
     private Calendar Date;
     private int StorageId;
     private int PharmacyId;
+    private String PharmacyName;
+    int isSent = 0;
+
 
     public int getId() {
         return Id;
@@ -39,5 +42,26 @@ public class SendingModel {
 
     public void setPharmacyId(int pharmacyId) {
         PharmacyId = pharmacyId;
+    }
+
+    public String getPharmacyName() {
+        return PharmacyName;
+    }
+
+    public void setPharmacyName(String pharmacyName) {
+        PharmacyName = pharmacyName;
+    }
+
+    public boolean isSent() {
+        if (isSent > 0) return true;
+        return false;
+    }
+
+    public void setSent(boolean sent) {
+        if (sent) {
+            isSent = 1;
+        } else {
+            isSent = 0;
+        }
     }
 }

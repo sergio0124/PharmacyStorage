@@ -15,7 +15,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.pharmacystorage.R;
 import com.example.pharmacystorage.database.logics.RequestLogic;
+import com.example.pharmacystorage.database.logics.SendingLogic;
 import com.example.pharmacystorage.models.RequestModel;
+import com.example.pharmacystorage.models.SendingModel;
 
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
