@@ -1,6 +1,8 @@
 package com.example.pharmacystorage.models;
 
-public class RequestAmount {
+import java.io.Serializable;
+
+public class RequestAmount implements Serializable {
 
     int RequestId;
     int MedicineId;

@@ -1,5 +1,7 @@
 package com.example.pharmacystorage.activities;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -139,6 +141,44 @@ public class ClientActivity extends AppCompatActivity {
                 }
 
                 tableRow.setBackgroundColor(Color.parseColor("#FFBB86FC"));
+            });
+
+            tableRow.setOnLongClickListener(v -> {
+
+                selectedRow = tableRow;
+
+                for(int i = 0; i < tableLayoutClients.getChildCount(); i++){
+                    View view = tableLayoutClients.getChildAt(i);
+                    if (view instanceof TableRow){
+                        view.setBackgroundColor(Color.parseColor("#FF03DAC5"));
+                    }
+                }
+                tableRow.setBackgroundColor(Color.parseColor("#FFBB86FC"));
+
+                String child = ((TextView) selectedRow.getChildAt(3)).getText().toString();
+                PharmacyModel model = new PharmacyModel();
+                model.setId(Integer.parseInt(child));
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(ClientActivity.this);
+                builder.setMessage("Удалить запись?");
+                builder.setNegativeButton("Отмена", (dialog, id) -> dialog.cancel());
+
+                builder.setPositiveButton("Да",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                logic.open();
+                                logic.delete(Integer.parseInt(child));
+
+                                fillTable(Arrays.asList("Название", "Почта", "Адрес"), logic.getFilteredList(userId));
+                                dialog.dismiss();
+                                logic.close();
+                            }
+                        }).create();
+
+                AlertDialog alert = builder.create();
+                alert.show();
+                return false;
             });
 
             tableLayoutClients.addView(tableRow);
