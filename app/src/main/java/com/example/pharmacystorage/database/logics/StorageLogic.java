@@ -24,6 +24,7 @@ public class StorageLogic {
     public StorageLogic(Context context) {
         sqlHelper = new DatabaseHelper(context);
         db = sqlHelper.getWritableDatabase();
+
     }
 
     public StorageLogic open() {

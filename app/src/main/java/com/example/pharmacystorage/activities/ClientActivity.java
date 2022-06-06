@@ -1,7 +1,5 @@
 package com.example.pharmacystorage.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -12,6 +10,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.pharmacystorage.R;
 import com.example.pharmacystorage.database.logics.PharmacyLogic;
 import com.example.pharmacystorage.helper_models.ReadEmail;
@@ -19,8 +19,6 @@ import com.example.pharmacystorage.models.PharmacyModel;
 
 import java.util.Arrays;
 import java.util.List;
-
-import javax.mail.MessagingException;
 
 public class ClientActivity extends AppCompatActivity {
 
