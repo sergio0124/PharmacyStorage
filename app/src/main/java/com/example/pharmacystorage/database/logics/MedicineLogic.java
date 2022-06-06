@@ -19,7 +19,7 @@ public class MedicineLogic {
     final String COLUMN_NAME = "Name";
     final String COLUMN_DOSAGE = "Dosage";
     final String COLUMN_FORM = "Form";
-    final String COLUMN_MANUFACTURE_ID = "ManufacturerId";
+    final String COLUMN_MANUFACTURER_ID = "ManufacturerId";
 
     public MedicineLogic(Context context) {
         sqlHelper = new DatabaseHelper(context);
@@ -48,7 +48,7 @@ public class MedicineLogic {
             obj.setName(cursor.getString((int) cursor.getColumnIndex(COLUMN_NAME)));
             obj.setDosage(cursor.getInt((int) cursor.getColumnIndex(COLUMN_DOSAGE)));
             obj.setForm(cursor.getString((int) cursor.getColumnIndex(COLUMN_FORM)));
-            obj.setManufacturerId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_MANUFACTURE_ID)));
+            obj.setManufacturerId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_MANUFACTURER_ID)));
 
             list.add(obj);
             cursor.moveToNext();
@@ -58,7 +58,7 @@ public class MedicineLogic {
 
     public List<MedicineModel> getFilteredList(int manufactureId) {
         Cursor cursor = db.rawQuery("select * from " + TABLE + " where "
-                + COLUMN_MANUFACTURE_ID + " = " + manufactureId, null);
+                + COLUMN_MANUFACTURER_ID + " = " + manufactureId, null);
         List<MedicineModel> list = new ArrayList<>();
         if (!cursor.moveToFirst()) {
             return list;
@@ -83,7 +83,7 @@ public class MedicineLogic {
         obj.setName(cursor.getString((int) cursor.getColumnIndex(COLUMN_NAME)));
         obj.setDosage(cursor.getInt((int) cursor.getColumnIndex(COLUMN_DOSAGE)));
         obj.setForm(cursor.getString((int) cursor.getColumnIndex(COLUMN_FORM)));
-        obj.setManufacturerId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_MANUFACTURE_ID)));
+        obj.setManufacturerId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_MANUFACTURER_ID)));
 
         return obj;
     }
@@ -93,7 +93,7 @@ public class MedicineLogic {
         content.put(COLUMN_NAME, model.getName());
         content.put(COLUMN_DOSAGE, model.getDosage());
         content.put(COLUMN_FORM, model.getForm());
-        content.put(COLUMN_MANUFACTURE_ID, model.getManufacturerId());
+        content.put(COLUMN_MANUFACTURER_ID, model.getManufacturerId());
         if (model.getId() != 0) {
             content.put(COLUMN_ID, model.getId());
         }
@@ -105,7 +105,7 @@ public class MedicineLogic {
         content.put(COLUMN_NAME, model.getName());
         content.put(COLUMN_DOSAGE, model.getDosage());
         content.put(COLUMN_FORM, model.getForm());
-        content.put(COLUMN_MANUFACTURE_ID, model.getManufacturerId());
+        content.put(COLUMN_MANUFACTURER_ID, model.getManufacturerId());
         String where = COLUMN_ID + " = " + model.getId();
         db.update(TABLE, content, where, null);
     }
@@ -135,9 +135,37 @@ public class MedicineLogic {
         model.setName(cursor.getString((int) cursor.getColumnIndex(COLUMN_NAME)));
         model.setDosage(cursor.getInt((int) cursor.getColumnIndex(COLUMN_DOSAGE)));
         model.setForm(cursor.getString((int) cursor.getColumnIndex(COLUMN_FORM)));
-        model.setManufacturerId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_MANUFACTURE_ID)));
+        model.setManufacturerId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_MANUFACTURER_ID)));
 
         return model;
+
+    }
+
+    public List<MedicineModel> getFilteredListWithQuantityByStorage(int userId){
+
+        Cursor cursor = db.rawQuery("SELECT SUM(Medicine_Supply.CurrentQuantity) QuantitySum, Medicine.Name, Medicine.Id, Dosage, Form, Manufacturer.Id ManufacturerId FROM Medicine JOIN Manufacturer ON ManufacturerId = Manufacturer.Id" +
+                " JOIN Storage ON Manufacturer.StorageId = Storage.Id AND Storage.Id = " + userId +
+                " JOIN Medicine_Supply ON MedicineId = Medicine.Id " +
+                " GROUP BY Medicine.Id", null);
+
+        List<MedicineModel> list = new ArrayList<>();
+        if (!cursor.moveToFirst()) {
+            return list;
+        }
+        do {
+            MedicineModel model = new MedicineModel();
+            model.setId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_ID)));
+            model.setName(cursor.getString((int) cursor.getColumnIndex(COLUMN_NAME)));
+            model.setDosage(cursor.getInt((int) cursor.getColumnIndex(COLUMN_DOSAGE)));
+            model.setForm(cursor.getString((int) cursor.getColumnIndex(COLUMN_FORM)));
+            model.setManufacturerId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_MANUFACTURER_ID)));
+            model.setQuantityOnStorage(cursor.getInt((int) cursor.getColumnIndex("QuantitySum")));
+            list.add(model);
+            cursor.moveToNext();
+        } while (!cursor.isAfterLast());
+
+
+        return list;
 
     }
 }

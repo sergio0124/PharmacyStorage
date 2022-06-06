@@ -88,7 +88,7 @@ public class SupplyLogic {
             content.put("MedicineId", v.getMedicineId());
             content.put("Cost", v.getCost());
             sdf.setTimeZone(v.getEndDate().getTimeZone());
-            content.put(COLUMN_DATE, sdf.format(v.getEndDate().getTime()));
+            content.put("EndDate", sdf.format(v.getEndDate().getTime()));
             content.put("Quantity", v.getQuantity());
             content.put("CurrentQuantity", v.getQuantity());
             content.put("isEmpty", 0);

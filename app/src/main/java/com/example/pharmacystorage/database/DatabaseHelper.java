@@ -87,6 +87,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "\tId integer primary key autoincrement,\n" +
                 "\tDate varchar(255) not null,\n" +
                 "\tStorageId int not null,\n" +
+                "\tIsAlreadySent bit not null default ('0')," +
                 "\tFOREIGN KEY (StorageId) \n" +
                 "\tREFERENCES Storage (StorageId) ON DELETE CASCADE\n" +
                 ");\n");
