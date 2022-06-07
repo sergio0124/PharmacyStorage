@@ -60,7 +60,7 @@ public class SendingLogic {
             obj.setDate(cal);
             obj.setStorageId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_STORAGE_ID)));
             obj.setPharmacyId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_PHARMACY_ID)));
-            obj.setSent(cursor.getInt((byte) cursor.getColumnIndex(COLUMN_IS_SENT)));
+           // obj.setSent(cursor.getInt((byte) cursor.getColumnIndex(COLUMN_IS_SENT)));
 
             list.add(obj);
             cursor.moveToNext();
@@ -69,14 +69,22 @@ public class SendingLogic {
     }
 
     public List<SendingModel> getFilteredList(int pharmacyId) {
-        Cursor cursor = db.rawQuery("select * from " + TABLE + " where "
+        Cursor cursor = db.rawQuery("select * from " + TABLE + " JOIN Pharmacy ON Pharmacy.Id = PharmacyId AND "
                 + COLUMN_PHARMACY_ID + " = " + pharmacyId, null);
         List<SendingModel> list = new ArrayList<>();
         if (!cursor.moveToFirst()) {
             return list;
         }
         do {
-            SendingModel obj = getElement(cursor.getInt((int) cursor.getColumnIndex(COLUMN_ID)));
+            SendingModel obj = new SendingModel();
+            obj.setId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_ID)));Calendar cal = new GregorianCalendar();
+            try {
+                cal.setTime(sdf.parse(cursor.getString((int) cursor.getColumnIndex(COLUMN_DATE))));// all done
+            }catch (Exception ex){}
+            obj.setDate(cal);
+            obj.setStorageId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_STORAGE_ID)));
+            obj.setPharmacyId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_PHARMACY_ID)));
+            obj.setPharmacyName(cursor.getString((int) cursor.getColumnIndex("Pharmacy.Name")));
             list.add(obj);
             cursor.moveToNext();
         } while (!cursor.isAfterLast());
@@ -97,20 +105,19 @@ public class SendingLogic {
         }catch (Exception ex){}
 
         obj.setId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_ID)));
-        obj.setDate(cal);
         obj.setStorageId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_STORAGE_ID)));
         obj.setPharmacyId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_PHARMACY_ID)));
-        obj.setSent(cursor.getInt((byte) cursor.getColumnIndex(COLUMN_IS_SENT)));
+        //obj.setSent(cursor.getInt((byte) cursor.getColumnIndex(COLUMN_IS_SENT)));
 
         return obj;
     }
 
     public void insert(SendingModel model) {
         ContentValues content = new ContentValues();
-        content.put(COLUMN_DATE,sdf.format(model.getDate()));
+        content.put(COLUMN_DATE,sdf.format(model.getDate().getTime()));
         content.put(COLUMN_STORAGE_ID,model.getStorageId());
         content.put(COLUMN_PHARMACY_ID,model.getPharmacyId());
-        content.put(COLUMN_IS_SENT,model.isSent());
+        //content.put(COLUMN_IS_SENT,model.isSent());
         if(model.getId() != 0){
             content.put(COLUMN_ID, model.getId());
         }
@@ -119,10 +126,10 @@ public class SendingLogic {
 
     public void update(SendingModel model) {
         ContentValues content=new ContentValues();
-        content.put(COLUMN_DATE, sdf.format(model.getDate()));
+        content.put(COLUMN_DATE, sdf.format(model.getDate().getTime()));
         content.put(COLUMN_STORAGE_ID,model.getStorageId());
         content.put(COLUMN_PHARMACY_ID,model.getPharmacyId());
-        content.put(COLUMN_IS_SENT,model.isSent());
+       // content.put(COLUMN_IS_SENT,model.isSent());
         String where = COLUMN_ID + " = " + model.getId();
         db.update(TABLE,content,where,null);
     }
@@ -146,8 +153,8 @@ public class SendingLogic {
 
     public List<SendingAmount> getSendingAmountsById(int sendingId) {
 
-        Cursor cursor = db.rawQuery("SELECT Id, SendingId, Cost, MedicineId, Quantity, Name, Dosage, " +
-                "Form FROM Sending_Medicine JOIN Medicine ON MedicineId = Medicine.Id AND SendingId = " + sendingId, null);
+        Cursor cursor = db.rawQuery("SELECT * " +
+                " FROM Sending_Medicine JOIN Medicine ON MedicineId = Medicine.Id AND SendingId = " + sendingId, null);
         ArrayList<SendingAmount> list = new ArrayList<>();
         if (!cursor.moveToFirst()) {
             return list;
@@ -155,7 +162,7 @@ public class SendingLogic {
         do {
             SendingAmount obj = new SendingAmount();
 
-            obj.setId(cursor.getInt((int) cursor.getColumnIndex("Id")));
+            obj.setId(cursor.getInt((int) cursor.getColumnIndex("Sending_Medicine.Id")));
             obj.setSendingId(cursor.getInt((int) cursor.getColumnIndex("SendingId")));
             obj.setCost(cursor.getInt((int) cursor.getColumnIndex("Cost")));
             obj.setQuantity(cursor.getInt((int) cursor.getColumnIndex("Quantity")));

@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.example.pharmacystorage.models.RequestAmount;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -69,7 +70,8 @@ public class JSONHelper<T> {
             fileInputStream = context.openFileInput(FILE_NAME);
             streamReader = new InputStreamReader(fileInputStream);
             Gson gson = new Gson();
-            DataItems dataItems = gson.fromJson(streamReader, DataItems.class);
+            DataItems<RequestAmount> dataItems = gson.fromJson(streamReader, (new TypeToken<DataItems<RequestAmount>>() {
+            }).getType());
             if (dataItems != null) return dataItems.getCollection();
             else return null;
         } catch (IOException ex) {

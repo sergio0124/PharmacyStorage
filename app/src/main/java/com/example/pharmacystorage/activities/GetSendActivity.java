@@ -93,7 +93,7 @@ public class GetSendActivity extends AppCompatActivity {
         });
         tableLayoutSupplies = findViewById(R.id.tableLayoutSupply);
 
-        sendingId = getIntent().getExtras().getInt("requestId");
+        sendingId = getIntent().getExtras().getInt("sendingId");
         userId = getIntent().getExtras().getInt("userId");
         logicS = new SendingLogic(this);
         logicM = new MedicineLogic(this);
@@ -102,13 +102,14 @@ public class GetSendActivity extends AppCompatActivity {
         logicStorage = new StorageLogic(this);
         logicP = new PharmacyLogic(this);
 
-
+        logicS.open();
         sendingAmountAtStart = logicS.getSendingAmountsById(sendingId);
         sendingAmountAtStart.stream().forEach(v -> {
-            SendingAmount sending = new SendingAmount();
-
-            sendingAmount.add(new SendingAmount(v.getMedicineId(), v.getSendingId(), v.getQuantity(), v.getCost(), v.getName(), "Ожидание"));
+            SendingAmount sending = new SendingAmount(v.getMedicineId(), v.getSendingId(), v.getQuantity(), v.getCost(), v.getName(), "Ожидание");
+            sending.setId(v.getId());
+            sendingAmount.add(sending);
         });
+        logicS.close();
 
         LoadData();
     }
@@ -146,7 +147,7 @@ public class GetSendActivity extends AppCompatActivity {
         logicSupply.open();
 
         SendingModel model = logicS.getElement(sendingId);
-        model.setSent(true);
+        model.setSent(1);
         logicS.update(model);
 
         List<SendingAmount> listSA = sendingAmount;
@@ -158,13 +159,12 @@ public class GetSendActivity extends AppCompatActivity {
             int i = 0;
             List<SupplyAmount> supplyAmountsByMedicine = supplyAmounts.stream().filter(rec -> rec.getMedicineId() == v.getMedicineId()).collect(Collectors.toList());
             while (count > 0) {
-                SupplyAmount supplyAmount = supplyAmountsByMedicine.get(supplyAmountsByMedicine.size() -1 -i);
+                SupplyAmount supplyAmount = supplyAmountsByMedicine.get(supplyAmountsByMedicine.size() - 1 - i);
                 supplyAmount.setOldQuantity(supplyAmount.getQuantity());
-                if(supplyAmount.getQuantity()>count){
-                    supplyAmount.setQuantity(supplyAmount.getQuantity()-count);
+                if (supplyAmount.getQuantity() > count) {
+                    supplyAmount.setQuantity(supplyAmount.getQuantity() - count);
                     count = 0;
-                }
-                else {
+                } else {
                     supplyAmount.setQuantity(0);
                     count = count - supplyAmount.getQuantity();
                 }
@@ -197,8 +197,9 @@ public class GetSendActivity extends AppCompatActivity {
     }
 
     void fillTable() {
-        tableLayoutSupplies.removeAllViews();
 
+
+        tableLayoutSupplies.removeAllViews();
         TableRow tableRowTitles = new TableRow(this);
 
         for (String title : titles) {

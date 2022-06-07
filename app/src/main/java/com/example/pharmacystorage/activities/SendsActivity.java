@@ -25,6 +25,7 @@ import com.example.pharmacystorage.models.RequestModel;
 import com.example.pharmacystorage.models.SendingAmount;
 import com.example.pharmacystorage.models.SendingModel;
 import com.example.pharmacystorage.models.StorageModel;
+import com.google.gson.internal.LinkedTreeMap;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -50,7 +51,7 @@ public class SendsActivity extends AppCompatActivity {
     int userId;
     TableLayout tableLayoutSending;
     final SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy", Locale.ENGLISH);
-    List<String> titles = Arrays.asList("Дата", "Предприятие");
+    List<String> titles = Arrays.asList("Аптека", "Дата запроса");
     Map<String, List<RequestAmount>> stringListMap = new HashMap<>();
 
     @Override
@@ -109,19 +110,21 @@ public class SendsActivity extends AppCompatActivity {
         fillTable();
 
         Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
+        timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
 
-                if(stringListMap.size()>0){
+                if (stringListMap.size() > 0) {
                     LoadSendings();
-                    fillTable();
-                    Toast.makeText(button_cancel.getContext(), "Message Sent", Toast.LENGTH_SHORT).show();
                     timer.cancel();
+                    runOnUiThread(() -> {
+                        fillTable();
+                        Toast.makeText(button_cancel.getContext(), "Message Sent", Toast.LENGTH_SHORT).show();
+                    });
                 }
 
             }
-        }, 2*1000);
+        }, 1000, 1000);
     }
 
 
@@ -149,27 +152,37 @@ public class SendsActivity extends AppCompatActivity {
             int sendingId = logicS.getFullList().get(logicS.getFullList().size() - 1).getId();
 
             List<SendingAmount> sendingAmounts = new ArrayList<>();
-            entry.getValue().stream()
-                    .forEach(v -> {
-                        int medicineId = logicM.getMedicineByFullName(v.getName()).getId();
-                        v.setMedicineId(medicineId);
-                        SendingAmount tmpSending = new SendingAmount(v);
-                        tmpSending.setSendingId(sendingId);
-                        sendingAmounts.add(tmpSending);
-                    });
-
+            for (Object v : entry.getValue()
+            ) {
+                if (v instanceof LinkedTreeMap) {
+                    LinkedTreeMap<String, Object> data = (LinkedTreeMap) v;
+                    int medicineId = logicM.getMedicineByFullName((String) data.get("Name")).getId();
+                    RequestAmount v_data = new RequestAmount();
+                    v_data.setName((String) data.get("Name"));
+                    v_data.setQuantity(((Double) data.get("Quantity")).intValue());
+                    v_data.setCost(((Double) data.get("Cost")).intValue());
+                    v_data.setMedicineId(((Double) data.get("MedicineId")).intValue());
+                    v_data.setRequestId(((Double) data.get("RequestId")).intValue());
+                    v_data.setMedicineId(medicineId);
+                    SendingAmount tmpSending = new SendingAmount(v_data);
+                    tmpSending.setSendingId(sendingId);
+                    sendingAmounts.add(tmpSending);
+                }
+            }
             logicS.insertSendingAmounts(sendingAmounts);
         });
 
-        logicS.open();
-        logicM.open();
+        logicS.close();
+        logicM.close();
         logicP.close();
 
     }
 
 
     void fillTable() {
+        logicS.open();
         List<SendingModel> sendingModels = logicS.getFilteredList(userId);
+        logicS.close();
         tableLayoutSending.removeAllViews();
 
         TableRow tableRowTitles = new TableRow(this);
