@@ -103,7 +103,7 @@ public class JSONHelper<T> {
 
             streamReader = new InputStreamReader(is);
             Gson gson = new Gson();
-            DataItems dataItems = gson.fromJson(streamReader, DataItems.class);
+            DataItems<RequestAmount> dataItems = gson.fromJson(streamReader, new DataItems<RequestAmount>().getClass());
             if (dataItems != null) return dataItems.getCollection();
             else return null;
         } finally {

@@ -83,10 +83,11 @@ public class RegisterActivity extends AppCompatActivity {
                             return;
                         }
                     }
+                    logic.insert(model);
                     int userId = logic.getFullList().get(logic.getFullList().size()-1).getId();
                     logicBasket.createBasket(userId);
 
-                    logic.insert(model);
+
                     logicBasket.close();
 
                     this.finish();

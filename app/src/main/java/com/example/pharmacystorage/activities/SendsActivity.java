@@ -139,7 +139,7 @@ public class SendsActivity extends AppCompatActivity {
         logicS.open();
         logicM.open();
 
-        stringListMap.entrySet().stream().forEachOrdered((entry) -> {
+        stringListMap.entrySet().stream().forEach((entry) -> {
 
             SendingModel sendingModel = new SendingModel();
             PharmacyModel pharmacyModel = logicP.getElement(entry.getKey());
@@ -177,6 +177,8 @@ public class SendsActivity extends AppCompatActivity {
         logicP.close();
 
     }
+
+
 
 
     void fillTable() {

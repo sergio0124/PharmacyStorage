@@ -1,17 +1,16 @@
 package com.example.pharmacystorage.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TableRow;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.pharmacystorage.R;
 import com.example.pharmacystorage.database.logics.PharmacyLogic;
 import com.example.pharmacystorage.helper_models.Validators;
-import com.example.pharmacystorage.models.ManufacturerModel;
 import com.example.pharmacystorage.models.PharmacyModel;
 
 public class CreateClientActivity extends AppCompatActivity {
@@ -56,6 +55,7 @@ public class CreateClientActivity extends AppCompatActivity {
                     for (PharmacyModel mod : logic.getFullList()){
                         if (mod.getEmail().equals(model.getEmail()) && model.getId() != mod.getId()){
                             errorDialog("Такая почта уже есть");
+                            return;
                         }
                     }
 
