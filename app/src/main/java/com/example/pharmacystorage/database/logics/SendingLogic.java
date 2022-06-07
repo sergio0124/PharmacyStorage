@@ -60,7 +60,7 @@ public class SendingLogic {
             obj.setDate(cal);
             obj.setStorageId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_STORAGE_ID)));
             obj.setPharmacyId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_PHARMACY_ID)));
-           // obj.setSent(cursor.getInt((byte) cursor.getColumnIndex(COLUMN_IS_SENT)));
+            obj.setSent(cursor.getInt((byte) cursor.getColumnIndex(COLUMN_IS_SENT)));
 
             list.add(obj);
             cursor.moveToNext();
@@ -107,7 +107,7 @@ public class SendingLogic {
         obj.setId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_ID)));
         obj.setStorageId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_STORAGE_ID)));
         obj.setPharmacyId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_PHARMACY_ID)));
-        //obj.setSent(cursor.getInt((byte) cursor.getColumnIndex(COLUMN_IS_SENT)));
+        obj.setSent(cursor.getInt((byte) cursor.getColumnIndex(COLUMN_IS_SENT)));
 
         return obj;
     }
@@ -117,7 +117,7 @@ public class SendingLogic {
         content.put(COLUMN_DATE,sdf.format(model.getDate().getTime()));
         content.put(COLUMN_STORAGE_ID,model.getStorageId());
         content.put(COLUMN_PHARMACY_ID,model.getPharmacyId());
-        //content.put(COLUMN_IS_SENT,model.isSent());
+        content.put(COLUMN_IS_SENT,model.isSent());
         if(model.getId() != 0){
             content.put(COLUMN_ID, model.getId());
         }
@@ -129,7 +129,7 @@ public class SendingLogic {
         content.put(COLUMN_DATE, sdf.format(model.getDate().getTime()));
         content.put(COLUMN_STORAGE_ID,model.getStorageId());
         content.put(COLUMN_PHARMACY_ID,model.getPharmacyId());
-       // content.put(COLUMN_IS_SENT,model.isSent());
+        content.put(COLUMN_IS_SENT,model.isSent());
         String where = COLUMN_ID + " = " + model.getId();
         db.update(TABLE,content,where,null);
     }
