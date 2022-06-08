@@ -1,5 +1,6 @@
 package com.example.pharmacystorage.activities;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -32,12 +34,11 @@ import com.example.pharmacystorage.models.StorageModel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 public class CreateRequestActivity extends AppCompatActivity {
-
-    final private String LETTER_SUBJECT = "Request to medicines";
 
     TableRow selectedRow;
     Spinner spinner_manufacturer;
@@ -86,8 +87,8 @@ public class CreateRequestActivity extends AppCompatActivity {
             int count = Integer.parseInt(edit_count.getText().toString());
             int cost = Integer.parseInt(edit_cost.getText().toString());
 
-            for (RequestAmount model: requestAmounts) {
-                if (model.getMedicineId() == item.getId() && item.getId() != 0){
+            for (RequestAmount model : requestAmounts) {
+                if (model.getMedicineId() == item.getId() && item.getId() != 0) {
                     model.setCost(cost);
                     model.setQuantity(count);
                     fillTable();
@@ -105,7 +106,7 @@ public class CreateRequestActivity extends AppCompatActivity {
         });
 
         button_send.setOnClickListener(v -> {
-            if(requestAmounts.size()>0){
+            if (requestAmounts.size() > 0) {
                 try {
                     SaveRequest();
                     SendMessage();
@@ -118,14 +119,12 @@ public class CreateRequestActivity extends AppCompatActivity {
             }
         });
 
-        button_cancel.setOnClickListener(v -> {
-            finish();
-        });
+        button_cancel.setOnClickListener(v -> finish());
 
         LoadData();
     }
 
-    private void SaveRequest(){
+    private void SaveRequest() {
         //Save Request for first
         //Save Request_Medicines
         logicR.open();
@@ -137,14 +136,14 @@ public class CreateRequestActivity extends AppCompatActivity {
         requestModel.setStorageId(userId);
         logicR.insert(requestModel);
 
-        int requestId = logicR.getFullList().get(logicR.getFullList().size()-1).getId();
-        requestAmounts.stream().forEach(v->v.setRequestId(requestId));
+        int requestId = logicR.getFullList().get(logicR.getFullList().size() - 1).getId();
+        requestAmounts.forEach(v -> v.setRequestId(requestId));
 
         logicR.insertRequestMedicines(requestAmounts);
         logicR.close();
     }
 
-    private void SendMessage(){
+    private void SendMessage() {
         ManufacturerModel item = (ManufacturerModel) spinner_manufacturer.getItemAtPosition(spinner_manufacturer.getSelectedItemPosition());
         String Email = item.getEmail();
 
@@ -156,6 +155,7 @@ public class CreateRequestActivity extends AppCompatActivity {
         jsonHelper.exportToJSON(this, requestAmounts);
         String path = this.getFileStreamPath(jsonHelper.getPath()).getAbsolutePath();
 
+        String LETTER_SUBJECT = "Request to medicines";
         JavaMailApi javaMailAPI = new JavaMailApi(this, Email, LETTER_SUBJECT, "", sEmail, sPassword, path);
         javaMailAPI.execute();
     }
@@ -163,11 +163,10 @@ public class CreateRequestActivity extends AppCompatActivity {
     private void LoadData() {
 
         logic.open();
-        List<ManufacturerModel> spinnerArray = new ArrayList<ManufacturerModel>();
-        spinnerArray.addAll(logic.getFilteredList(userId));
+        List<ManufacturerModel> spinnerArray = new ArrayList<>(logic.getFilteredList(userId));
         logic.close();
 
-        ArrayAdapter<ManufacturerModel> adapter = new ArrayAdapter<ManufacturerModel>(
+        ArrayAdapter<ManufacturerModel> adapter = new ArrayAdapter<>(
                 this, android.R.layout.simple_spinner_item, spinnerArray);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner_manufacturer.setAdapter(adapter);
@@ -175,14 +174,13 @@ public class CreateRequestActivity extends AppCompatActivity {
         AdapterView.OnItemSelectedListener itemSelectedListener = new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if(iid==0){
+                if (iid == 0) {
                     ManufacturerModel item = (ManufacturerModel) parent.getItemAtPosition(position);
                     requestAmounts.clear();
                     fillTable();
                     logicM.open();
 
-                    List<MedicineModel> spinnerArrayMeds = new ArrayList<>();
-                    spinnerArrayMeds.addAll(logicM.getFilteredList(item.getId()));
+                    List<MedicineModel> spinnerArrayMeds = new ArrayList<>(logicM.getFilteredList(item.getId()));
                     ArrayAdapter<MedicineModel> adapterMeds = new ArrayAdapter<>(
                             CreateRequestActivity.this, android.R.layout.simple_spinner_item, spinnerArrayMeds);
                     adapterMeds.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -198,7 +196,7 @@ public class CreateRequestActivity extends AppCompatActivity {
         };
         spinner_manufacturer.setOnItemSelectedListener(itemSelectedListener);
 
-        if(iid >0){
+        if (iid > 0) {
             button_add.setVisibility(View.INVISIBLE);
             button_send.setVisibility(View.INVISIBLE);
             logicR.open();
@@ -207,7 +205,7 @@ public class CreateRequestActivity extends AppCompatActivity {
             RequestModel requestModel = logicR.getElement(iid);
             ManufacturerModel manufacturerModel = logic.getElement(requestModel.getManufacturerId());
             ArrayAdapter<String> adapterNoChoose = new ArrayAdapter<>(
-                    CreateRequestActivity.this, android.R.layout.simple_spinner_item, Arrays.asList(manufacturerModel.getName()));
+                    CreateRequestActivity.this, android.R.layout.simple_spinner_item, Collections.singletonList(manufacturerModel.getName()));
             spinner_manufacturer.setAdapter(adapterNoChoose);
             spinner_manufacturer.setEnabled(false);
             spinner_medicine.setAdapter(null);
@@ -285,6 +283,39 @@ public class CreateRequestActivity extends AppCompatActivity {
                 }
 
                 tableRow.setBackgroundColor(Color.parseColor("#FFBB86FC"));
+            });
+
+            tableRow.setOnLongClickListener(v -> {
+                if (userId != 0) {
+                    Toast.makeText(this, "Нельзя удалять записи при просмотре", Toast.LENGTH_LONG).show();
+                    return false;
+                }
+
+                selectedRow = tableRow;
+
+                for (int i = 0; i < tableLayoutMedicines.getChildCount(); i++) {
+                    View view = tableLayoutMedicines.getChildAt(i);
+                    if (view instanceof TableRow) {
+                        view.setBackgroundColor(Color.parseColor("#FF03DAC5"));
+                    }
+                }
+                tableRow.setBackgroundColor(Color.parseColor("#FFBB86FC"));
+
+                String fullNameField = ((TextView) selectedRow.getChildAt(0)).getText().toString();
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("Удалить запись?");
+                builder.setNegativeButton("Отмена", (dialog, id) -> dialog.cancel());
+
+                builder.setPositiveButton("Да",
+                        (dialog, which) -> {
+                            requestAmounts.removeIf(rec -> rec.getName().contains(fullNameField));
+                            fillTable();
+                        }).create();
+
+                AlertDialog alert = builder.create();
+                alert.show();
+                return false;
             });
 
             tableLayoutMedicines.addView(tableRow);

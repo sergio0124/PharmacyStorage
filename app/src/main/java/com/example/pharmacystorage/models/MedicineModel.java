@@ -1,6 +1,7 @@
 package com.example.pharmacystorage.models;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class MedicineModel implements Serializable {
 
@@ -79,5 +80,18 @@ public class MedicineModel implements Serializable {
     @Override
     public String toString() {
         return Name + ", " + Dosage + "мл, " + Form;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MedicineModel that = (MedicineModel) o;
+        return Dosage == that.Dosage && Objects.equals(Name, that.Name) && Objects.equals(Form, that.Form);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(Name, Dosage, Form);
     }
 }

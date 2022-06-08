@@ -79,8 +79,9 @@ public class JavaMailApi extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... params) {
         Properties props = new Properties();
+        String host = "smtp." + sEmail.split("[@]*", 100)[1];
 
-        props.put("mail.smtp.host", "smtp.yandex.ru");
+        props.put("mail.smtp.host", host);
         props.put("mail.smtp.socketFactory.port", "465");
         props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
         props.put("mail.smtp.auth", "true");

@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -27,6 +28,7 @@ import com.example.pharmacystorage.models.MedicineModel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CreateManufacturerActivity extends AppCompatActivity {
 
@@ -90,6 +92,10 @@ public class CreateManufacturerActivity extends AppCompatActivity {
                             fillTable(Arrays.asList("Название", "Дозировка", "Форма выпуска"), medicines);
                             return;
                         }
+                    }
+                    if(medicines.stream().filter(v->v.equals(model)).count() > 0){
+                        errorDialog("Такой медикамент уже существует");
+                        return;
                     }
                     medicines.add(model);
                     fillTable(Arrays.asList("Название", "Дозировка", "Форма выпуска"), medicines);
@@ -242,7 +248,9 @@ public class CreateManufacturerActivity extends AppCompatActivity {
 
                     logicMed.close();
                 }
-
+                else {
+                    Toast.makeText(this, "Нельзя изменять несохранённые лекарства", Toast.LENGTH_LONG).show();
+                }
 
             });
 
@@ -258,27 +266,30 @@ public class CreateManufacturerActivity extends AppCompatActivity {
                 }
                 tableRow.setBackgroundColor(Color.parseColor("#FFBB86FC"));
 
-                String child = ((TextView) selectedRow.getChildAt(3)).getText().toString();
-                ManufacturerModel model = new ManufacturerModel();
-                model.setId(Integer.parseInt(child));
+                String idField = ((TextView) selectedRow.getChildAt(3)).getText().toString();
+                String formField = ((TextView) selectedRow.getChildAt(2)).getText().toString();
+                String dosageField = ((TextView) selectedRow.getChildAt(1)).getText().toString();
+                String nameField = ((TextView) selectedRow.getChildAt(0)).getText().toString();
+                MedicineModel model = new MedicineModel();
+                model.setId(Integer.parseInt(idField));
+                model.setDosage(Integer.parseInt(dosageField));
+                model.setForm(formField);
+                model.setName(nameField);
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(CreateManufacturerActivity.this);
                 builder.setMessage("Удалить запись?");
                 builder.setNegativeButton("Отмена", (dialog, id) -> dialog.cancel());
 
                 builder.setPositiveButton("Да",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                logicMed.open();
-                                logicMed.delete(Integer.parseInt(child));
-                                medicines.clear();
-                                medicines.addAll(logicMed.getFilteredList(id));
+                        (dialog, which) -> {
+                            logicMed.open();
+                            logicMed.delete(Integer.parseInt(idField));
 
-                                fillTable(Arrays.asList("Название", "Почта", "Адрес"), medicines);
-                                dialog.dismiss();
-                                logicMed.close();
-                            }
+                            medicines.removeIf(rec ->rec.equals(model));
+
+                            fillTable(Arrays.asList("Название", "Почта", "Адрес"), medicines);
+                            dialog.dismiss();
+                            logicMed.close();
                         }).create();
 
                 AlertDialog alert = builder.create();

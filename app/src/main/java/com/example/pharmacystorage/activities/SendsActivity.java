@@ -156,7 +156,7 @@ public class SendsActivity extends AppCompatActivity {
             ) {
                 if (v instanceof LinkedTreeMap) {
                     LinkedTreeMap<String, Object> data = (LinkedTreeMap) v;
-                    int medicineId = logicM.getMedicineByFullName((String) data.get("Name")).getId();
+                    int medicineId = logicM.getMedicineByFullName((String) data.get("Name")).getId()  ;
                     RequestAmount v_data = new RequestAmount();
                     v_data.setName((String) data.get("Name"));
                     v_data.setQuantity(((Double) data.get("Quantity")).intValue());
