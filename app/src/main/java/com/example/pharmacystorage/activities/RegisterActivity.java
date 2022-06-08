@@ -1,6 +1,7 @@
 package com.example.pharmacystorage.activities;
 
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -36,6 +37,8 @@ public class RegisterActivity extends AppCompatActivity {
     EditText editTextEmailPassword;
     StorageLogic logic;
     BasketLogic logicBasket;
+    int userId;
+    boolean check;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -48,51 +51,104 @@ public class RegisterActivity extends AppCompatActivity {
         editTextPassword = findViewById(R.id.edit_text_password);
         editTextEmail = findViewById(R.id.edit_text_email);
         editTextEmailPassword = findViewById(R.id.edit_text_email_password);
+        userId = getIntent().getExtras().getInt("userId");
+        check = true;
 
         logic = new StorageLogic(this);
         logicBasket = new BasketLogic(this);
 
+        if (userId != 0){
+            logic.open();
+            StorageModel model = logic.getElement(userId);
+            editTextLogin.setText(model.getName());
+            editTextPassword.setText("");
+            editTextEmail.setText(model.getEmail());
+            editTextEmailPassword.setText(model.getEmailPassword());
+            logic.close();
+        }
+
         buttonRegister.setOnClickListener(
                 v -> {
+                    check = true;
+                    logic.open();
+                    StorageModel currentModel = logic.getElement(userId);
                     StorageModel model = new StorageModel(editTextLogin.getText().toString(), editTextPassword.getText().toString(),
                             editTextEmail.getText().toString(), editTextEmailPassword.getText().toString());
 
-                    // Валидация пароля
-                    if (!Validators.validatePassword(model.getPassword())){
-                        errorDialog("Пароль должен содержать цифры, строчный латинский символ, заглавный латинский символ, " +
-                                "cодержать по крайней мере один специальный символ, такой как ! @ # & ( ), пароль должен содержать не менее 4 символов и не более 20 символов.");
-                        return;
-                    }
+                    if (userId != 0){
+                        if (!editTextPassword.getText().toString().equals("")){
+                            if(verifyPassword(editTextPassword.getText().toString(), currentModel.getPassword(), salt)){
 
-                    // Валидация почты
-                    if (!Validators.validateEmail(model.getEmail())){
-                        errorDialog("Неверный формат почты");
-                        return;
-                    }
+                                edit_password_alert(currentModel, model);
 
-                    model.setPassword(hashPassword(model.getPassword(), salt).get().toString());
 
-                    logic.open();
-                    logicBasket.open();
+                            }else {
+                                logic.close();
+                                return;
+                            }
+                        } else{
+                            currentModel.setName(editTextLogin.getText().toString());
+                            currentModel.setEmail(editTextEmail.getText().toString());
+                            currentModel.setEmailPassword(editTextEmailPassword.getText().toString());
 
-                    List<StorageModel> storages = logic.getFullList();
 
-                    for (StorageModel storage : storages) {
-                        if (storage.getName().equals(model.getName()) || storage.getEmail().equals(model.getEmail())) {
-                            errorDialog("Пользователь с такими данными уже зарегестрирован");
+
+                            // Валидация почты
+                            if (!Validators.validateEmail(model.getEmail())){
+                                errorDialog("Неверный формат почты");
+                                return;
+                            }
+                            logic.update(currentModel);
+                            logic.close();
+                            Intent intent = new Intent(RegisterActivity.this, EnterActivity.class);
+                            startActivity(intent);
                             return;
                         }
+
+
+                    }else {
+                        logic.close();
+
+                        // Валидация пароля
+                        if (!Validators.validatePassword(model.getPassword())){
+                            errorDialog("Пароль должен содержать цифры, строчный латинский символ, заглавный латинский символ, " +
+                                    "cодержать по крайней мере один специальный символ, такой как ! @ # & ( ), пароль должен содержать не менее 4 символов и не более 20 символов.");
+                            return;
+                        }
+
+                        // Валидация почты
+                        if (!Validators.validateEmail(model.getEmail())){
+                            errorDialog("Неверный формат почты");
+                            return;
+                        }
+
+
+
+                        model.setPassword(hashPassword(model.getPassword(), salt).get().toString());
+
+                        logic.open();
+                        logicBasket.open();
+
+                        List<StorageModel> storages = logic.getFullList();
+
+                        for (StorageModel storage : storages) {
+                            if (storage.getName().equals(model.getName()) || storage.getEmail().equals(model.getEmail())) {
+                                errorDialog("Пользователь с такими данными уже зарегестрирован");
+                                return;
+                            }
+                        }
+                        logic.insert(model);
+                        int userId = logic.getFullList().get(logic.getFullList().size()-1).getId();
+                        logicBasket.createBasket(userId);
+
+
+                        logicBasket.close();
+
+                        this.finish();
+                        Intent intent = new Intent(RegisterActivity.this, EnterActivity.class);
+                        startActivity(intent);
                     }
-                    logic.insert(model);
-                    int userId = logic.getFullList().get(logic.getFullList().size()-1).getId();
-                    logicBasket.createBasket(userId);
 
-
-                    logicBasket.close();
-
-                    this.finish();
-                    Intent intent = new Intent(RegisterActivity.this, EnterActivity.class);
-                    startActivity(intent);
                 }
         );
     }
@@ -159,5 +215,65 @@ public class RegisterActivity extends AppCompatActivity {
         Optional optEncrypted = hashPassword(password, salt);
         if (!optEncrypted.isPresent()) return false;
         return optEncrypted.get().equals(key);
+    }
+
+    private void edit_password_alert(StorageModel currentModel, StorageModel model){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this);
+
+        alert.setTitle("Изменение пароля");
+        alert.setMessage("Введите новый пароль");
+
+// Set an EditText view to get user input
+        final EditText input = new EditText(this);
+        alert.setView(input);
+
+        alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            public void onClick(DialogInterface dialog, int whichButton) {
+                editTextPassword.setText(input.getText());
+
+                currentModel.setPassword(editTextPassword.getText().toString());
+                if(currentModel.getPassword().toString().equals("")){
+                    return;
+                }
+
+                // Валидация пароля
+                if (!Validators.validatePassword(model.getPassword())){
+                    errorDialog("Пароль должен содержать цифры, строчный латинский символ, заглавный латинский символ, " +
+                            "cодержать по крайней мере один специальный символ, такой как ! @ # & ( ), пароль должен содержать не менее 4 символов и не более 20 символов.");
+                    return;
+                }
+
+                currentModel.setPassword(hashPassword(currentModel.getPassword(), salt).get().toString());
+
+                currentModel.setName(editTextLogin.getText().toString());
+                currentModel.setEmail(editTextEmail.getText().toString());
+                currentModel.setEmailPassword(editTextEmailPassword.getText().toString());
+
+
+
+                // Валидация почты
+                if (!Validators.validateEmail(model.getEmail())){
+                    errorDialog("Неверный формат почты");
+                    return;
+                }
+                logic.update(currentModel);
+                logic.close();
+                Intent intent = new Intent(RegisterActivity.this, EnterActivity.class);
+                startActivity(intent);
+                return;
+                // Do something with value!
+            }
+        });
+
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int whichButton) {
+                editTextPassword.setText("");
+                check = false;
+                // Canceled.
+            }
+        });
+
+        alert.show();
     }
 }

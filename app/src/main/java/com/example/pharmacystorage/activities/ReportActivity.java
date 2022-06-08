@@ -1,6 +1,5 @@
 package com.example.pharmacystorage.activities;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
@@ -8,10 +7,13 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TextView;
-import com.example.pharmacystorage.R;
-import com.example.pharmacystorage.Report;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.pharmacystorage.R;
+import com.example.pharmacystorage.Report;
+import com.example.pharmacystorage.database.logics.MedicineLogic;
+import com.example.pharmacystorage.database.logics.SupplyLogic;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -40,6 +42,8 @@ public class ReportActivity extends AppCompatActivity {
 
         dateFrom.set(2021, 1, 1);
         dateTo.set(2021, 1, 1);
+
+        int userId = getIntent().getExtras().getInt("userId");
 
         String text = "Отчет по количеству продаж у каждого аптекаря в период с " + dateFrom.getTime().getDate() + " / " + dateFrom.getTime().getMonth() + " / " + (dateFrom.getTime().getYear()+ 1900) + " по " + dateTo.getTime().getDate() + " / " + dateTo.getTime().getMonth() + " / " + (dateTo.getTime().getYear()+ 1900);
         text_view_report_info.setText(text);
@@ -89,11 +93,11 @@ public class ReportActivity extends AppCompatActivity {
         button_report.setOnClickListener(
                 v -> {
                     Report report = new Report();
-              //      SaleLogic saleLogic = new SaleLogic(this);
-             //       UserLogic userLogic = new UserLogic(this);
+                    SupplyLogic supplyLogic = new SupplyLogic(this);
+                    MedicineLogic medicineLogic = new MedicineLogic(this);
 
-               //     try {
-                    //    report.generatePdf(saleLogic, userLogic, dateFrom.getTime(), dateTo.getTime());
+                    try {
+                        report.generatePdf(userId, supplyLogic, medicineLogic, dateFrom.getTime(), dateTo.getTime());
 
                         AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
                         builder1.setMessage("Файл отчета создан");
@@ -109,9 +113,9 @@ public class ReportActivity extends AppCompatActivity {
 
                         AlertDialog alert11 = builder1.create();
                         alert11.show();
-                //    } catch (IOException e) {
-               //         e.printStackTrace();
-                //    }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
         );
 

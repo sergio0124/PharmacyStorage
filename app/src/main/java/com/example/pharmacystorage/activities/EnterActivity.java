@@ -50,6 +50,7 @@ public class EnterActivity extends AppCompatActivity {
         button_to_register_activity.setOnClickListener(
                 v -> {
                     Intent intent = new Intent(EnterActivity.this, RegisterActivity.class);
+                    intent.putExtra("userId", 0);
                     startActivity(intent);
                 }
         );

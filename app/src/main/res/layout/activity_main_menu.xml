@@ -39,4 +39,20 @@
         android:layout_weight="1"
         android:text="@string/button_basket_check"/>
 
+    <Button
+        android:id="@+id/button_to_report_activity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_weight="1"
+        android:text="@string/button_report"/>
+
+    <Button
+        android:id="@+id/button_to_edit_storage_activity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_weight="1"
+        android:text="@string/button_edit_storage"/>
+
 </LinearLayout>

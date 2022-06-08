@@ -125,6 +125,35 @@ public class SupplyLogic {
         return list;
     }
 
+    public List<SupplyAmount> getSupplyAmountsBySupplyAndDate(int supplyId, long from, long to) {
+        Cursor cursor = db.rawQuery("select * from " + TABLE + " JOIN Medicine_Supply " +
+                "ON Medicine_Supply.Id = Supply.MedicineId AND Supply.Id = " + supplyId + " and " + COLUMN_DATE  + " BETWEEN " + from + " and " + to, null);
+        List<SupplyAmount> list = new ArrayList<>();
+        if (!cursor.moveToFirst()) {
+            return list;
+        }
+        do {
+
+            SupplyAmount obj = new SupplyAmount();
+            Calendar cal = new GregorianCalendar();
+            try {
+                cal.setTime(sdf.parse(cursor.getString((int) cursor.getColumnIndex(COLUMN_DATE))));
+            } catch (Exception ex) {
+            }
+
+            obj.setSupplyId(cursor.getInt((int) cursor.getColumnIndex("SupplyId")));
+            obj.setMedicineId(cursor.getInt((int) cursor.getColumnIndex("MedicineId")));
+            obj.setEndDate(cal);
+            obj.setCost(cursor.getInt((int) cursor.getColumnIndex("Cost")));
+            obj.setQuantity(cursor.getInt((int) cursor.getColumnIndex("Quantity")));
+            obj.setId(cursor.getInt((int) cursor.getColumnIndex("Id")));
+
+            list.add(obj);
+            cursor.moveToNext();
+        } while (!cursor.isAfterLast());
+        return list;
+    }
+
     public void updateSupplyAmount(SupplyAmount supplyAmount) {
 
         ContentValues content = new ContentValues();

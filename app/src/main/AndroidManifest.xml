@@ -15,10 +15,10 @@
         android:theme="@style/Theme.PharmacyStorage"
         tools:targetApi="31">
         <activity
-            android:name=".ShowBasketActivity"
+            android:name=".activities.ShowBasketActivity"
             android:exported="false" />
         <activity
-            android:name=".CheckSendingActivity"
+            android:name=".activities.CheckSendingActivity"
             android:exported="false" />
         <activity
             android:name=".activities.CreateSendActivity"

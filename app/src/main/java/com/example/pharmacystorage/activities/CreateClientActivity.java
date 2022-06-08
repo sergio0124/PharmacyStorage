@@ -30,6 +30,7 @@ public class CreateClientActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_client);
         userId = getIntent().getExtras().getInt("userId");
+        id = getIntent().getExtras().getInt("id");
 
         button_create_pharmacy = findViewById(R.id.button_save);
         button_cancel = findViewById(R.id.button_cancel);
@@ -38,6 +39,12 @@ public class CreateClientActivity extends AppCompatActivity {
         edit_text_name = findViewById(R.id.edit_text_name);
         edit_text_email = findViewById(R.id.edit_text_email);
         edit_text_address = findViewById(R.id.edit_text_address);
+
+        if(id != 0){
+            edit_text_name.setText(getIntent().getExtras().getString("name"));
+            edit_text_email.setText(getIntent().getExtras().getString("email"));
+            edit_text_address.setText(getIntent().getExtras().getString("address"));
+        }
 
         button_create_pharmacy.setOnClickListener(
                 v -> { ;

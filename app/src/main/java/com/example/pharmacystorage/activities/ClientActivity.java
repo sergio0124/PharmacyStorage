@@ -61,6 +61,7 @@ public class ClientActivity extends AppCompatActivity {
         fillTable(Arrays.asList("Название", "Почта", "Адрес"), logic.getFilteredList(userId));
         logic.close();
 
+
     }
 
     @Override
@@ -141,7 +142,25 @@ public class ClientActivity extends AppCompatActivity {
                 }
 
                 tableRow.setBackgroundColor(Color.parseColor("#FFBB86FC"));
+
+                String child = ((TextView) selectedRow.getChildAt(3)).getText().toString();
+                PharmacyModel model = new PharmacyModel();
+                model.setId(Integer.parseInt(child));
+
+                logic.open();
+
+                model = logic.getElement(model.getId());
+                Intent intent = new Intent(ClientActivity.this, CreateClientActivity.class);
+                intent.putExtra("userId", userId);
+                intent.putExtra("id", model.getId());
+                intent.putExtra("name", model.getName());
+                intent.putExtra("email", model.getEmail());
+                intent.putExtra("address", model.getAddress());
+                startActivity(intent);
+
+                logic.close();
             });
+
 
             tableRow.setOnLongClickListener(v -> {
 

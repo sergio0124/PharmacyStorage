@@ -3,6 +3,10 @@ package com.example.pharmacystorage;
 
 import android.os.Environment;
 
+import com.example.pharmacystorage.database.logics.MedicineLogic;
+import com.example.pharmacystorage.database.logics.SupplyLogic;
+import com.example.pharmacystorage.models.SupplyAmount;
+import com.example.pharmacystorage.models.SupplyModel;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
@@ -16,7 +20,7 @@ import java.util.Date;
 
 public class Report {
 
-    public void generatePdf(Date dateFrom, Date dateTo) throws IOException {
+    public void generatePdf(int storageID, SupplyLogic logicS, MedicineLogic logicM, Date dateFrom, Date dateTo) throws IOException {
 
         String pdfPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).toString();
         File file = new File(pdfPath, "report.pdf");
@@ -24,19 +28,32 @@ public class Report {
         PdfDocument pdfDocument = new PdfDocument(pdfWriter);
         Document document = new Document(pdfDocument);
 
-        Paragraph paragraph = new Paragraph("Report on the number of sales of each pharmacist for the period from " + dateFrom + " to " + dateTo);
+        Paragraph paragraph = new Paragraph("Delivery report for the period from " + dateFrom + " to " + dateTo);
 
         document.add(paragraph);
 
-        float columnWidth[] = { 200, 200 };
+        float columnWidth[] = { 200, 300 };
         Table table = new Table(columnWidth);
 
+        int supplyId = 0;
+        int medicineId = 0;
+        for(SupplyModel supplyModel : logicS.getFilteredByStorageList(storageID)) {
+            if(supplyId == 0 || supplyId != supplyModel.getId()){
+                supplyId = supplyModel.getId();
+                table.addCell(supplyModel.getDate()+"");
+            }
 
-   //     for(UserModel user : logicU.getFullList()) {
-
-   //         table.addCell("Pharmacist " + user.getLogin());
-   //         table.addCell(String.valueOf(logicS.getFilteredList(dateFrom.getTime(), dateTo.getTime(), user.getId()).size()));
-   //     }
+            for(SupplyAmount supplyAmount: logicS.getSupplyAmountsBySupplyAndDate(supplyModel.getId(), dateFrom.getTime(), dateTo.getTime())){
+                if(medicineId == 0){
+                    medicineId = supplyAmount.getId();
+                    table.addCell(supplyAmount.getName()+"");
+                    table.addCell("");
+                }
+                table.addCell(logicM.getElement(supplyAmount.getMedicineId()).getName());
+                table.addCell(supplyAmount.getCost()+"");
+                table.addCell(supplyAmount.getQuantity()+"");
+            }
+        }
 
         document.add(table);
         document.close();
