@@ -99,7 +99,7 @@ public class SupplyLogic {
 
     public List<SupplyAmount> getSupplyAmountsByStorage(int userId) {
         Cursor cursor = db.rawQuery("select * from " + TABLE + " JOIN Medicine_Supply " +
-                        "ON Medicine_Supply.Id = Supply.MedicineId AND StorageId = " + userId, null);
+                        "ON Medicine_Supply.SupplyId = Supply.Id AND StorageId = " + userId, null);
         List<SupplyAmount> list = new ArrayList<>();
         if (!cursor.moveToFirst()) {
             return list;

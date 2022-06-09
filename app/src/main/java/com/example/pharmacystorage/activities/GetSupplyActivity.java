@@ -62,12 +62,6 @@ public class GetSupplyActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_get_supply);
-        final int abTitleId = getResources().getIdentifier("action_bar_title", "id", "android");
-        findViewById(abTitleId).setOnClickListener(v -> {
-            Intent intent = new Intent(GetSupplyActivity.this, MainMenuActivity.class);
-            intent.putExtra("userId", userId);
-            startActivity(intent);
-        });
 
         mStartForResult = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -93,6 +87,7 @@ public class GetSupplyActivity extends AppCompatActivity {
             SaveSupply();
             SendMessage();
             DeleteRequest();
+            finish();
         });
         cancelButton = findViewById(R.id.button_cancel);
         cancelButton.setOnClickListener(v -> {
