@@ -58,6 +58,12 @@ public class SendsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sends);
+        final int abTitleId = getResources().getIdentifier("action_bar_title", "id", "android");
+        findViewById(abTitleId).setOnClickListener(v -> {
+            Intent intent = new Intent(SendsActivity.this, MainMenuActivity.class);
+            intent.putExtra("userId", userId);
+            startActivity(intent);
+        });
         userId = getIntent().getExtras().getInt("userId");
 
         tableLayoutSending = findViewById(R.id.tableLayoutSending);
@@ -183,7 +189,7 @@ public class SendsActivity extends AppCompatActivity {
 
     void fillTable() {
         logicS.open();
-        List<SendingModel> sendingModels = logicS.getFilteredList(userId);
+        List<SendingModel> sendingModels = logicS.getFilteredByUserIdList(userId);
         logicS.close();
         tableLayoutSending.removeAllViews();
 

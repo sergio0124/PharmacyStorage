@@ -2,13 +2,11 @@ package com.example.pharmacystorage.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -18,13 +16,11 @@ import com.example.pharmacystorage.database.logics.SendingLogic;
 import com.example.pharmacystorage.models.MedicineModel;
 import com.example.pharmacystorage.models.SendingAmount;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.stream.Collectors;
 
 public class CheckSendingActivity extends AppCompatActivity {
 
-    SendingAmount SendingAmount;
+    SendingAmount sendingAmount;
     EditText quantityEditText;
     SendingAmount databaseSending;
     MedicineModel medicineData;
@@ -40,10 +36,26 @@ public class CheckSendingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_check_sending);
 
         userId = getIntent().getExtras().getInt("userId");
+        final int abTitleId = getResources().getIdentifier("action_bar_title", "id", "android");
+        findViewById(abTitleId).setOnClickListener(v -> {
+            Intent intent = new Intent(CheckSendingActivity.this, MainMenuActivity.class);
+            intent.putExtra("userId", userId);
+            startActivity(intent);
+        });
         Intent intent = getIntent();
+
+
+        Bundle arguments = intent.getExtras();
+        sendingAmount =(SendingAmount) arguments.getSerializable(SendingAmount.class.getSimpleName());
         sendingLogic = new SendingLogic(this);
         sendingLogic.open();
-        databaseSending = sendingLogic.getSendingAmountsById(SendingAmount.getSendingId()).stream().filter(v -> v.getId() == SendingAmount.getId()).collect(Collectors.toList()).get(0);
+        databaseSending = sendingLogic.getSendingAmountsById(
+                sendingAmount
+                        .getSendingId())
+                .stream()
+                .filter(v -> v.getId() == sendingAmount.getId())
+                .collect(Collectors.toList())
+                .get(0);
         sendingLogic.close();
 
         medicineLogic = new MedicineLogic(this);
@@ -54,12 +66,8 @@ public class CheckSendingActivity extends AppCompatActivity {
                 .get(0);
         medicineLogic.close();
 
-        Bundle arguments = intent.getExtras();
-
-        SendingAmount = (SendingAmount) arguments.getSerializable(SendingAmount.class.getSimpleName());
-
         quantityEditText = (EditText) findViewById(R.id.edit_text_quality);
-        quantityEditText.setText(String.valueOf(SendingAmount.getQuantity()));
+        quantityEditText.setText(String.valueOf(sendingAmount.getQuantity()));
         quantityEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -94,13 +102,13 @@ public class CheckSendingActivity extends AppCompatActivity {
         });
 
 
-        ((EditText) findViewById(R.id.edit_text_name)).setText(SendingAmount.getName());
+        ((EditText) findViewById(R.id.edit_text_name)).setText(sendingAmount.getName());
         ((EditText) findViewById(R.id.edit_text_name)).setEnabled(false);
 
-        if (SendingAmount.getCost() > medicineData.getQuantityOnStorage()) {
+        if (sendingAmount.getCost() > medicineData.getQuantityOnStorage()) {
             ((EditText) findViewById(R.id.edit_text_cost)).setText(String.valueOf(medicineData.getQuantityOnStorage()));
         } else {
-            ((EditText) findViewById(R.id.edit_text_cost)).setText(String.valueOf(SendingAmount.getCost()));
+            ((EditText) findViewById(R.id.edit_text_cost)).setText(String.valueOf(sendingAmount.getCost()));
         }
         ((EditText) findViewById(R.id.edit_text_cost)).setEnabled(false);
 
@@ -119,10 +127,10 @@ public class CheckSendingActivity extends AppCompatActivity {
                 status.contains("Подтверждено")) {
             status = "Недостача";
         }
-        SendingAmount.setStatus(status);
-        SendingAmount.setQuantity(Integer.parseInt(quantityEditText.getText().toString()));
+        sendingAmount.setStatus(status);
+        sendingAmount.setQuantity(Integer.parseInt(quantityEditText.getText().toString()));
         Intent intent = new Intent(this, GetSupplyActivity.class);
-        intent.putExtra("SendingAmount", SendingAmount);
+        intent.putExtra("SendingAmount", sendingAmount);
         setResult(RESULT_OK, intent);
         this.finish();
     }

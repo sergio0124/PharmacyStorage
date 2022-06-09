@@ -34,6 +34,12 @@ public class ShowBasketActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_basket);
+        final int abTitleId = getResources().getIdentifier("action_bar_title", "id", "android");
+        findViewById(abTitleId).setOnClickListener(v -> {
+            Intent intent = new Intent(ShowBasketActivity.this, MainMenuActivity.class);
+            intent.putExtra("userId", userId);
+            startActivity(intent);
+        });
 
         button_cancel = findViewById(R.id.button_cancel);
         logic = new MedicineLogic(this);

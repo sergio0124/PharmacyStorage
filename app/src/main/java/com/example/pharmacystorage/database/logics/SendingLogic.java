@@ -54,19 +54,47 @@ public class SendingLogic {
 
             try {
                 cal.setTime(sdf.parse(cursor.getString((int) cursor.getColumnIndex(COLUMN_DATE))));// all done
-            }catch (Exception ex){}
+            } catch (Exception ex) {
+            }
 
             obj.setId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_ID)));
             obj.setDate(cal);
             obj.setStorageId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_STORAGE_ID)));
             obj.setPharmacyId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_PHARMACY_ID)));
-            obj.setSent(cursor.getInt((byte) cursor.getColumnIndex(COLUMN_IS_SENT)));
+            obj.setSent(cursor.getInt((int) cursor.getColumnIndex(COLUMN_IS_SENT)));
 
             list.add(obj);
             cursor.moveToNext();
         } while (!cursor.isAfterLast());
         return list;
     }
+
+    public List<SendingModel> getFilteredByUserIdList(int userId) {
+        Cursor cursor = db.rawQuery("select * from " + TABLE + " JOIN Pharmacy ON Pharmacy.Id = " +
+                "PharmacyId JOIN Storage ON Pharmacy.StorageId = Storage.Id AND Storage.Id = " + userId, null);
+        List<SendingModel> list = new ArrayList<>();
+        if (!cursor.moveToFirst()) {
+            return list;
+        }
+        do {
+            SendingModel obj = new SendingModel();
+            obj.setId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_ID)));
+            Calendar cal = new GregorianCalendar();
+            try {
+                cal.setTime(sdf.parse(cursor.getString((int) cursor.getColumnIndex(COLUMN_DATE))));// all done
+            } catch (Exception ex) {
+            }
+            obj.setDate(cal);
+            obj.setStorageId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_STORAGE_ID)));
+            obj.setPharmacyId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_PHARMACY_ID)));
+            obj.setPharmacyName(cursor.getString(6));
+            obj.setSent(cursor.getInt((int) cursor.getColumnIndex(COLUMN_IS_SENT)));
+            list.add(obj);
+            cursor.moveToNext();
+        } while (!cursor.isAfterLast());
+        return list;
+    }
+
 
     public List<SendingModel> getFilteredList(int pharmacyId) {
         Cursor cursor = db.rawQuery("select * from " + TABLE + " JOIN Pharmacy ON Pharmacy.Id = PharmacyId AND "
@@ -77,14 +105,17 @@ public class SendingLogic {
         }
         do {
             SendingModel obj = new SendingModel();
-            obj.setId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_ID)));Calendar cal = new GregorianCalendar();
+            obj.setId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_ID)));
+            Calendar cal = new GregorianCalendar();
             try {
                 cal.setTime(sdf.parse(cursor.getString((int) cursor.getColumnIndex(COLUMN_DATE))));// all done
-            }catch (Exception ex){}
+            } catch (Exception ex) {
+            }
             obj.setDate(cal);
             obj.setStorageId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_STORAGE_ID)));
             obj.setPharmacyId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_PHARMACY_ID)));
             obj.setPharmacyName(cursor.getString((int) cursor.getColumnIndex("Pharmacy.Name")));
+            obj.setSent(cursor.getInt((int) cursor.getColumnIndex(COLUMN_IS_SENT)));
             list.add(obj);
             cursor.moveToNext();
         } while (!cursor.isAfterLast());
@@ -92,7 +123,7 @@ public class SendingLogic {
     }
 
     public SendingModel getElement(int id) {
-        Cursor cursor = db.rawQuery("select * from " + TABLE + " where "
+        Cursor cursor = db.rawQuery("select * from " + TABLE + " JOIN Pharmacy ON Pharmacy.Id = PharmacyId AND "
                 + COLUMN_ID + " = " + id, null);
         SendingModel obj = new SendingModel();
         if (!cursor.moveToFirst()) {
@@ -102,45 +133,46 @@ public class SendingLogic {
 
         try {
             cal.setTime(sdf.parse(cursor.getString((int) cursor.getColumnIndex(COLUMN_DATE))));// all done
-        }catch (Exception ex){}
+        } catch (Exception ex) {
+        }
 
         obj.setId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_ID)));
         obj.setStorageId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_STORAGE_ID)));
         obj.setPharmacyId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_PHARMACY_ID)));
-        obj.setSent(cursor.getInt((byte) cursor.getColumnIndex(COLUMN_IS_SENT)));
+        obj.setSent(cursor.getInt((int) cursor.getColumnIndex(COLUMN_IS_SENT)));
 
         return obj;
     }
 
     public void insert(SendingModel model) {
         ContentValues content = new ContentValues();
-        content.put(COLUMN_DATE,sdf.format(model.getDate().getTime()));
-        content.put(COLUMN_STORAGE_ID,model.getStorageId());
-        content.put(COLUMN_PHARMACY_ID,model.getPharmacyId());
-        content.put(COLUMN_IS_SENT,model.isSent());
-        if(model.getId() != 0){
+        content.put(COLUMN_DATE, sdf.format(model.getDate().getTime()));
+        content.put(COLUMN_STORAGE_ID, model.getStorageId());
+        content.put(COLUMN_PHARMACY_ID, model.getPharmacyId());
+        content.put(COLUMN_IS_SENT, model.isSent());
+        if (model.getId() != 0) {
             content.put(COLUMN_ID, model.getId());
         }
-        db.insert(TABLE,null,content);
+        db.insert(TABLE, null, content);
     }
 
     public void update(SendingModel model) {
-        ContentValues content=new ContentValues();
+        ContentValues content = new ContentValues();
         content.put(COLUMN_DATE, sdf.format(model.getDate().getTime()));
-        content.put(COLUMN_STORAGE_ID,model.getStorageId());
-        content.put(COLUMN_PHARMACY_ID,model.getPharmacyId());
-        content.put(COLUMN_IS_SENT,model.isSent());
+        content.put(COLUMN_STORAGE_ID, model.getStorageId());
+        content.put(COLUMN_PHARMACY_ID, model.getPharmacyId());
+        content.put(COLUMN_IS_SENT, model.isSent());
         String where = COLUMN_ID + " = " + model.getId();
-        db.update(TABLE,content,where,null);
+        db.update(TABLE, content, where, null);
     }
 
     public void delete(int id) {
-        String where = COLUMN_ID+" = "+id;
-        db.delete(TABLE,where,null);
+        String where = COLUMN_ID + " = " + id;
+        db.delete(TABLE, where, null);
     }
 
     public void insertSendingAmounts(List<SendingAmount> models) {
-        models.stream().forEach(v->{
+        models.stream().forEach(v -> {
             ContentValues content = new ContentValues();
             content.put("SendingId", v.getSendingId());
             content.put("MedicineId", v.getMedicineId());

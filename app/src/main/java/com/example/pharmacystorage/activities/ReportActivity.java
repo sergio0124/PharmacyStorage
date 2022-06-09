@@ -3,6 +3,7 @@ package com.example.pharmacystorage.activities;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -28,11 +29,18 @@ public class ReportActivity extends AppCompatActivity {
 
     Calendar dateFrom = new GregorianCalendar();
     Calendar dateTo = new GregorianCalendar();
+    int userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report);
+        final int abTitleId = getResources().getIdentifier("action_bar_title", "id", "android");
+        findViewById(abTitleId).setOnClickListener(v -> {
+            Intent intent = new Intent(ReportActivity.this, MainMenuActivity.class);
+            intent.putExtra("userId", userId);
+            startActivity(intent);
+        });
 
         button_date_from = findViewById(R.id.button_date_from);
         button_date_to = findViewById(R.id.button_date_to);
@@ -43,7 +51,7 @@ public class ReportActivity extends AppCompatActivity {
         dateFrom.set(2021, 1, 1);
         dateTo.set(2021, 1, 1);
 
-        int userId = getIntent().getExtras().getInt("userId");
+        userId = getIntent().getExtras().getInt("userId");
 
         String text = "Отчет по количеству продаж у каждого аптекаря в период с " + dateFrom.getTime().getDate() + " / " + dateFrom.getTime().getMonth() + " / " + (dateFrom.getTime().getYear()+ 1900) + " по " + dateTo.getTime().getDate() + " / " + dateTo.getTime().getMonth() + " / " + (dateTo.getTime().getYear()+ 1900);
         text_view_report_info.setText(text);

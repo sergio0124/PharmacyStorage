@@ -79,7 +79,7 @@ public class JavaMailApi extends AsyncTask<Void, Void, Void> {
     @Override
     protected Void doInBackground(Void... params) {
         Properties props = new Properties();
-        String host = "smtp." + sEmail.split("[@]*", 100)[1];
+        String host = "smtp." + sEmail.split("@", 100)[1];
 
         props.put("mail.smtp.host", host);
         props.put("mail.smtp.socketFactory.port", "465");

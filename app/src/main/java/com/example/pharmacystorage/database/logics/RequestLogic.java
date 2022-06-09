@@ -160,9 +160,9 @@ public class RequestLogic {
         });
     }
 
-    public ArrayList<RequestAmount> getRequestAmountsById(int id) {
+    public ArrayList<RequestAmount> getRequestAmountsById(int requestId) {
         Cursor cursor = db.rawQuery("SELECT RequestId, Cost, MedicineId, Quantity, Name, Dosage, " +
-                "Form FROM Request_Medicine JOIN Medicine ON MedicineId = Medicine.Id AND RequestId = " + id, null);
+                "Form FROM Request_Medicine JOIN Medicine ON MedicineId = Medicine.Id AND RequestId = " + requestId, null);
         ArrayList<RequestAmount> list = new ArrayList<>();
         if (!cursor.moveToFirst()) {
             return list;

@@ -45,6 +45,12 @@ public class ManufacturerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manufacturer);
+        final int abTitleId = getResources().getIdentifier("action_bar_title", "id", "android");
+        findViewById(abTitleId).setOnClickListener(v -> {
+            Intent intent = new Intent(ManufacturerActivity.this, MainMenuActivity.class);
+            intent.putExtra("userId", userId);
+            startActivity(intent);
+        });
         userId = getIntent().getExtras().getInt("userId");
         tableLayoutMedicines = findViewById(R.id.tableLayoutMedicines);
 

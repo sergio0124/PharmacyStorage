@@ -286,7 +286,7 @@ public class CreateRequestActivity extends AppCompatActivity {
             });
 
             tableRow.setOnLongClickListener(v -> {
-                if (userId != 0) {
+                if (iid != 0) {
                     Toast.makeText(this, "Нельзя удалять записи при просмотре", Toast.LENGTH_LONG).show();
                     return false;
                 }
