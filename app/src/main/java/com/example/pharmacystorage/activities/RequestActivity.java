@@ -42,13 +42,6 @@ public class RequestActivity extends AppCompatActivity {
         setContentView(R.layout.activity_request);
         userId = getIntent().getExtras().getInt("userId");
 
-        final int abTitleId = getResources().getIdentifier("action_bar_title", "id", "android");
-        findViewById(abTitleId).setOnClickListener(v -> {
-            Intent intent = new Intent(RequestActivity.this, MainMenuActivity.class);
-            intent.putExtra("userId", userId);
-            startActivity(intent);
-        });
-
         tableLayoutRequest = findViewById(R.id.tableLayoutRequest);
         logic = new RequestLogic(this);
         button_create_request = findViewById(R.id.button_to_create_request_activity);

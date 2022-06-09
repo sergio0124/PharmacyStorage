@@ -39,12 +39,6 @@ public class MedicineListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_medicine_list);
-        final int abTitleId = getResources().getIdentifier("action_bar_title", "id", "android");
-        findViewById(abTitleId).setOnClickListener(v -> {
-            Intent intent = new Intent(MedicineListActivity.this, MainMenuActivity.class);
-            intent.putExtra("userId", userId);
-            startActivity(intent);
-        });
 
         searchButton = findViewById(R.id.button_search_content);
         searchEditText = findViewById(R.id.edit_search_content);

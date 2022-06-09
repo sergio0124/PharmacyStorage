@@ -35,13 +35,6 @@ public class ClientActivity extends AppCompatActivity {
         setContentView(R.layout.activity_client);
         userId = getIntent().getExtras().getInt("userId");
 
-        final int abTitleId = getResources().getIdentifier("action_bar_title", "id", "android");
-        findViewById(abTitleId).setOnClickListener(v -> {
-            Intent intent = new Intent(ClientActivity.this, MainMenuActivity.class);
-            intent.putExtra("userId", userId);
-            startActivity(intent);
-        });
-
         button_create_pharmacy = findViewById(R.id.button_to_create_pharmacy_activity);
         button_sending = findViewById(R.id.button_to_sending);
 
