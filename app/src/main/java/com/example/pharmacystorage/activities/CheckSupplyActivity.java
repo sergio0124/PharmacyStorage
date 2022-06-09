@@ -17,6 +17,7 @@ import com.example.pharmacystorage.models.SupplyAmount;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 public class CheckSupplyActivity extends AppCompatActivity {
 
@@ -36,6 +37,7 @@ public class CheckSupplyActivity extends AppCompatActivity {
         supplyAmount =(SupplyAmount)arguments.getSerializable(SupplyAmount.class.getSimpleName());
         buttonDate = findViewById(R.id.buttonDate);
         date = GregorianCalendar.getInstance();
+        date.setTimeZone(TimeZone.getDefault());
         String text = date==null? "Choose date" : date.get(Calendar.DAY_OF_MONTH) + " / " +
                 date.get(Calendar.MONTH) + " / " + (date.get(Calendar.YEAR));
         buttonDate.setText(text);
@@ -71,16 +73,12 @@ public class CheckSupplyActivity extends AppCompatActivity {
 
         buttonDate.setOnClickListener(
                 v -> {
-                    DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
-
-                        @Override
-                        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                            date.set(year, monthOfYear + 1, dayOfMonth);
-                            String text = date.get(Calendar.DAY_OF_MONTH) + "/" +
-                                    date.get(Calendar.MONTH) + "/" + (date.get(Calendar.YEAR));
-                            buttonDate.setText(text);
-                            supplyAmount.setEndDate(date);
-                        }
+                    DatePickerDialog.OnDateSetListener dateSetListener = (view, year, monthOfYear, dayOfMonth) -> {
+                        date.set(year, monthOfYear, dayOfMonth);
+                        String text1 = date.get(Calendar.DAY_OF_MONTH) + "/" +
+                                date.get(Calendar.MONTH) + "/" + (date.get(Calendar.YEAR));
+                        buttonDate.setText(text1);
+                        supplyAmount.setEndDate(date);
                     };
                     DatePickerDialog datePickerDialog;
                     datePickerDialog = new DatePickerDialog(buttonDate.getContext(),
