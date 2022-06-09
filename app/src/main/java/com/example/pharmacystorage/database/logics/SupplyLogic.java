@@ -9,6 +9,7 @@ import com.example.pharmacystorage.database.DatabaseHelper;
 import com.example.pharmacystorage.models.SupplyAmount;
 import com.example.pharmacystorage.models.SupplyModel;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -108,7 +109,7 @@ public class SupplyLogic {
             SupplyAmount obj = new SupplyAmount();
             Calendar cal = new GregorianCalendar();
             try {
-                cal.setTime(sdf.parse(cursor.getString((int) cursor.getColumnIndex(COLUMN_DATE))));
+                cal.setTime(sdf.parse(cursor.getString((int) cursor.getColumnIndex("EndDate"))));
             } catch (Exception ex) {
             }
 
@@ -127,7 +128,7 @@ public class SupplyLogic {
 
     public List<SupplyAmount> getSupplyAmountsBySupplyAndDate(int supplyId, long from, long to) {
         Cursor cursor = db.rawQuery("select * from " + TABLE + " JOIN Medicine_Supply " +
-                "ON Medicine_Supply.Id = Supply.MedicineId AND Supply.Id = " + supplyId + " and " + COLUMN_DATE  + " BETWEEN " + from + " and " + to, null);
+                "ON Medicine_Supply.SupplyId = Supply.Id AND Supply.Id = " + supplyId, null);
         List<SupplyAmount> list = new ArrayList<>();
         if (!cursor.moveToFirst()) {
             return list;
@@ -137,8 +138,19 @@ public class SupplyLogic {
             SupplyAmount obj = new SupplyAmount();
             Calendar cal = new GregorianCalendar();
             try {
-                cal.setTime(sdf.parse(cursor.getString((int) cursor.getColumnIndex(COLUMN_DATE))));
+                cal.setTime(sdf.parse(cursor.getString((int) cursor.getColumnIndex("EndDate"))));
             } catch (Exception ex) {
+            }
+
+            Calendar calDate = new GregorianCalendar();
+            try {
+                calDate.setTime(sdf.parse(cursor.getString((int) cursor.getColumnIndex("Date"))));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            if(from >= calDate.getTimeInMillis() || calDate.getTimeInMillis() >= to){
+                continue;
             }
 
             obj.setSupplyId(cursor.getInt((int) cursor.getColumnIndex("SupplyId")));

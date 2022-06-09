@@ -3,7 +3,6 @@ package com.example.pharmacystorage.activities;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -13,7 +12,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.pharmacystorage.R;
 import com.example.pharmacystorage.Report;
+import com.example.pharmacystorage.database.logics.ManufacturerLogic;
 import com.example.pharmacystorage.database.logics.MedicineLogic;
+import com.example.pharmacystorage.database.logics.StorageLogic;
 import com.example.pharmacystorage.database.logics.SupplyLogic;
 
 import java.io.IOException;
@@ -42,8 +43,11 @@ public class ReportActivity extends AppCompatActivity {
 
         text_view_report_info = findViewById(R.id.text_view_report_info);
 
-        dateFrom.set(2021, 1, 1);
-        dateTo.set(2021, 1, 1);
+        Calendar calendar = Calendar.getInstance();
+
+
+        dateFrom.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+        dateTo.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
 
         userId = getIntent().getExtras().getInt("userId");
 
@@ -65,7 +69,7 @@ public class ReportActivity extends AppCompatActivity {
                     DatePickerDialog datePickerDialog;
                     datePickerDialog = new DatePickerDialog(this,
                             android.R.style.Theme_Holo_Light_Dialog_NoActionBar,
-                            dateSetListener, 2021, 0, 1);
+                            dateSetListener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), Calendar.DAY_OF_MONTH);
 
                     datePickerDialog.show();
                 }
@@ -86,7 +90,7 @@ public class ReportActivity extends AppCompatActivity {
                     DatePickerDialog datePickerDialog;
                     datePickerDialog = new DatePickerDialog(this,
                             android.R.style.Theme_Holo_Light_Dialog_NoActionBar,
-                            dateSetListener, 2021, 0, 1);
+                            dateSetListener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), Calendar.DAY_OF_MONTH);
 
                     datePickerDialog.show();
                 }
@@ -94,12 +98,15 @@ public class ReportActivity extends AppCompatActivity {
 
         button_report.setOnClickListener(
                 v -> {
-                    Report report = new Report();
                     SupplyLogic supplyLogic = new SupplyLogic(this);
                     MedicineLogic medicineLogic = new MedicineLogic(this);
+                    StorageLogic storageLogic = new StorageLogic(this);
+                    ManufacturerLogic manufacturerLogic = new ManufacturerLogic(this);
+
+                    Report report = new Report(this, userId, manufacturerLogic, storageLogic, supplyLogic, medicineLogic, dateFrom.getTime(), dateTo.getTime());
 
                     try {
-                        report.generatePdf(userId, supplyLogic, medicineLogic, dateFrom.getTime(), dateTo.getTime());
+                        report.generatePdf();
 
                         AlertDialog.Builder builder1 = new AlertDialog.Builder(this);
                         builder1.setMessage("Файл отчета создан");
