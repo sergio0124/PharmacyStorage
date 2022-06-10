@@ -119,6 +119,7 @@ public class MedicineLogic {
         MedicineModel model = new MedicineModel();
 
         String[] fields = name.split(", ");
+        fields[1] = fields[1].replaceAll("\\D", "");
 
         String MedicineName = fields[0];
         String MedicineFormat = fields[2];

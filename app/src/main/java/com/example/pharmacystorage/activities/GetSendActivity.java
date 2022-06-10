@@ -142,13 +142,13 @@ public class GetSendActivity extends AppCompatActivity {
 
     private void SaveSending() {
         logicS.open();
-        logicM.open();
         logicB.open();
         logicSupply.open();
 
         SendingModel model = logicS.getElement(sendingId);
         model.setSent(1);
         logicS.update(model);
+        logicS.close();
 
         List<SendingAmount> listSA = sendingAmount;
 
@@ -158,7 +158,7 @@ public class GetSendActivity extends AppCompatActivity {
 
             int i = 0;
             List<SupplyAmount> supplyAmountsByMedicine = supplyAmounts.stream().filter(rec -> rec.getMedicineId() == v.getMedicineId()).collect(Collectors.toList());
-            while (count > 0) {
+            while (count > 0 && i-1<supplyAmounts.size()) {
                 SupplyAmount supplyAmount = supplyAmountsByMedicine.get(supplyAmountsByMedicine.size() - 1 - i);
                 supplyAmount.setOldQuantity(supplyAmount.getQuantity());
                 if (supplyAmount.getQuantity() > count) {
@@ -176,12 +176,14 @@ public class GetSendActivity extends AppCompatActivity {
 
         listSA.stream().filter(v -> v.getStatus().contains("Недостача")).forEach(v -> logicB.insertMedicineById(v.getMedicineId(), userId));
         listSA.forEach(v -> v.setSendingId(sendingId));
+        logicM.open();
         listSA.forEach(v -> v.setMedicineId(logicM.getMedicineByFullName(v.getName()).getId()));
-
-        logicS.insertSendingAmounts(listSA);
-
-        logicS.close();
         logicM.close();
+
+        logicS.open();
+        logicS.insertSendingAmounts(listSA);
+        logicS.close();
+        
         logicB.close();
         logicSupply.close();
     }

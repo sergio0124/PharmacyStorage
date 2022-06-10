@@ -15,6 +15,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class SendingLogic {
     DatabaseHelper sqlHelper;
@@ -109,7 +110,7 @@ public class SendingLogic {
             Calendar cal = new GregorianCalendar();
             try {
                 cal.setTime(sdf.parse(cursor.getString((int) cursor.getColumnIndex(COLUMN_DATE))));// all done
-            } catch (Exception ex) {
+            } catch (Exception ignored) {
             }
             obj.setDate(cal);
             obj.setStorageId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_STORAGE_ID)));
@@ -132,8 +133,8 @@ public class SendingLogic {
         Calendar cal = new GregorianCalendar();
 
         try {
-            cal.setTime(sdf.parse(cursor.getString((int) cursor.getColumnIndex(COLUMN_DATE))));// all done
-        } catch (Exception ex) {
+            cal.setTime(Objects.requireNonNull(sdf.parse(cursor.getString((int) cursor.getColumnIndex(COLUMN_DATE)))));// all done
+        } catch (Exception ignored) {
         }
 
         obj.setId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_ID)));
@@ -173,7 +174,8 @@ public class SendingLogic {
     }
 
     public void insertSendingAmounts(List<SendingAmount> models) {
-        models.stream().forEach(v -> {
+        models.forEach(v -> {
+            db.rawQuery("DELETE FROM Sending_Medicine WHERE Id = " + v.getId(), null);
             ContentValues content = new ContentValues();
             content.put("SendingId", v.getSendingId());
             content.put("MedicineId", v.getMedicineId());

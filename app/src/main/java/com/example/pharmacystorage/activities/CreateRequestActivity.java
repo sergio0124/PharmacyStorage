@@ -116,6 +116,7 @@ public class CreateRequestActivity extends AppCompatActivity {
                 Intent intent = new Intent(CreateRequestActivity.this, ManufacturerActivity.class);
                 intent.putExtra("userId", userId);
                 startActivity(intent);
+                finish();
             }
         });
 
