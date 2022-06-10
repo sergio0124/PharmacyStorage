@@ -1,13 +1,13 @@
 package com.example.pharmacystorage.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.pharmacystorage.R;
 import com.example.pharmacystorage.database.logics.MedicineLogic;
@@ -25,7 +25,7 @@ public class MedicineActivity extends AppCompatActivity {
     EditText edit_text_dosage;
     Spinner spinner_form;
     MedicineLogic logic;
-    List<String> spinnerTitles = new ArrayList<>(Arrays.asList("Таблетки", "Сироп", "Крем"));
+    List<String> spinnerTitles = new ArrayList<>(Arrays.asList("Таблетки", "Порошки", "Капсулы", "Драже", "Гранулы", "Карамель", "Лекарственный карандаш", "Глоссет", "раствор", "Настойка", "Суспензия", "Эмульсия", "Капли", "Сироп", "Микстура"));
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,6 +36,7 @@ public class RegisterActivity extends AppCompatActivity {
     EditText editTextPassword;
     EditText editTextEmail;
     EditText editTextEmailPassword;
+    TextView textViewPassword;
     StorageLogic logic;
     BasketLogic logicBasket;
     int userId;
@@ -51,6 +53,7 @@ public class RegisterActivity extends AppCompatActivity {
         editTextPassword = findViewById(R.id.edit_text_password);
         editTextEmail = findViewById(R.id.edit_text_email);
         editTextEmailPassword = findViewById(R.id.edit_text_email_password);
+        textViewPassword = findViewById(R.id.text_view_password);
         userId = getIntent().getExtras().getInt("userId");
         check = true;
 
@@ -58,6 +61,8 @@ public class RegisterActivity extends AppCompatActivity {
         logicBasket = new BasketLogic(this);
 
         if (userId != 0){
+            textViewPassword.setText("Текущий пароль(если меняете пароль)");
+            buttonRegister.setText("Изменить");
             logic.open();
             StorageModel model = logic.getElement(userId);
             editTextLogin.setText(model.getName());

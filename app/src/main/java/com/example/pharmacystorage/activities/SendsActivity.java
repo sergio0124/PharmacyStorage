@@ -133,7 +133,7 @@ public class SendsActivity extends AppCompatActivity {
 
 
     void loadRequests(String email, String password) {
-        ReadEmail readEmail = new ReadEmail(this, password, email, stringListMap);
+        ReadEmail readEmail = new ReadEmail(this, userId, password, email, stringListMap);
         readEmail.execute();
     }
 
