@@ -94,4 +94,32 @@ public class BasketLogic {
         String where =" MedicineId = " + medicineId + " AND BasketId = " + basketId;
         db.delete("Medicine_Basket", where, null);
     }
+
+    public List<MedicineModel> getMedicinesByManufacturer(int manufacturerId, int userId){
+        Cursor cursor = db.rawQuery("SELECT Medicine.Id as Id, Medicine.Name as Name, " +
+                "Medicine.Dosage AS Dosage, Medicine.Form as Form, Medicine.ManufacturerId AS ManufacturerId" +
+                " FROM Manufacturer JOIN Medicine ON Medicine.ManufacturerId = Manufacturer.Id " +
+                " JOIN Medicine_Basket ON Medicine_Basket.MedicineId = Medicine.Id " +
+                " JOIN Basket ON Basket.Id = Medicine_Basket.BasketId "+
+                " JOIN Storage ON Storage.Id = Basket.StorageId AND Storage.Id = " + userId +
+                " AND Manufacturer.Id = " + manufacturerId, null);
+
+        ArrayList<MedicineModel> list = new ArrayList<>();
+        if (!cursor.moveToFirst()) {
+            return list;
+        }
+        do {
+            MedicineModel obj = new MedicineModel();
+
+            obj.setId(cursor.getInt((int) cursor.getColumnIndex("Id")));
+            obj.setName(cursor.getString((int) cursor.getColumnIndex("Name")));
+            obj.setDosage(cursor.getInt((int) cursor.getColumnIndex("Dosage")));
+            obj.setForm(cursor.getString((int) cursor.getColumnIndex("Form")));
+            obj.setManufacturerId(cursor.getInt((int) cursor.getColumnIndex("ManufacturerId")));
+
+            list.add(obj);
+            cursor.moveToNext();
+        } while (!cursor.isAfterLast());
+        return list;
+    }
 }

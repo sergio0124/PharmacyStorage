@@ -19,6 +19,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.pharmacystorage.R;
+import com.example.pharmacystorage.database.logics.BasketLogic;
 import com.example.pharmacystorage.database.logics.ManufacturerLogic;
 import com.example.pharmacystorage.database.logics.MedicineLogic;
 import com.example.pharmacystorage.database.logics.RequestLogic;
@@ -37,6 +38,8 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class CreateRequestActivity extends AppCompatActivity {
 
@@ -51,12 +54,14 @@ public class CreateRequestActivity extends AppCompatActivity {
     ArrayList<RequestAmount> requestAmounts = new ArrayList<>();
     List<String> titles = Arrays.asList("Наименование", "Кол-во", "Цена шт.");
     int userId;
+    int manufacturerId;
     int iid = 0;
     Button button_add;
     Button button_send;
     Button button_cancel;
     EditText edit_count;
     EditText edit_cost;
+    List<ManufacturerModel> spinnerArray;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +78,7 @@ public class CreateRequestActivity extends AppCompatActivity {
 
         userId = getIntent().getExtras().getInt("userId");
         iid = getIntent().getExtras().getInt("id");
+        manufacturerId = getIntent().getExtras().getInt("manufacturerId");
 
         button_add = findViewById(R.id.button_add);
         button_send = findViewById(R.id.button_save);
@@ -123,11 +129,21 @@ public class CreateRequestActivity extends AppCompatActivity {
         button_cancel.setOnClickListener(v -> finish());
 
         LoadData();
+        if(manufacturerId>0){
+            TimerTask timerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    runOnUiThread(() -> {
+                        LoadBasket();
+                    });
+                }
+            };
+            Timer timer = new Timer();
+            timer.schedule(timerTask, 500);
+        }
     }
 
     private void SaveRequest() {
-        //Save Request for first
-        //Save Request_Medicines
         logicR.open();
 
         ManufacturerModel item = (ManufacturerModel) spinner_manufacturer.getItemAtPosition(spinner_manufacturer.getSelectedItemPosition());
@@ -164,7 +180,7 @@ public class CreateRequestActivity extends AppCompatActivity {
     private void LoadData() {
 
         logic.open();
-        List<ManufacturerModel> spinnerArray = new ArrayList<>(logic.getFilteredList(userId));
+        spinnerArray = new ArrayList<>(logic.getFilteredList(userId));
         logic.close();
 
         ArrayAdapter<ManufacturerModel> adapter = new ArrayAdapter<>(
@@ -217,6 +233,34 @@ public class CreateRequestActivity extends AppCompatActivity {
             requestAmounts = amounts;
             fillTable();
         }
+    }
+
+    void LoadBasket(){
+        logic.open();
+        ManufacturerModel manufacturerModel = logic.getElement(manufacturerId);
+        logic.close();
+        spinner_manufacturer.setSelection(spinnerArray.indexOf(manufacturerModel));
+
+        List<MedicineModel> spinnerArrayMeds = new ArrayList<>(logicM.getFilteredList(manufacturerId));
+        ArrayAdapter<MedicineModel> adapterMeds = new ArrayAdapter<>(
+                CreateRequestActivity.this, android.R.layout.simple_spinner_item, spinnerArrayMeds);
+        adapterMeds.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner_medicine.setAdapter(adapterMeds);
+
+        BasketLogic basketLogic = new BasketLogic(this);
+        List<MedicineModel> medicineModels = basketLogic.getMedicinesByManufacturer(manufacturerId, userId);
+        medicineModels.forEach(rec -> {
+            RequestAmount requestAmount = new RequestAmount();
+            requestAmount.setRequestId(0);
+            requestAmount.setMedicineId(rec.getId());
+            requestAmount.setName(rec.toString());
+            requestAmount.setCost(1);
+            requestAmount.setQuantity(1);
+
+            requestAmounts.add(requestAmount);
+        });
+
+        fillTable();
     }
 
     void fillTable() {

@@ -106,6 +106,16 @@ public class ShowBasketActivity extends AppCompatActivity {
                 }
 
                 tableRow.setBackgroundColor(Color.parseColor("#FFBB86FC"));
+
+                String child = ((TextView) selectedRow.getChildAt(1)).getText().toString();
+                int medicineId = Integer.parseInt(child);
+                MedicineModel model = medicines.stream().filter(rec->rec.getId() == medicineId).findFirst().get();
+
+                Intent intent = new Intent(this, CreateRequestActivity.class);
+                intent.putExtra("manufacturerId", model.getManufacturerId());
+                intent.putExtra("userId", userId);
+                startActivity(intent);
+                finish();
             });
 
 
