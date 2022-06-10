@@ -4,12 +4,13 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import com.example.pharmacystorage.database.logics.PharmacyLogic;
+import com.example.pharmacystorage.database.logics.StorageLogic;
 import com.example.pharmacystorage.models.RequestAmount;
+import com.example.pharmacystorage.models.StorageModel;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,14 +32,18 @@ import javax.mail.search.FlagTerm;
 
 public class ReadEmail extends AsyncTask<Void, Void, Void> {
     PharmacyLogic logic;
+    StorageLogic logicStorage;
     JSONHelper jsonHelper;
     String sPassword;
     String sName;
     Map<String, List<RequestAmount>> stringListMap = null;
+    int userId;
 
-    public ReadEmail(Context context, String password, String name, Map<String, List<RequestAmount>> stringListMap1){
+    public ReadEmail(Context context, int userId, String password, String name, Map<String, List<RequestAmount>> stringListMap1){
         logic = new PharmacyLogic(context);
+        logicStorage = new StorageLogic(context);
         jsonHelper = new JSONHelper();
+        this.userId = userId;
 
         sPassword = password;
         sName = name;
@@ -94,7 +99,11 @@ public class ReadEmail extends AsyncTask<Void, Void, Void> {
                     //От кого
                     String from = ((InternetAddress) message.getFrom()[0]).getAddress();
 
-                    if(logic.getElement(from) == null){
+                    logicStorage.open();
+                    StorageModel modelStorage = logicStorage.getElement(userId);
+                    logicStorage.close();
+
+                    if(logic.getElement(from) == null && from != modelStorage.getEmail()){
                         message.setFlag(Flags.Flag.DELETED, true);
                     }else{
 
