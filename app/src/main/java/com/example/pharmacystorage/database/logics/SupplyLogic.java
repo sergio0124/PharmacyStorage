@@ -149,7 +149,7 @@ public class SupplyLogic {
                 e.printStackTrace();
             }
 
-            if(from >= calDate.getTimeInMillis() || calDate.getTimeInMillis() >= to){
+            if(from > calDate.getTimeInMillis() || calDate.getTimeInMillis() > to){
                 continue;
             }
 

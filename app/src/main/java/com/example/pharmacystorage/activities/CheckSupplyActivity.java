@@ -38,7 +38,7 @@ public class CheckSupplyActivity extends AppCompatActivity {
 
         date = GregorianCalendar.getInstance();
         date.setTimeZone(TimeZone.getDefault());
-        String text = date == null ? "Choose date" : date.getTime().getDate() + "/" + date.getTime().getMonth() + "/" + (date.getTime().getYear() + 1900);
+        String text = date == null ? "Choose date" : date.getTime().getDate() + "/" + (date.getTime().getMonth()+1) + "/" + (date.getTime().getYear() + 1900);
         buttonDate.setText(text);
 
 
@@ -83,7 +83,7 @@ public class CheckSupplyActivity extends AppCompatActivity {
 
                         date.set(year, monthOfYear, dayOfMonth);
                         String text1 = date.get(Calendar.DAY_OF_MONTH) + "/" +
-                                date.get(Calendar.MONTH) + "/" + (date.get(Calendar.YEAR));
+                                (date.get(Calendar.MONTH)+1) + "/" + (date.get(Calendar.YEAR));
                         buttonDate.setText(text1);
                         supplyAmount.setEndDate(date);
                     };

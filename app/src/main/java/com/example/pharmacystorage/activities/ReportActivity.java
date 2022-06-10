@@ -46,12 +46,12 @@ public class ReportActivity extends AppCompatActivity {
         Calendar calendar = Calendar.getInstance();
 
 
-        dateFrom.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
-        dateTo.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+        dateFrom.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), 0,0);
+        dateTo.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH),0,0);
 
         userId = getIntent().getExtras().getInt("userId");
 
-        String text = "Отчет по количеству продаж у каждого аптекаря в период с " + dateFrom.getTime().getDate() + " / " + dateFrom.getTime().getMonth() + " / " + (dateFrom.getTime().getYear()+ 1900) + " по " + dateTo.getTime().getDate() + " / " + dateTo.getTime().getMonth() + " / " + (dateTo.getTime().getYear()+ 1900);
+        String text = "Отчет по количеству продаж у каждого аптекаря в период с " + dateFrom.getTime().getDate() + " / " + (dateFrom.getTime().getMonth()+1) + " / " + (dateFrom.getTime().getYear()+ 1900) + " по " + dateTo.getTime().getDate() + " / " + (dateTo.getTime().getMonth()+1) + " / " + (dateTo.getTime().getYear()+ 1900);
         text_view_report_info.setText(text);
 
         button_date_from.setOnClickListener(
@@ -60,16 +60,16 @@ public class ReportActivity extends AppCompatActivity {
 
                         @Override
                         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                            dateFrom.set(year, monthOfYear + 1, dayOfMonth);
+                            dateFrom.set(year, monthOfYear, dayOfMonth, 0,0);
                             text_view_report_info.clearComposingText();
-                            String text = "Отчет по количеству продаж у каждого аптекаря в период с " + dateFrom.getTime().getDate() + " / " + dateFrom.getTime().getMonth() + " / " + (dateFrom.getTime().getYear()+ 1900) + " по " + dateTo.getTime().getDate() + " / " + dateTo.getTime().getMonth() + " / " + (dateTo.getTime().getYear()+ 1900);
+                            String text = "Отчет по количеству продаж у каждого аптекаря в период с " + dateFrom.getTime().getDate() + " / " + (dateFrom.getTime().getMonth()+1) + " / " + (dateFrom.getTime().getYear()+ 1900) + " по " + dateTo.getTime().getDate() + " / " + (dateTo.getTime().getMonth()+1) + " / " + (dateTo.getTime().getYear()+ 1900);
                             text_view_report_info.setText(text);
                         }
                     };
                     DatePickerDialog datePickerDialog;
                     datePickerDialog = new DatePickerDialog(this,
                             android.R.style.Theme_Holo_Light_Dialog_NoActionBar,
-                            dateSetListener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), Calendar.DAY_OF_MONTH);
+                            dateSetListener, dateFrom.get(Calendar.YEAR), dateFrom.get(Calendar.MONTH), dateFrom.get(Calendar.DAY_OF_MONTH));
 
                     datePickerDialog.show();
                 }
@@ -81,16 +81,16 @@ public class ReportActivity extends AppCompatActivity {
 
                         @Override
                         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                            dateTo.set(year, monthOfYear + 1, dayOfMonth);
+                            dateTo.set(year, monthOfYear, dayOfMonth,0,0);
                             text_view_report_info.clearComposingText();
-                            String text = "Отчет по количеству продаж у каждого аптекаря в период с " + dateFrom.getTime().getDate() + " / " + dateFrom.getTime().getMonth() + " / " + (dateFrom.getTime().getYear()+ 1900) + " по " + dateTo.getTime().getDate() + " / " + dateTo.getTime().getMonth() + " / " + (dateTo.getTime().getYear()+ 1900);
+                            String text = "Отчет по поставкам в период с " + dateFrom.getTime().getDate() + " / " + (dateFrom.getTime().getMonth()+1) + " / " + (dateFrom.getTime().getYear()+ 1900) + " по " + dateTo.getTime().getDate() + " / " + (dateTo.getTime().getMonth()+1) + " / " + (dateTo.getTime().getYear()+ 1900);
                             text_view_report_info.setText(text);
                         }
                     };
                     DatePickerDialog datePickerDialog;
                     datePickerDialog = new DatePickerDialog(this,
                             android.R.style.Theme_Holo_Light_Dialog_NoActionBar,
-                            dateSetListener, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), Calendar.DAY_OF_MONTH);
+                            dateSetListener, dateTo.get(Calendar.YEAR), dateTo.get(Calendar.MONTH), dateTo.get(Calendar.DAY_OF_MONTH));
 
                     datePickerDialog.show();
                 }
