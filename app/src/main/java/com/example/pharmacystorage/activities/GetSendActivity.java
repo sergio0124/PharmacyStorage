@@ -53,7 +53,7 @@ public class GetSendActivity extends AppCompatActivity {
     int sendingId;
     int userId;
     List<SendingAmount> sendingAmountAtStart = new ArrayList<>();
-    List<SendingAmount> sendingAmount = new ArrayList<>();
+    List<SendingAmount> sendingAmount;
 
 
     @Override
@@ -61,6 +61,7 @@ public class GetSendActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_get_send);
 
+        sendingAmount = new ArrayList<>();
         mStartForResult = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 result -> {
@@ -69,7 +70,7 @@ public class GetSendActivity extends AppCompatActivity {
                     Bundle arguments = intent.getExtras();
                     SendingAmount model = (SendingAmount) arguments.getSerializable(SendingAmount.class.getSimpleName());
                     for (int i = 0; i < sendingAmount.size(); i++) {
-                        if (model.getMedicineId() == ((SendingAmount) sendingAmount.get(i)).getMedicineId() && ((SendingAmount) sendingAmount.get(i)).getMedicineId() != 0) {
+                        if (model.getMedicineId() == (sendingAmount.get(i)).getMedicineId() && (sendingAmount.get(i)).getMedicineId() != 0) {
                             sendingAmount.set(i, model);
                             fillTable();
                             return;
@@ -84,6 +85,7 @@ public class GetSendActivity extends AppCompatActivity {
 
             SaveSending();
             SendMessage();
+            finish();
         });
         cancelButton = findViewById(R.id.button_cancel);
         cancelButton.setOnClickListener(v -> {
@@ -102,7 +104,7 @@ public class GetSendActivity extends AppCompatActivity {
 
         logicS.open();
         sendingAmountAtStart = logicS.getSendingAmountsById(sendingId);
-        sendingAmountAtStart.stream().forEach(v -> {
+        sendingAmountAtStart.forEach(v -> {
             SendingAmount sending = new SendingAmount(v.getMedicineId(), v.getSendingId(), v.getQuantity(), v.getCost(), v.getName(), "Ожидание");
             sending.setId(v.getId());
             sendingAmount.add(sending);
@@ -118,7 +120,7 @@ public class GetSendActivity extends AppCompatActivity {
         logicS.open();
         logicP.open();
 
-        SendingModel item = (SendingModel) logicS.getElement(sendingId);
+        SendingModel item = logicS.getElement(sendingId);
         PharmacyModel pharmacyModel = logicP.getElement(item.getPharmacyId());
         String Email = pharmacyModel.getEmail();
 
@@ -140,23 +142,23 @@ public class GetSendActivity extends AppCompatActivity {
 
     private void SaveSending() {
         logicS.open();
-        logicM.open();
         logicB.open();
         logicSupply.open();
 
         SendingModel model = logicS.getElement(sendingId);
         model.setSent(1);
         logicS.update(model);
+        logicS.close();
 
         List<SendingAmount> listSA = sendingAmount;
 
         List<SupplyAmount> supplyAmounts = logicSupply.getSupplyAmountsByStorage(userId);
-        listSA.stream().forEach(v -> {
+        listSA.forEach(v -> {
             int count = v.getQuantity();
 
             int i = 0;
             List<SupplyAmount> supplyAmountsByMedicine = supplyAmounts.stream().filter(rec -> rec.getMedicineId() == v.getMedicineId()).collect(Collectors.toList());
-            while (count > 0) {
+            while (count > 0 && (supplyAmountsByMedicine.size() - 1 - i)>-1) {
                 SupplyAmount supplyAmount = supplyAmountsByMedicine.get(supplyAmountsByMedicine.size() - 1 - i);
                 supplyAmount.setOldQuantity(supplyAmount.getQuantity());
                 if (supplyAmount.getQuantity() > count) {
@@ -167,18 +169,21 @@ public class GetSendActivity extends AppCompatActivity {
                     count = count - supplyAmount.getQuantity();
                 }
                 logicSupply.updateSupplyAmount(supplyAmount);
+                i++;
             }
 
         });
 
         listSA.stream().filter(v -> v.getStatus().contains("Недостача")).forEach(v -> logicB.insertMedicineById(v.getMedicineId(), userId));
-        listSA.stream().forEach(v -> v.setSendingId(sendingId));
-        listSA.stream().forEach(v -> v.setMedicineId(logicM.getMedicineByFullName(v.getName()).getId()));
-
-        logicS.insertSendingAmounts(listSA);
-
-        logicS.close();
+        listSA.forEach(v -> v.setSendingId(sendingId));
+        logicM.open();
+        listSA.forEach(v -> v.setMedicineId(logicM.getMedicineByFullName(v.getName()).getId()));
         logicM.close();
+
+        logicS.open();
+        logicS.insertSendingAmounts(listSA);
+        logicS.close();
+        
         logicB.close();
         logicSupply.close();
     }
@@ -195,8 +200,6 @@ public class GetSendActivity extends AppCompatActivity {
     }
 
     void fillTable() {
-
-
         tableLayoutSupplies.removeAllViews();
         TableRow tableRowTitles = new TableRow(this);
 
@@ -255,10 +258,15 @@ public class GetSendActivity extends AppCompatActivity {
             textViewCost.setTextColor(Color.WHITE);
             textViewCost.setGravity(Gravity.CENTER);
 
+            TextView textViewId = new TextView(this);
+            textViewId.setText(String.valueOf(SendingAmount.getId()));
+            textViewId.setVisibility(View.INVISIBLE);
+
             tableRow.addView(textViewStatus);
             tableRow.addView(textViewName);
             tableRow.addView(textViewQuantity);
             tableRow.addView(textViewCost);
+            tableRow.addView(textViewId);
 
             tableRow.setBackgroundColor(Color.parseColor("#FF03DAC5"));
 
@@ -275,15 +283,14 @@ public class GetSendActivity extends AppCompatActivity {
                 }
                 tableRow.setBackgroundColor(Color.parseColor("#FFBB86FC"));
 
-                String child = ((TextView) selectedRow.getChildAt(1)).getText().toString();
-                SendingAmount supplyAmo = sendingAmount.stream()
-                        .filter(rec -> rec.getName().contains(child)).collect(Collectors.toList()).get(0);
+                String child = ((TextView) selectedRow.getChildAt(4)).getText().toString();
+                int id = Integer.parseInt(child);
+                SendingAmount supplyAmo = sendingAmount.stream().filter(rec1 -> rec1.getId() == id).collect(Collectors.toList()).get(0);
 
                 Intent intent = new Intent(GetSendActivity.this, CheckSendingActivity.class);
                 intent.putExtra("SendingAmount", supplyAmo);
+                intent.putExtra("userId", userId);
                 mStartForResult.launch(intent);
-
-
                 fillTable();
 
             });

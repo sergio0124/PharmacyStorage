@@ -1,7 +1,6 @@
 package com.example.pharmacystorage.activities;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -28,7 +27,6 @@ import com.example.pharmacystorage.models.MedicineModel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class CreateManufacturerActivity extends AppCompatActivity {
 
@@ -50,6 +48,7 @@ public class CreateManufacturerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_manufacturer);
+        medicines = new ArrayList<>();
 
         userId = getIntent().getExtras().getInt("userId");
         id = getIntent().getExtras().getInt("id");
@@ -70,7 +69,7 @@ public class CreateManufacturerActivity extends AppCompatActivity {
             edit_text_address.setText(getIntent().getExtras().getString("address"));
             logicMed.open();
             if (logicMed.getFilteredList(id).size() != 0){
-                medicines = logicMed.getFilteredList(id);
+                medicines.addAll(logicMed.getFilteredList(id));
             }
             logicMed.close();
             fillTable(Arrays.asList("Название", "Дозировка", "Форма выпуска"), medicines);
@@ -93,7 +92,7 @@ public class CreateManufacturerActivity extends AppCompatActivity {
                             return;
                         }
                     }
-                    if(medicines.stream().filter(v->v.equals(model)).count() > 0){
+                    if(medicines.stream().anyMatch(v -> v.equals(model))){
                         errorDialog("Такой медикамент уже существует");
                         return;
                     }
@@ -102,7 +101,7 @@ public class CreateManufacturerActivity extends AppCompatActivity {
                 });
 
         button_create_medicine.setOnClickListener(
-                v -> { ;
+                v -> {
                     Intent intent = new Intent(CreateManufacturerActivity.this, MedicineActivity.class);
                     intent.putExtra("id", 0);
                     mStartForResult.launch(intent);
@@ -112,7 +111,7 @@ public class CreateManufacturerActivity extends AppCompatActivity {
         );
 
         button_save.setOnClickListener(
-                v -> { ;
+                v -> {
 
                     ManufacturerModel model = new ManufacturerModel(edit_text_name.getText().toString(), edit_text_email.getText().toString(),
                             edit_text_address.getText().toString(), userId);

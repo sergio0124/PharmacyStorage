@@ -119,6 +119,7 @@ public class MedicineLogic {
         MedicineModel model = new MedicineModel();
 
         String[] fields = name.split(", ");
+        fields[1] = fields[1].replaceAll("\\D", "");
 
         String MedicineName = fields[0];
         String MedicineFormat = fields[2];
@@ -143,7 +144,9 @@ public class MedicineLogic {
 
     public List<MedicineModel> getFilteredListWithQuantityByStorage(int userId){
 
-        Cursor cursor = db.rawQuery("SELECT SUM(Medicine_Supply.CurrentQuantity) QuantitySum, Medicine.Name, Medicine.Id, Dosage, Form, Manufacturer.Id ManufacturerId FROM Medicine JOIN Manufacturer ON ManufacturerId = Manufacturer.Id" +
+        Cursor cursor = db.rawQuery("SELECT SUM(Medicine_Supply.CurrentQuantity) QuantitySum, " +
+                "Medicine.Name, Medicine.Id, Dosage, Form, Manufacturer.Id ManufacturerId " +
+                " FROM Medicine JOIN Manufacturer ON ManufacturerId = Manufacturer.Id" +
                 " JOIN Storage ON Manufacturer.StorageId = Storage.Id AND Storage.Id = " + userId +
                 " JOIN Medicine_Supply ON MedicineId = Medicine.Id " +
                 " GROUP BY Medicine.Id", null);

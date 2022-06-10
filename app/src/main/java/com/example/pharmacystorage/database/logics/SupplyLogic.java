@@ -99,7 +99,7 @@ public class SupplyLogic {
 
     public List<SupplyAmount> getSupplyAmountsByStorage(int userId) {
         Cursor cursor = db.rawQuery("select * from " + TABLE + " JOIN Medicine_Supply " +
-                        "ON Medicine_Supply.Id = Supply.MedicineId AND StorageId = " + userId, null);
+                        "ON Medicine_Supply.SupplyId = Supply.Id AND StorageId = " + userId, null);
         List<SupplyAmount> list = new ArrayList<>();
         if (!cursor.moveToFirst()) {
             return list;
@@ -117,7 +117,7 @@ public class SupplyLogic {
             obj.setMedicineId(cursor.getInt((int) cursor.getColumnIndex("MedicineId")));
             obj.setEndDate(cal);
             obj.setCost(cursor.getInt((int) cursor.getColumnIndex("Cost")));
-            obj.setQuantity(cursor.getInt((int) cursor.getColumnIndex("Quantity")));
+            obj.setQuantity(cursor.getInt((int) cursor.getColumnIndex("CurrentQuantity")));
             obj.setId(cursor.getInt((int) cursor.getColumnIndex("Id")));
 
             list.add(obj);
@@ -157,7 +157,7 @@ public class SupplyLogic {
             obj.setMedicineId(cursor.getInt((int) cursor.getColumnIndex("MedicineId")));
             obj.setEndDate(cal);
             obj.setCost(cursor.getInt((int) cursor.getColumnIndex("Cost")));
-            obj.setQuantity(cursor.getInt((int) cursor.getColumnIndex("Quantity")));
+            obj.setQuantity(cursor.getInt((int) cursor.getColumnIndex("CurrentQuantity")));
             obj.setId(cursor.getInt((int) cursor.getColumnIndex("Id")));
 
             list.add(obj);
@@ -174,8 +174,7 @@ public class SupplyLogic {
         content.put("Cost", supplyAmount.getCost());
         sdf.setTimeZone(supplyAmount.getEndDate().getTimeZone());
         content.put("EndDate", sdf.format(supplyAmount.getEndDate().getTime()));
-        content.put("Quantity", supplyAmount.getQuantity());
-        content.put("CurrentQuantity", supplyAmount.getOldQuantity());
+        content.put("CurrentQuantity", supplyAmount.getQuantity());
         content.put("isEmpty", supplyAmount.getIsEmpty());
         String where = COLUMN_ID + " = " + supplyAmount.getId();
         db.update("Medicine_Supply", content, where, null);

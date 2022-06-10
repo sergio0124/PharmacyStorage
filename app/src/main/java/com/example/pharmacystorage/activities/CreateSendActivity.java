@@ -2,6 +2,7 @@ package com.example.pharmacystorage.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.pharmacystorage.R;
 import com.example.pharmacystorage.database.logics.PharmacyLogic;
@@ -34,6 +36,7 @@ import com.example.pharmacystorage.models.SendingModel;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -113,15 +116,14 @@ public class CreateSendActivity extends AppCompatActivity {
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
-                Intent intent = new Intent(CreateSendActivity.this, SendsActivity.class);
-                intent.putExtra("userId", userId);
-                startActivity(intent);
+                finish();
+            }
+            else {
+                Toast.makeText(this, "Добавьте лекарства", Toast.LENGTH_LONG).show();
             }
         });
 
-        button_cancel.setOnClickListener(v -> {
-            finish();
-        });
+        button_cancel.setOnClickListener(v -> finish());
 
         LoadData();
     }
@@ -140,7 +142,7 @@ public class CreateSendActivity extends AppCompatActivity {
         logicSending.insert(sendingModel);
 
         int sendingId = logicSending.getFullList().get(logicSending.getFullList().size()-1).getId();
-        sendingAmounts.stream().forEach(v->v.setSendingId(sendingId));
+        sendingAmounts.forEach(v->v.setSendingId(sendingId));
 
         logicSending.insertSendingAmounts(sendingAmounts);
         logicSending.close();
@@ -151,11 +153,10 @@ public class CreateSendActivity extends AppCompatActivity {
     private void LoadData() {
 
         logicP.open();
-        List<PharmacyModel> spinnerArray = new ArrayList<PharmacyModel>();
-        spinnerArray.addAll(logicP.getFilteredList(userId));
+        List<PharmacyModel> spinnerArray = logicP.getFilteredList(userId);
         logicP.close();
 
-        ArrayAdapter<PharmacyModel> adapter = new ArrayAdapter<PharmacyModel>(
+        ArrayAdapter<PharmacyModel> adapter = new ArrayAdapter<>(
                 this, android.R.layout.simple_spinner_item, spinnerArray);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner_pharmacy.setAdapter(adapter);
@@ -163,35 +164,31 @@ public class CreateSendActivity extends AppCompatActivity {
 
 
         logicM.open();
-        List<MedicineModel> spinnerArrayMeds = new ArrayList<>();
-        spinnerArrayMeds.addAll(logicM.getFilteredListWithQuantityByStorage(userId));
+        List<MedicineModel> spinnerArrayMeds = logicM.getFilteredList(userId);
         ArrayAdapter<MedicineModel> adapterMeds = new ArrayAdapter<>(
                 this, android.R.layout.simple_spinner_item, spinnerArrayMeds);
         adapterMeds.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner_medicine.setAdapter(adapterMeds);
         logicM.close();
 
-
-
         if(iid >0){
-//            button_add.setVisibility(View.INVISIBLE);
-//            button_save.setVisibility(View.INVISIBLE);
-//            logicR.open();
-//            logicP.open();
-//
-//            RequestModel requestModel = logicR.getElement(iid);
-//            PharmacyModel PharmacyModel = logicP.getElement(requestModel.getPharmacyId());
-//            ArrayAdapter<String> adapterNoChoose = new ArrayAdapter<>(
-//                    CreateRequestActivity.this, android.R.layout.simple_spinner_item, Arrays.asList(PharmacyModel.getName()));
-//            spinner_pharmacy.setAdapter(adapterNoChoose);
-//            spinner_pharmacy.setEnabled(false);
-//            spinner_medicine.setAdapter(null);
-//
-//            ArrayList<RequestAmount> amounts = logicR.getRequestAmountsById(iid);
-//            logicR.close();
-//            logicP.close();
-//            sendingAmounts = amounts;
-//            fillTable();
+            button_add.setVisibility(View.INVISIBLE);
+            button_save.setVisibility(View.INVISIBLE);
+            logicSending.open();
+            logicP.open();
+
+            PharmacyModel pharmacyModel = logicP.getElement(iid);
+            ArrayAdapter<String> adapterNoChoose = new ArrayAdapter<>(
+                    this, android.R.layout.simple_spinner_item, Collections.singletonList(pharmacyModel.getName()));
+            spinner_pharmacy.setAdapter(adapterNoChoose);
+            spinner_pharmacy.setEnabled(false);
+            spinner_medicine.setAdapter(null);
+
+            List<SendingAmount> amounts = logicSending.getSendingAmountsById(iid);
+            logicR.close();
+            logicP.close();
+            sendingAmounts = (ArrayList<SendingAmount>) amounts;
+            fillTable();
         }
     }
 
@@ -263,6 +260,38 @@ public class CreateSendActivity extends AppCompatActivity {
                 }
 
                 tableRow.setBackgroundColor(Color.parseColor("#FFBB86FC"));
+            });
+
+            tableRow.setOnLongClickListener(v -> {
+
+                selectedRow = tableRow;
+
+                for(int i = 0; i < tableLayoutMedicines.getChildCount(); i++){
+                    View view = tableLayoutMedicines.getChildAt(i);
+                    if (view instanceof TableRow){
+                        view.setBackgroundColor(Color.parseColor("#FF03DAC5"));
+                    }
+                }
+                tableRow.setBackgroundColor(Color.parseColor("#FFBB86FC"));
+
+                String nameField = ((TextView) selectedRow.getChildAt(0)).getText().toString();
+                SendingAmount model = new SendingAmount();
+                model.setName(nameField);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("Удалить запись?");
+                builder.setNegativeButton("Отмена", (dialog, id) -> dialog.cancel());
+
+                builder.setPositiveButton("Да",
+                        (dialog, which) -> {
+                            sendingAmounts.removeIf(rec ->rec.getName().equals(model.getName()));
+                            fillTable();
+                            dialog.dismiss();
+                        }).create();
+
+                AlertDialog alert = builder.create();
+                alert.show();
+                return false;
             });
 
             tableLayoutMedicines.addView(tableRow);

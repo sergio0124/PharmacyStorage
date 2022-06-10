@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 
 import com.example.pharmacystorage.database.DatabaseHelper;
 import com.example.pharmacystorage.models.MedicineModel;
-import com.example.pharmacystorage.models.RequestAmount;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,8 +40,13 @@ public class BasketLogic {
     }
 
     public void insertMedicineById(int medicineId, int userId){
-        Cursor cursor = db.rawQuery("select * from " + TABLE + " JOIN Medicine_Basket ON Medicine_Basket.StorageId = Storage.Id AND Storage.Id = " + userId, null);
+        Cursor cursor = db.rawQuery("select * from " + TABLE + " JOIN Storage ON StorageId = Storage.Id AND Storage.Id = " + userId, null);
+        cursor.moveToFirst();
         int basketId = cursor.getInt((int) cursor.getColumnIndex("Basket.Id"));
+
+        if(checkIfExist(basketId, medicineId)){
+            return;
+        }
 
         ContentValues content = new ContentValues();
         content.put("BasketId", basketId);
@@ -50,8 +54,9 @@ public class BasketLogic {
         db.insert("Medicine_Basket", null, content);
     }
 
-    public List<MedicineModel> getMedicinesInBasket(){
-        Cursor cursor = db.rawQuery("SELECT * FROM Medicine_Basket JOIN Medicine ON Medicine.Id = Medicine_Basket.MedicineId",null);
+    public List<MedicineModel> getMedicinesInBasket(int userId){
+        int basketId = getBasketId(userId);
+        Cursor cursor = db.rawQuery("SELECT * FROM Medicine_Basket JOIN Medicine ON Medicine.Id = Medicine_Basket.MedicineId AND Medicine_Basket.BasketId = " + basketId,null);
 
         ArrayList<MedicineModel> list = new ArrayList<>();
         if (!cursor.moveToFirst()) {
@@ -70,5 +75,23 @@ public class BasketLogic {
             cursor.moveToNext();
         } while (!cursor.isAfterLast());
         return list;
+    }
+
+    public int getBasketId(int userId){
+        Cursor cursor = db.rawQuery("select * from " + TABLE + " JOIN Storage ON StorageId = Storage.Id AND Storage.Id = " + userId, null);
+        cursor.moveToFirst();
+        return cursor.getInt((int) cursor.getColumnIndex("Basket.Id"));
+    }
+
+    private boolean checkIfExist(int basketId, int medicineId){
+        Cursor cursor = db.rawQuery("select * from " + TABLE + " JOIN Medicine_Basket ON Medicine_Basket.BasketId = Basket.Id" +
+                " AND MedicineId = " + medicineId + " AND BasketId = " + basketId, null);
+        return cursor.moveToFirst();
+    }
+
+    public void deleteMedicineFromDatabase(int medicineId, int userId){
+        int basketId = getBasketId(userId);
+        String where =" MedicineId = " + medicineId + " AND BasketId = " + basketId;
+        db.delete("Medicine_Basket", where, null);
     }
 }

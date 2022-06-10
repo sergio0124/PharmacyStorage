@@ -91,6 +91,12 @@ public class RequestActivity extends AppCompatActivity {
         fillTable();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        fillTable();
+    }
+
     void fillTable() {
         List<RequestModel> requestModels = logic.getFilteredList(userId);
         tableLayoutRequest.removeAllViews();

@@ -1,10 +1,6 @@
 package com.example.pharmacystorage.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -15,7 +11,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import com.example.pharmacystorage.MainActivity;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.example.pharmacystorage.R;
 import com.example.pharmacystorage.database.logics.ManufacturerLogic;
 import com.example.pharmacystorage.models.ManufacturerModel;
@@ -184,16 +181,13 @@ public class ManufacturerActivity extends AppCompatActivity {
                 builder.setNegativeButton("Отмена", (dialog, id) -> dialog.cancel());
 
                 builder.setPositiveButton("Да",
-                        new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                logic.open();
-                                logic.delete(Integer.parseInt(child));
+                        (dialog, which) -> {
+                            logic.open();
+                            logic.delete(Integer.parseInt(child));
 
-                                fillTable(Arrays.asList("Название", "Почта", "Адрес"), logic.getFilteredList(userId));
-                                dialog.dismiss();
-                                logic.close();
-                            }
+                            fillTable(Arrays.asList("Название", "Почта", "Адрес"), logic.getFilteredList(userId));
+                            dialog.dismiss();
+                            logic.close();
                         }).create();
 
                 AlertDialog alert = builder.create();

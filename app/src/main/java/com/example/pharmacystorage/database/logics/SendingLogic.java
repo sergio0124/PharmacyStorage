@@ -15,6 +15,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class SendingLogic {
     DatabaseHelper sqlHelper;
@@ -71,14 +72,14 @@ public class SendingLogic {
 
     public List<SendingModel> getFilteredByUserIdList(int userId) {
         Cursor cursor = db.rawQuery("select * from " + TABLE + " JOIN Pharmacy ON Pharmacy.Id = " +
-                "PharmacyId JOIN Storage ON Pharmacy.StorageId = Storage.Id AND Storage.Id = " + userId, null);
+                "PharmacyId JOIN Storage ON Pharmacy.StorageId = Storage.Id AND IsSent = 0 AND Storage.Id = " + userId, null);
         List<SendingModel> list = new ArrayList<>();
         if (!cursor.moveToFirst()) {
             return list;
         }
         do {
             SendingModel obj = new SendingModel();
-            obj.setId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_ID)));
+            obj.setId(cursor.getInt(0));
             Calendar cal = new GregorianCalendar();
             try {
                 cal.setTime(sdf.parse(cursor.getString((int) cursor.getColumnIndex(COLUMN_DATE))));// all done
@@ -109,7 +110,7 @@ public class SendingLogic {
             Calendar cal = new GregorianCalendar();
             try {
                 cal.setTime(sdf.parse(cursor.getString((int) cursor.getColumnIndex(COLUMN_DATE))));// all done
-            } catch (Exception ex) {
+            } catch (Exception ignored) {
             }
             obj.setDate(cal);
             obj.setStorageId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_STORAGE_ID)));
@@ -123,8 +124,9 @@ public class SendingLogic {
     }
 
     public SendingModel getElement(int id) {
-        Cursor cursor = db.rawQuery("select * from " + TABLE + " JOIN Pharmacy ON Pharmacy.Id = PharmacyId AND "
-                + COLUMN_ID + " = " + id, null);
+        Cursor cursor = db.rawQuery("select Date, Sending.Id as 'IdOfSending', Pharmacy.StorageId, PharmacyId, IsSent from "
+                + TABLE + " JOIN Pharmacy ON Pharmacy.Id = PharmacyId AND Sending.Id"
+                + " = " + id, null);
         SendingModel obj = new SendingModel();
         if (!cursor.moveToFirst()) {
             return null;
@@ -132,11 +134,12 @@ public class SendingLogic {
         Calendar cal = new GregorianCalendar();
 
         try {
-            cal.setTime(sdf.parse(cursor.getString((int) cursor.getColumnIndex(COLUMN_DATE))));// all done
-        } catch (Exception ex) {
+            cal.setTime(Objects.requireNonNull(sdf.parse(cursor.getString((int) cursor.getColumnIndex(COLUMN_DATE)))));// all done
+        } catch (Exception ignored) {
         }
 
-        obj.setId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_ID)));
+        obj.setId(cursor.getInt((int) cursor.getColumnIndex("IdOfSending")));
+        obj.setDate(cal);
         obj.setStorageId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_STORAGE_ID)));
         obj.setPharmacyId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_PHARMACY_ID)));
         obj.setSent(cursor.getInt((int) cursor.getColumnIndex(COLUMN_IS_SENT)));
@@ -172,7 +175,8 @@ public class SendingLogic {
     }
 
     public void insertSendingAmounts(List<SendingAmount> models) {
-        models.stream().forEach(v -> {
+        models.forEach(v -> {
+            db.rawQuery("DELETE FROM Sending_Medicine WHERE Id = " + v.getId(), null);
             ContentValues content = new ContentValues();
             content.put("SendingId", v.getSendingId());
             content.put("MedicineId", v.getMedicineId());
@@ -185,8 +189,9 @@ public class SendingLogic {
 
     public List<SendingAmount> getSendingAmountsById(int sendingId) {
 
-        Cursor cursor = db.rawQuery("SELECT * " +
-                " FROM Sending_Medicine JOIN Medicine ON MedicineId = Medicine.Id AND SendingId = " + sendingId, null);
+        Cursor cursor = db.rawQuery("SELECT Sending_Medicine.Id, SendingId, Cost, Quantity, MedicineId, Name, Dosage, Form " +
+                " FROM Sending_Medicine JOIN Medicine ON MedicineId = Medicine.Id AND SendingId = "
+                + sendingId, null);
         ArrayList<SendingAmount> list = new ArrayList<>();
         if (!cursor.moveToFirst()) {
             return list;

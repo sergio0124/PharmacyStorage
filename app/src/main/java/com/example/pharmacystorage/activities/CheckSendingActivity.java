@@ -36,12 +36,6 @@ public class CheckSendingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_check_sending);
 
         userId = getIntent().getExtras().getInt("userId");
-        final int abTitleId = getResources().getIdentifier("action_bar_title", "id", "android");
-        findViewById(abTitleId).setOnClickListener(v -> {
-            Intent intent = new Intent(CheckSendingActivity.this, MainMenuActivity.class);
-            intent.putExtra("userId", userId);
-            startActivity(intent);
-        });
         Intent intent = getIntent();
 
 
@@ -63,7 +57,12 @@ public class CheckSendingActivity extends AppCompatActivity {
         medicineData = medicineLogic.getFilteredListWithQuantityByStorage(userId).stream()
                 .filter(v -> v.getId() == databaseSending.getMedicineId())
                 .collect(Collectors.toList())
-                .get(0);
+                .stream().findAny().orElse(null);
+        if (medicineData == null){
+            medicineData = new MedicineModel();
+            medicineData.setQuantityOnStorage(0);
+            medicineData.setId(databaseSending.getMedicineId());
+        }
         medicineLogic.close();
 
         quantityEditText = (EditText) findViewById(R.id.edit_text_quality);
@@ -105,19 +104,22 @@ public class CheckSendingActivity extends AppCompatActivity {
         ((EditText) findViewById(R.id.edit_text_name)).setText(sendingAmount.getName());
         ((EditText) findViewById(R.id.edit_text_name)).setEnabled(false);
 
-        if (sendingAmount.getCost() > medicineData.getQuantityOnStorage()) {
-            ((EditText) findViewById(R.id.edit_text_cost)).setText(String.valueOf(medicineData.getQuantityOnStorage()));
+        if (sendingAmount.getQuantity() > medicineData.getQuantityOnStorage()) {
+            ((EditText) findViewById(R.id.edit_text_quality)).setText(String.valueOf(medicineData.getQuantityOnStorage()));
         } else {
-            ((EditText) findViewById(R.id.edit_text_cost)).setText(String.valueOf(sendingAmount.getCost()));
+            ((EditText) findViewById(R.id.edit_text_quality)).setText(String.valueOf(sendingAmount.getQuantity()));
         }
+        ((EditText) findViewById(R.id.edit_text_cost)).setText(String.valueOf(sendingAmount.getCost()));
         ((EditText) findViewById(R.id.edit_text_cost)).setEnabled(false);
 
         ((Button) findViewById(R.id.button_accept)).setOnClickListener(v -> {
             SendResult("Подтверждено");
+            finish();
         });
 
         ((Button) findViewById(R.id.button_cancel)).setOnClickListener(v -> {
             SendResult("Ожидание");
+            finish();
         });
     }
 
@@ -129,7 +131,7 @@ public class CheckSendingActivity extends AppCompatActivity {
         }
         sendingAmount.setStatus(status);
         sendingAmount.setQuantity(Integer.parseInt(quantityEditText.getText().toString()));
-        Intent intent = new Intent(this, GetSupplyActivity.class);
+        Intent intent = new Intent(this, GetSendActivity.class);
         intent.putExtra("SendingAmount", sendingAmount);
         setResult(RESULT_OK, intent);
         this.finish();

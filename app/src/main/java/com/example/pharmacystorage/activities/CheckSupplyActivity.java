@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -17,6 +16,7 @@ import com.example.pharmacystorage.models.SupplyAmount;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 public class CheckSupplyActivity extends AppCompatActivity {
 
@@ -33,12 +33,14 @@ public class CheckSupplyActivity extends AppCompatActivity {
 
         Bundle arguments = intent.getExtras();
 
-        supplyAmount =(SupplyAmount)arguments.getSerializable(SupplyAmount.class.getSimpleName());
+        supplyAmount = (SupplyAmount) arguments.getSerializable(SupplyAmount.class.getSimpleName());
         buttonDate = findViewById(R.id.buttonDate);
+
         date = GregorianCalendar.getInstance();
-        String text = date==null? "Choose date" : date.get(Calendar.DAY_OF_MONTH) + " / " +
-                date.get(Calendar.MONTH) + " / " + (date.get(Calendar.YEAR));
+        date.setTimeZone(TimeZone.getDefault());
+        String text = date == null ? "Choose date" : date.getTime().getDate() + "/" + date.getTime().getMonth() + "/" + (date.getTime().getYear() + 1900);
         buttonDate.setText(text);
+
 
         quantityEditText = (EditText) findViewById(R.id.edit_text_quality);
         quantityEditText.setText(String.valueOf(supplyAmount.getQuantity()));
@@ -71,21 +73,27 @@ public class CheckSupplyActivity extends AppCompatActivity {
 
         buttonDate.setOnClickListener(
                 v -> {
-                    DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
-
-                        @Override
-                        public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-                            date.set(year, monthOfYear + 1, dayOfMonth);
-                            String text = date.get(Calendar.DAY_OF_MONTH) + "/" +
-                                    date.get(Calendar.MONTH) + "/" + (date.get(Calendar.YEAR));
-                            buttonDate.setText(text);
-                            supplyAmount.setEndDate(date);
+                    DatePickerDialog.OnDateSetListener dateSetListener = (view, year, monthOfYear, dayOfMonth) -> {
+                        Calendar testDate = new GregorianCalendar();
+                        testDate.set(year, monthOfYear, dayOfMonth);
+                        if (testDate.getTime().getTime() < GregorianCalendar.getInstance().getTime().getTime()) {
+                            Toast.makeText(this, "Дата не может быть раньше сегодня", Toast.LENGTH_LONG).show();
+                            return;
                         }
+
+                        date.set(year, monthOfYear, dayOfMonth);
+                        String text1 = date.get(Calendar.DAY_OF_MONTH) + "/" +
+                                date.get(Calendar.MONTH) + "/" + (date.get(Calendar.YEAR));
+                        buttonDate.setText(text1);
+                        supplyAmount.setEndDate(date);
                     };
                     DatePickerDialog datePickerDialog;
+                    Calendar testDate = GregorianCalendar.getInstance();
                     datePickerDialog = new DatePickerDialog(buttonDate.getContext(),
                             android.R.style.Theme_Holo_Light_Dialog_NoActionBar,
-                            dateSetListener, 2022, 6, 1);
+                            dateSetListener, testDate.get(Calendar.YEAR),
+                            testDate.get(Calendar.MONTH),
+                            testDate.get(Calendar.DAY_OF_MONTH));
 
                     datePickerDialog.show();
                 }
@@ -97,24 +105,23 @@ public class CheckSupplyActivity extends AppCompatActivity {
         ((EditText) findViewById(R.id.edit_text_cost)).setText(String.valueOf(supplyAmount.getCost()));
         ((EditText) findViewById(R.id.edit_text_cost)).setEnabled(false);
 
-        ((Button) findViewById(R.id.button_accept)).setOnClickListener(v->{
+        ((Button) findViewById(R.id.button_accept)).setOnClickListener(v -> {
             SendResult("Подтверждено");
         });
 
-        ((Button) findViewById(R.id.button_cancel)).setOnClickListener(v->{
+        ((Button) findViewById(R.id.button_cancel)).setOnClickListener(v -> {
             SendResult("Ожидание");
         });
 
-        ((Button) findViewById(R.id.button_defective)).setOnClickListener(v->{
+        ((Button) findViewById(R.id.button_defective)).setOnClickListener(v -> {
             SendResult("Брак");
         });
     }
 
 
-
-    private void SendResult(String status){
-        if(supplyAmount.getQuantity() > Integer.parseInt(quantityEditText.getText().toString()) &&
-                status.contains("Подтверждено")){
+    private void SendResult(String status) {
+        if (supplyAmount.getQuantity() > Integer.parseInt(quantityEditText.getText().toString()) &&
+                status.contains("Подтверждено")) {
             status = "Недостача";
         }
         supplyAmount.setState(status);

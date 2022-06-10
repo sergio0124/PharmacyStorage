@@ -1,5 +1,6 @@
 package com.example.pharmacystorage.activities;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -19,6 +20,7 @@ import com.example.pharmacystorage.database.logics.PharmacyLogic;
 import com.example.pharmacystorage.database.logics.SendingLogic;
 import com.example.pharmacystorage.database.logics.StorageLogic;
 import com.example.pharmacystorage.helper_models.ReadEmail;
+import com.example.pharmacystorage.models.ManufacturerModel;
 import com.example.pharmacystorage.models.PharmacyModel;
 import com.example.pharmacystorage.models.RequestAmount;
 import com.example.pharmacystorage.models.RequestModel;
@@ -35,6 +37,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -85,7 +88,7 @@ public class SendsActivity extends AppCompatActivity {
             }
 
             String child = ((TextView) selectedRow.getChildAt(2)).getText().toString();
-            RequestModel model = new RequestModel();
+            SendingModel model = new SendingModel();
             model.setId(Integer.parseInt(child));
 
             Intent intent = new Intent(SendsActivity.this, GetSendActivity.class);
@@ -134,6 +137,12 @@ public class SendsActivity extends AppCompatActivity {
         readEmail.execute();
     }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        fillTable();
+    }
+
 
     void LoadSendings() {
         logicP.open();
@@ -157,13 +166,11 @@ public class SendsActivity extends AppCompatActivity {
             ) {
                 if (v instanceof LinkedTreeMap) {
                     LinkedTreeMap<String, Object> data = (LinkedTreeMap) v;
-                    int medicineId = logicM.getMedicineByFullName((String) data.get("Name")).getId()  ;
+                    int medicineId = logicM.getMedicineByFullName((String) Objects.requireNonNull(data.get("Name"))).getId()  ;
                     RequestAmount v_data = new RequestAmount();
                     v_data.setName((String) data.get("Name"));
-                    v_data.setQuantity(((Double) data.get("Quantity")).intValue());
-                    v_data.setCost(((Double) data.get("Cost")).intValue());
-                    v_data.setMedicineId(((Double) data.get("MedicineId")).intValue());
-                    v_data.setRequestId(((Double) data.get("RequestId")).intValue());
+                    v_data.setQuantity(((Double) Objects.requireNonNull(data.get("Quantity"))).intValue());
+                    v_data.setCost(((Double) Objects.requireNonNull(data.get("Cost"))).intValue());
                     v_data.setMedicineId(medicineId);
                     SendingAmount tmpSending = new SendingAmount(v_data);
                     tmpSending.setSendingId(sendingId);
@@ -230,7 +237,6 @@ public class SendsActivity extends AppCompatActivity {
             tableRow.addView(textViewEmail);
             tableRow.addView(textViewName);
             tableRow.addView(textViewId);
-
             tableRow.setBackgroundColor(Color.parseColor("#FF03DAC5"));
 
             tableRow.setOnClickListener(v -> {
@@ -244,6 +250,43 @@ public class SendsActivity extends AppCompatActivity {
                     }
                 }
                 tableRow.setBackgroundColor(Color.parseColor("#FFBB86FC"));
+
+
+            });
+
+            tableRow.setOnLongClickListener(v -> {
+
+                selectedRow = tableRow;
+
+                for(int i = 0; i < tableLayoutSending.getChildCount(); i++){
+                    View view = tableLayoutSending.getChildAt(i);
+                    if (view instanceof TableRow){
+                        view.setBackgroundColor(Color.parseColor("#FF03DAC5"));
+                    }
+                }
+                tableRow.setBackgroundColor(Color.parseColor("#FFBB86FC"));
+
+                String child = ((TextView) selectedRow.getChildAt(2)).getText().toString();
+                SendingModel model = new SendingModel();
+                model.setId(Integer.parseInt(child));
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("Удалить запись?");
+                builder.setNegativeButton("Отмена", (dialog, id) -> dialog.cancel());
+
+                builder.setPositiveButton("Да",
+                        (dialog, which) -> {
+                            logicS.open();
+                            logicS.delete(Integer.parseInt(child));
+
+                            fillTable();
+                            dialog.dismiss();
+                            logicS.close();
+                        }).create();
+
+                AlertDialog alert = builder.create();
+                alert.show();
+                return false;
             });
 
             tableLayoutSending.addView(tableRow);

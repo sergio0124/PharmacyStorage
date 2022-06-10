@@ -13,6 +13,7 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.example.pharmacystorage.R;
+import com.example.pharmacystorage.database.logics.BasketLogic;
 import com.example.pharmacystorage.database.logics.MedicineLogic;
 import com.example.pharmacystorage.database.logics.PharmacyLogic;
 import com.example.pharmacystorage.models.MedicineModel;
@@ -26,7 +27,7 @@ public class ShowBasketActivity extends AppCompatActivity {
 
     TableRow selectedRow;
     Button button_cancel;
-    MedicineLogic logic;
+    BasketLogic logic;
     int userId;
     List<String> titles = new ArrayList<>(Arrays.asList("Полное название"));
 
@@ -34,10 +35,10 @@ public class ShowBasketActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_basket);
-
+        userId = getIntent().getExtras().getInt("userId");
 
         button_cancel = findViewById(R.id.button_cancel);
-        logic = new MedicineLogic(this);
+        logic = new BasketLogic(this);
 
         button_cancel.setOnClickListener(
                 v -> {
@@ -45,12 +46,13 @@ public class ShowBasketActivity extends AppCompatActivity {
                 }
         );
 
-        logic.open();
-        fillTable(titles, logic.getFilteredListWithQuantityByStorage(userId));
-        logic.close();
+        fillTable();
     }
 
-    void fillTable(List<String> titles, List<MedicineModel> clients) {
+    void fillTable() {
+        logic.open();
+        List<MedicineModel> medicines = logic.getMedicinesInBasket(userId);
+        logic.close();
 
         TableLayout tableLayoutClients = findViewById(R.id.tableLayoutMedicines);
 
@@ -73,7 +75,7 @@ public class ShowBasketActivity extends AppCompatActivity {
         tableLayoutClients.addView(tableRowTitles);
 
 
-        for (MedicineModel Client : clients) {
+        for (MedicineModel Client : medicines) {
             TableRow tableRow = new TableRow(this);
 
             TextView textViewName = new TextView(this);
@@ -105,6 +107,8 @@ public class ShowBasketActivity extends AppCompatActivity {
 
                 tableRow.setBackgroundColor(Color.parseColor("#FFBB86FC"));
             });
+
+
 
             tableLayoutClients.addView(tableRow);
         }

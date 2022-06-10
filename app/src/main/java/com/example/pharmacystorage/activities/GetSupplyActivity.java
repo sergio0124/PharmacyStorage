@@ -15,6 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.pharmacystorage.R;
+import com.example.pharmacystorage.database.logics.BasketLogic;
 import com.example.pharmacystorage.database.logics.ManufacturerLogic;
 import com.example.pharmacystorage.database.logics.MedicineLogic;
 import com.example.pharmacystorage.database.logics.RequestLogic;
@@ -48,7 +49,6 @@ public class GetSupplyActivity extends AppCompatActivity {
     TableLayout tableLayoutSupplies;
     List<String> titles = Arrays.asList("Статус", "Медикамент", "Количество", "Стоимость");
     ActivityResultLauncher<Intent> mStartForResult;
-    final private String LETTER_SUBJECT = "Supply Report";
 
     int requestId;
     int userId;
@@ -56,18 +56,10 @@ public class GetSupplyActivity extends AppCompatActivity {
     List<SupplyAmount> supplyAmounts = new ArrayList<>();
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_get_supply);
-        final int abTitleId = getResources().getIdentifier("action_bar_title", "id", "android");
-        findViewById(abTitleId).setOnClickListener(v -> {
-            Intent intent = new Intent(GetSupplyActivity.this, MainMenuActivity.class);
-            intent.putExtra("userId", userId);
-            startActivity(intent);
-        });
 
         mStartForResult = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
@@ -89,15 +81,13 @@ public class GetSupplyActivity extends AppCompatActivity {
 
         acceptSupply = findViewById(R.id.button_to_accept_supply);
         acceptSupply.setOnClickListener(v -> {
-
             SaveSupply();
             SendMessage();
             DeleteRequest();
-        });
-        cancelButton = findViewById(R.id.button_cancel);
-        cancelButton.setOnClickListener(v -> {
             finish();
         });
+        cancelButton = findViewById(R.id.button_cancel);
+        cancelButton.setOnClickListener(v -> finish());
         tableLayoutSupplies = findViewById(R.id.tableLayoutSupply);
 
         requestId = getIntent().getExtras().getInt("requestId");
@@ -109,9 +99,7 @@ public class GetSupplyActivity extends AppCompatActivity {
         logicManufacturer = new ManufacturerLogic(this);
         requestAmounts = logicR.getRequestAmountsById(requestId);
 
-        requestAmounts.stream().forEach(v -> {
-            supplyAmounts.add(new SupplyAmount(v.getMedicineId(), v.getName(), v.getQuantity(), v.getCost(), "Ожидание"));
-        });
+        requestAmounts.forEach(v -> supplyAmounts.add(new SupplyAmount(v.getMedicineId(), v.getName(), v.getQuantity(), v.getCost(), "Ожидание")));
 
         LoadData();
     }
@@ -136,6 +124,7 @@ public class GetSupplyActivity extends AppCompatActivity {
         logicR.close();
         logicManufacturer.close();
 
+        String LETTER_SUBJECT = "Supply Report";
         JavaMailApi javaMailAPI = new JavaMailApi(this, Email, LETTER_SUBJECT, "", sEmail, sPassword, path);
         javaMailAPI.execute();
     }
@@ -144,6 +133,8 @@ public class GetSupplyActivity extends AppCompatActivity {
     private void SaveSupply() {
         logicS.open();
         logicM.open();
+        BasketLogic basketLogic = new BasketLogic(this);
+        basketLogic.open();
 
         SupplyModel model = new SupplyModel();
         model.setDate(Calendar.getInstance());
@@ -152,17 +143,19 @@ public class GetSupplyActivity extends AppCompatActivity {
 
         SupplyModel supplyModel = logicS.getFilteredByStorageList(userId).get(logicS.getFilteredByStorageList(userId).size() - 1);
         List<SupplyAmount> listSA = supplyAmounts.stream().filter(v -> !v.getState().contains("Брак")).collect(Collectors.toList());
-        listSA.stream().forEach(v -> v.setSupplyId(supplyModel.getId()));
-        listSA.stream().forEach(v -> v.setMedicineId( logicM.getMedicineByFullName(v.getName()).getId()));
+        listSA.forEach(v -> v.setSupplyId(supplyModel.getId()));
+        listSA.forEach(v -> v.setMedicineId(logicM.getMedicineByFullName(v.getName()).getId()));
 
         logicS.insertSupplyAmounts(listSA);
+        listSA.forEach(v -> basketLogic.deleteMedicineFromDatabase(v.getMedicineId(), userId));
 
+        basketLogic.close();
         logicS.close();
         logicM.close();
     }
 
 
-    private void DeleteRequest(){
+    private void DeleteRequest() {
         logicR.open();
         logicR.delete(requestId);
 
@@ -176,13 +169,9 @@ public class GetSupplyActivity extends AppCompatActivity {
     }
 
 
-
-
     private void LoadData() {
         fillTable();
     }
-
-
 
 
     void fillTable() {
