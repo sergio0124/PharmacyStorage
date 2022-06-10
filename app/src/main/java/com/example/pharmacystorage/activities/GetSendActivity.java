@@ -158,7 +158,7 @@ public class GetSendActivity extends AppCompatActivity {
 
             int i = 0;
             List<SupplyAmount> supplyAmountsByMedicine = supplyAmounts.stream().filter(rec -> rec.getMedicineId() == v.getMedicineId()).collect(Collectors.toList());
-            while (count > 0 && i-1<supplyAmounts.size()) {
+            while (count > 0 && (supplyAmountsByMedicine.size() - 1 - i)>-1) {
                 SupplyAmount supplyAmount = supplyAmountsByMedicine.get(supplyAmountsByMedicine.size() - 1 - i);
                 supplyAmount.setOldQuantity(supplyAmount.getQuantity());
                 if (supplyAmount.getQuantity() > count) {

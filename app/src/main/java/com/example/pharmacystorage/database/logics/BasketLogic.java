@@ -84,12 +84,14 @@ public class BasketLogic {
     }
 
     private boolean checkIfExist(int basketId, int medicineId){
-        Cursor cursor = db.rawQuery("select * from " + TABLE + " WHERE MedicineId = " + medicineId + " AND BasketId = " + basketId, null);
+        Cursor cursor = db.rawQuery("select * from " + TABLE + " JOIN Medicine_Basket ON Medicine_Basket.BasketId = Basket.Id" +
+                " AND MedicineId = " + medicineId + " AND BasketId = " + basketId, null);
         return cursor.moveToFirst();
     }
 
-    private void deleteMedicineFromDatabase(int medicineId){
-        String where =" MedicineId = " + medicineId;
-        db.delete(TABLE, where, null);
+    public void deleteMedicineFromDatabase(int medicineId, int userId){
+        int basketId = getBasketId(userId);
+        String where =" MedicineId = " + medicineId + " AND BasketId = " + basketId;
+        db.delete("Medicine_Basket", where, null);
     }
 }

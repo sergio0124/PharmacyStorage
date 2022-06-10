@@ -50,5 +50,6 @@
     <string name="button_send_sending">Отправить</string>
     <string name="button_basket_check">"Просмотреть корзину "</string>
     <string name="button_report">Отчет</string>
-    <string name="button_edit_storage">Редактировать склад</string>
+    <string name="button_edit_storage">Редактировать аккаунт</string>
+    <string name="text_view_pharmacy_name">Название аптеки</string>
 </resources>

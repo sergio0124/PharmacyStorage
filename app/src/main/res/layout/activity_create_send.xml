@@ -12,7 +12,7 @@
         android:gravity="center"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/text_view_manufacturer_name" />
+        android:text="@string/text_view_pharmacy_name" />
 
     <Spinner
         android:id="@+id/spinner_pharmacy_name"

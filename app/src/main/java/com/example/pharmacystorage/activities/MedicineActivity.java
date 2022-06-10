@@ -25,7 +25,7 @@ public class MedicineActivity extends AppCompatActivity {
     EditText edit_text_dosage;
     Spinner spinner_form;
     MedicineLogic logic;
-    List<String> spinnerTitles = new ArrayList<String>(Arrays.asList("Таблетки", "Сироп", "Крем"));
+    List<String> spinnerTitles = new ArrayList<>(Arrays.asList("Таблетки", "Сироп", "Крем"));
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

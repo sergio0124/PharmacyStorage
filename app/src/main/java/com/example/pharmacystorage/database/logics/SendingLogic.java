@@ -124,8 +124,9 @@ public class SendingLogic {
     }
 
     public SendingModel getElement(int id) {
-        Cursor cursor = db.rawQuery("select * from " + TABLE + " JOIN Pharmacy ON Pharmacy.Id = PharmacyId AND Sending."
-                + COLUMN_ID + " = " + id, null);
+        Cursor cursor = db.rawQuery("select Date, Sending.Id as 'IdOfSending', Pharmacy.StorageId, PharmacyId, IsSent from "
+                + TABLE + " JOIN Pharmacy ON Pharmacy.Id = PharmacyId AND Sending.Id"
+                + " = " + id, null);
         SendingModel obj = new SendingModel();
         if (!cursor.moveToFirst()) {
             return null;
@@ -137,7 +138,7 @@ public class SendingLogic {
         } catch (Exception ignored) {
         }
 
-        obj.setId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_ID)));
+        obj.setId(cursor.getInt((int) cursor.getColumnIndex("IdOfSending")));
         obj.setDate(cal);
         obj.setStorageId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_STORAGE_ID)));
         obj.setPharmacyId(cursor.getInt((int) cursor.getColumnIndex(COLUMN_PHARMACY_ID)));
@@ -188,8 +189,9 @@ public class SendingLogic {
 
     public List<SendingAmount> getSendingAmountsById(int sendingId) {
 
-        Cursor cursor = db.rawQuery("SELECT * " +
-                " FROM Sending_Medicine JOIN Medicine ON MedicineId = Medicine.Id AND SendingId = " + sendingId, null);
+        Cursor cursor = db.rawQuery("SELECT Sending_Medicine.Id, SendingId, Cost, Quantity, MedicineId, Name, Dosage, Form " +
+                " FROM Sending_Medicine JOIN Medicine ON MedicineId = Medicine.Id AND SendingId = "
+                + sendingId, null);
         ArrayList<SendingAmount> list = new ArrayList<>();
         if (!cursor.moveToFirst()) {
             return list;

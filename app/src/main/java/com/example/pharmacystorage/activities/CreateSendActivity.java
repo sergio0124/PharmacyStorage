@@ -16,6 +16,7 @@ import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.pharmacystorage.R;
 import com.example.pharmacystorage.database.logics.PharmacyLogic;
@@ -116,6 +117,9 @@ public class CreateSendActivity extends AppCompatActivity {
                     ex.printStackTrace();
                 }
                 finish();
+            }
+            else {
+                Toast.makeText(this, "Добавьте лекарства", Toast.LENGTH_LONG).show();
             }
         });
 
